@@ -10,7 +10,6 @@ import static framework.math3d.math3d.add;
 import static framework.math3d.math3d.mul;
 import static framework.math3d.math3d.translation;
 import static framework.math3d.math3d.axisRotation;
-import static framework.math3d.math3d.length;
 import framework.math3d.vec4;
 
 /**
@@ -37,12 +36,6 @@ public class Animal
         if(mMoving)
         {
             mPos = add(mPos, mul(mVel,elapsed));
-            mVel = add(mVel, mul(mVel, -0.5f * elapsed));
-            if(length(mVel) < 0.2f)
-            {
-                mVel = new vec4(0,0,0,0);
-                mMoving = false;
-            }
         }
     }
     
