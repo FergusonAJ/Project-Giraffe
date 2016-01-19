@@ -1,19 +1,47 @@
 #version 150
-
+#define MAX_LIGHTS 8
+struct Light{
+    vec3 position;
+    vec3 color;
+};
 uniform vec3 lightPos;
+uniform vec3 lightColor;
+//uniform Light lights[MAX_LIGHTS];
 uniform vec3 eyePos;
 uniform sampler2D diffuse_texture;
+uniform vec3 skyColor;
 
 in vec2 v_texcoord;
 in vec3 v_normal;
 in vec3 v_pw;
 
+in float visibility;
 out vec4 color;
+in float true_z;
+
+const float levels = 5;
 
 void main(){
     vec4 tc = texture(diffuse_texture,v_texcoord);
     vec3 N = normalize(v_normal);
     vec3 V = normalize(eyePos - v_pw);
+
+
+
+
+    //float celLevel = floor(N* levels)/ levels;
+    //insert light stuff
+//This is for multiple lights be sure to include the cell shading stuff as well 
+//when we place more light sources
+//for(int i=0;i<MAX_LIGHTS;++i)
+//	{
+  //          vec3 L = normalize( lights[i].position - v_pw );
+    //        float dp = clamp( dot(L,N), 0.0, 1.0 );
+      //      lightsum += dp * lights[i].color;
+    	//}
+
+
+
     vec3 L = (lightPos - v_pw);
     float Ldist = length(L);
     L = 1.0/Ldist * L;
@@ -24,9 +52,10 @@ void main(){
     sp *= sign(dp);
     sp = pow(sp,32.0); 
     sp = clamp(sp,0.0,1.0);
-	//dp *= 3.0;
-	//dp = floor(dp);
-	//dp /= 3.0;
+	dp *= 3.0;
+	dp = floor(dp);
+	dp /= 3.0;
     color = vec4(dp*tc.rgb,tc.a);// + vec3(sp),tc.a);
+    color = mix(vec4(skyColor,1),color,visibility);
 }
 

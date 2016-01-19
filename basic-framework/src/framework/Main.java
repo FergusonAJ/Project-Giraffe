@@ -62,7 +62,7 @@ public class Main{
         Framebuffer fbo1;
         Framebuffer fbo2;
         Texture2D dummytex = new SolidTexture(GL_UNSIGNED_BYTE,0,0,0,0);
-        Mesh pigMesh = new Mesh("assets/giraffe.obj.mesh");
+        Mesh pigMesh = new Mesh("assets/pig.obj.mesh");
         Mesh pinMesh = new Mesh("assets/zom.obj.mesh");
         Mesh planeMesh = new Mesh("assets/grassPlane.obj.mesh");
         Animal pig = new Animal(pigMesh);
@@ -71,6 +71,7 @@ public class Main{
         pinList.add(new Pin(pinMesh, new vec4(3,2,-30,1)));
         pinList.add(new Pin(pinMesh, new vec4(-3,2,-30,1)));
         usq = new UnitSquare();
+        vec3 skyColor = new vec3(0.5,0.5,0.5);
 
         fbo1 = new Framebuffer(512,512);
         fbo2 = new Framebuffer(512,512);
@@ -83,6 +84,7 @@ public class Main{
         cam.lookAt( new vec3(0,2,3), new vec3(0,0,0), new vec3(0,1,0) );
 
         prev = (float)(System.nanoTime()*1E-9);
+
         SDL_Event ev=new SDL_Event();
         while(true){
             while(true){
@@ -156,7 +158,9 @@ public class Main{
             
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             prog.use();
-            prog.setUniform("lightPos", new vec3(0,10,-5));//new vec3(cam.eye.x, cam.eye.y, cam.eye.z));//50,50,50) )
+            prog.setUniform("mode",0.1);
+            prog.setUniform("skyColor",skyColor);
+            prog.setUniform("lightPos", new vec3(cam.eye.x, cam.eye.y, cam.eye.z));//50,50,50) )
             prog.setUniform("worldMatrix", mul(scaling(new vec3(100,1,100)),translation(new vec3(0,-1.0f,0))));
             planeMesh.draw(prog);
             cam.draw(prog);

@@ -66,6 +66,8 @@ public class Camera{
         prog.setUniform("cameraV",this.V.xyz());
         prog.setUniform("cameraW",this.W.xyz());
         prog.setUniform("eyePos",this.eye.xyz());
+        prog.setUniform("hiter",this.hither);
+        prog.setUniform("yon_minus_hiter",this.yon-this.hither);
     }
     
     public void turn( float a){
