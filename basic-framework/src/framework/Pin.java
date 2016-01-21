@@ -79,7 +79,6 @@ public class Pin
     void checkAnimalPosition(vec4 animalPos)
     {
         float dist = length(sub(mPos,animalPos));
-        System.out.println(dist);
 
         if(dist<=30f)
         {
