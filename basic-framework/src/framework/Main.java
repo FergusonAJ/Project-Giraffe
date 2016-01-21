@@ -74,7 +74,7 @@ public class Main{
         ArrayList<Animal> animalList = new ArrayList();
         animalList.add(new Animal(earthMesh,new vec4(-30,0,0,1)));
         animalList.add(new Animal(giraffeMesh,new vec4(0,0,0,1)));
-        animalList.add(new Animal(zomMesh,new vec4(30,0,0,1)));
+        animalList.add(new Animal(zomMesh,new vec4(30,1000,0,1)));
         
         int animalSelected = 0;
         
@@ -130,7 +130,13 @@ public class Main{
             {
                 for(Animal a: animalList)
                 {
-                p.checkCollision(a.mPos, a.mRad);
+                    if(p.checkCollision(a.mPos, a.mRad,a.mMoving))
+                    {
+                        if(a.equals(animalList.get(animalSelected)))
+                            animalSelected = 0;
+                        animalList.remove(a);
+                    }
+                
                 p.checkAnimalPosition(a.mPos);
                 }
                 p.update(elapsed);
