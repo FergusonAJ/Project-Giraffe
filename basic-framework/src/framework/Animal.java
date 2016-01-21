@@ -25,6 +25,7 @@ public class Animal
     vec4 mForward;
     float mYOffset;
     float mRad = 1.5f;
+    boolean mAlive = true;
     
     public Animal(Mesh mesh, vec4 position, float yOffset)
     {
