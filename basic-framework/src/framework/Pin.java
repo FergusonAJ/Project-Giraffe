@@ -5,15 +5,9 @@
  */
 package framework;
 
-import static framework.math3d.math3d.add;
-import static framework.math3d.math3d.sub;
-import static framework.math3d.math3d.mul;
-import static framework.math3d.math3d.translation;
-import static framework.math3d.math3d.axisRotation;
-import static framework.math3d.math3d.dot;
-import static framework.math3d.math3d.length;
-import static framework.math3d.math3d.normalize;
+import static framework.math3d.math3d.*;
 import framework.math3d.vec4;
+import framework.math3d.vec3;
 
 /**
  *
@@ -27,13 +21,15 @@ public class Pin
     double mRotY = Math.PI / 2 * 3;
     boolean mMoving = false;
     vec4 mVel;
+    float mYOffset;
     float mRad = 3;
     boolean mAlive = true;
     
-    public Pin(Mesh mesh, vec4 position)
+    public Pin(Mesh mesh, vec4 position, float yOffset)
     {
         mMesh = mesh;
         mPos = position;
+        mYOffset = yOffset;
     }
     
     public void update(float elapsed)
@@ -93,7 +89,7 @@ public class Pin
     {
         if(mAlive)
         {
-            prog.setUniform("worldMatrix", mul(axisRotation(new vec4(0.0f,1.0f,0.0f,0.0f), mRotY), translation(mPos)));
+            prog.setUniform("worldMatrix", mul(mul(axisRotation(new vec4(0.0f,1.0f,0.0f,0.0f), mRotY), translation(mPos), translation(new vec3(0,mYOffset, 0)))));
             mMesh.draw(prog);
         }
     }
