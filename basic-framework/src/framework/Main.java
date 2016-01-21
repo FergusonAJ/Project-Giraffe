@@ -125,6 +125,7 @@ public class Main{
 
             float now = (float)(System.nanoTime()*1E-9);
             float elapsed = now-prev;
+            prev=now;
             for(Animal a: animalList)
             {
                 a.update(elapsed);
@@ -138,21 +139,38 @@ public class Main{
                     {
                         if(a.equals(animalList.get(animalSelected)))
                             animalSelected = 0;
-                        animalList.remove(a);
+                        animalList.get(animalSelected).mAlive = false;
                     }
                 
-                p.checkAnimalPosition(a.mPos);
+                    p.checkAnimalPosition(a.mPos);
                 }
                 p.update(elapsed);
             }
-            prev=now;
-
+            for(int i = 0; i < pinList.size(); i++)
+            {
+                if(!pinList.get(i).mAlive)
+                    pinList.remove(i);
+            }
+            for(int i = 0; i < animalList.size(); i++)
+            {
+                if(!animalList.get(i).mAlive)
+                    animalList.remove(i);
+            }
             if( keys.contains(SDLK_z))
             {
                 animalSelected--;
                 if(animalSelected < 0)
                     animalSelected = animalList.size()-1;
-                cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
+                cam.follow(animalList.get(animalSelected),false);
+                cam.mFollowTarget = animalList.get(animalSelected);
+                if(animalList.get(animalSelected).mMoving)
+                {
+                    cam.follow(animalList.get(animalSelected), true);
+                }
+                else
+                {
+                    cam.mFollowing = false;
+                }
                 keys.remove(SDLK_z);
             }
             
@@ -161,7 +179,16 @@ public class Main{
                 animalSelected++;
                 if(animalSelected > animalList.size()-1)
                     animalSelected = 0;
-                cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
+                cam.follow(animalList.get(animalSelected),false);
+                cam.mFollowTarget = animalList.get(animalSelected);
+                if(animalList.get(animalSelected).mMoving)
+                {
+                    cam.follow(animalList.get(animalSelected), true);
+                }
+                else
+                {
+                    cam.mFollowing = false;
+                }
                 keys.remove(SDLK_x);
             }
                 

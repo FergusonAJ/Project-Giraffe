@@ -122,7 +122,7 @@ public class Camera{
     
     public void follow(Animal a, boolean takeoff)
     {
-        vec4 offset = mul(displacementNorm, length(sub(eye, a.mPos)));
+        vec4 offset = mul(displacementNorm, length(sub(eye, mFollowTarget.mPos)));//a.mPos)));
         offset = mul(offset, axisRotation(new vec4(0,1,0,0),a.mRotY - Math.PI / 2));
         eye = add(a.mPos, offset);
         this.lookAt(new vec3(eye.x, eye.y, eye.z), new vec3(a.mPos.x, a.mPos.y, a.mPos.z), new vec3(0,1,0));
