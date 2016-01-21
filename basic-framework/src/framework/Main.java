@@ -66,9 +66,9 @@ public class Main{
         Mesh treeMesh = new Mesh("assets/bobbleTree.obj.mesh");
         Mesh giraffeMesh = new Mesh("assets/giraffe.obj.mesh");
         Mesh pigMesh = new Mesh("assets/goodPig.obj.mesh");
-        Mesh zomMesh = new Mesh("assets/zom.obj.mesh");
+        Mesh zomMesh = new Mesh("assets/basicZombie.obj.mesh");
         
-        Mesh pinMesh = treeMesh;
+        Mesh pinMesh = zomMesh;
         Mesh planeMesh = new Mesh("assets/grassPlane.obj.mesh");
         
         ArrayList<Animal> animalList = new ArrayList();
@@ -81,9 +81,9 @@ public class Main{
         
         
         ArrayList<Pin> pinList = new ArrayList();
-        pinList.add(new Pin(pinMesh, new vec4(0,0,-30,1)));
-        pinList.add(new Pin(pinMesh, new vec4(30,0,-30,1)));
-        pinList.add(new Pin(pinMesh, new vec4(-30,0,-30,1)));
+        pinList.add(new Pin(pinMesh, new vec4(0,0,-30,1), 3.0f));
+        pinList.add(new Pin(pinMesh, new vec4(30,0,-30,1), 3.0f));
+        pinList.add(new Pin(pinMesh, new vec4(-30,0,-30,1), 3.0f));
         usq = new UnitSquare();
         vec3 skyColor = new vec3(0.5,0.5,0.5);
 
