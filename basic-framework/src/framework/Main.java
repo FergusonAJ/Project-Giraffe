@@ -62,14 +62,27 @@ public class Main{
         Framebuffer fbo1;
         Framebuffer fbo2;
         Texture2D dummytex = new SolidTexture(GL_UNSIGNED_BYTE,0,0,0,0);
-        Mesh pigMesh = new Mesh("assets/pig.obj.mesh");
-        Mesh pinMesh = new Mesh("assets/zom.obj.mesh");
+        Mesh rockMesh = new Mesh("assets/toonRocks.obj.mesh");
+        Mesh treeMesh = new Mesh("assets/bobbleTree.obj.mesh");
+        Mesh giraffeMesh = new Mesh("assets/giraffe.obj.mesh");
+        Mesh earthMesh = new Mesh("assets/Earth.obj.mesh");
+        Mesh zomMesh = new Mesh("assets/zom.obj.mesh");
+        
+        Mesh pinMesh = treeMesh;
         Mesh planeMesh = new Mesh("assets/grassPlane.obj.mesh");
-        Animal pig = new Animal(pigMesh);
+        
+        ArrayList<Animal> animalList = new ArrayList();
+        animalList.add(new Animal(earthMesh,new vec4(-30,0,0,1)));
+        animalList.add(new Animal(giraffeMesh,new vec4(0,0,0,1)));
+        animalList.add(new Animal(zomMesh,new vec4(30,0,0,1)));
+        
+        int animalSelected = 0;
+        
+        
         ArrayList<Pin> pinList = new ArrayList();
-        pinList.add(new Pin(pinMesh, new vec4(0,2,-30,1)));
-        pinList.add(new Pin(pinMesh, new vec4(3,2,-30,1)));
-        pinList.add(new Pin(pinMesh, new vec4(-3,2,-30,1)));
+        pinList.add(new Pin(pinMesh, new vec4(0,0,-30,1)));
+        pinList.add(new Pin(pinMesh, new vec4(30,0,-30,1)));
+        pinList.add(new Pin(pinMesh, new vec4(-30,0,-30,1)));
         usq = new UnitSquare();
         vec3 skyColor = new vec3(0.5,0.5,0.5);
 
@@ -81,7 +94,7 @@ public class Main{
 
 
         cam = new Camera();
-        cam.lookAt( new vec3(0,2,3), new vec3(0,0,0), new vec3(0,1,0) );
+        cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
 
         prev = (float)(System.nanoTime()*1E-9);
 
@@ -108,32 +121,58 @@ public class Main{
 
             float now = (float)(System.nanoTime()*1E-9);
             float elapsed = now-prev;
-            pig.update(elapsed);
+            for(Animal a: animalList)
+            {
+                a.update(elapsed);
+            }
             cam.update();
             for (Pin p : pinList)
             {
-                p.checkCollision(pig.mPos, pig.mRad);
+                for(Animal a: animalList)
+                {
+                p.checkCollision(a.mPos, a.mRad);
+                p.checkAnimalPosition(a.mPos);
+                }
+                p.update(elapsed);
             }
             prev=now;
 
+            if( keys.contains(SDLK_z))
+            {
+                animalSelected--;
+                if(animalSelected < 0)
+                    animalSelected = animalList.size()-1;
+                cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
+                keys.remove(SDLK_z);
+            }
+            
+            if( keys.contains(SDLK_x))
+            {
+                animalSelected++;
+                if(animalSelected > animalList.size()-1)
+                    animalSelected = 0;
+                cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
+                keys.remove(SDLK_x);
+            }
+                
             if( keys.contains(SDLK_w ))
-                cam.walk(0.5f*elapsed);
+                cam.walk(3f*elapsed);
             if( keys.contains(SDLK_s))
-                cam.walk(-0.5f*elapsed);
+                cam.walk(-3f*elapsed);
             if( keys.contains(SDLK_a))
             {
                 if(!cam.mFollowing)
                 {
-                    pig.rotate(2 * elapsed);
-                    cam.follow(pig,false);
+                    animalList.get(animalSelected).rotate(2 * elapsed);
+                    cam.follow(animalList.get(animalSelected),false);
                 }
             }
             if( keys.contains(SDLK_d))
             {
                 if(!cam.mFollowing)
                 {
-                    pig.rotate(-2 * elapsed);
-                    cam.follow(pig, false);
+                    animalList.get(animalSelected).rotate(-2 * elapsed);
+                    cam.follow(animalList.get(animalSelected), false);
                 }
             }
             if( keys.contains(SDLK_r))
@@ -144,9 +183,10 @@ public class Main{
             {
                 if(!cam.mFollowing)
                 {
-                    pig.takeoff();
-                    cam.follow(pig, true);
+                    animalList.get(animalSelected).takeoff();
+                    cam.follow(animalList.get(animalSelected), true);
                 }
+                keys.remove(SDLK_SPACE);
             }
             if(keys.contains(SDLK_ESCAPE))
             {
@@ -160,11 +200,23 @@ public class Main{
             prog.use();
             prog.setUniform("mode",0.1);
             prog.setUniform("skyColor",skyColor);
-            prog.setUniform("lightPos", new vec3(cam.eye.x, cam.eye.y, cam.eye.z));//50,50,50) )
+           // prog.setUniform("lightPos", new vec3(cam.eye.x, cam.eye.y, cam.eye.z));//50,50,50) )
+            prog.setUniform("lights[0].position",new vec3(cam.eye.x, cam.eye.y, cam.eye.z));
+            prog.setUniform("lights[0].color",new vec3(1,1,1));
+            
+            
+            for(int i =1;i<8;i++)
+            {
+            prog.setUniform("lights["+i+"].position",new vec3(0,0,0));
+            prog.setUniform("lights["+i+"].color",new vec3(0,0,0));
+            }
             prog.setUniform("worldMatrix", mul(scaling(new vec3(100,1,100)),translation(new vec3(0,-1.0f,0))));
             planeMesh.draw(prog);
             cam.draw(prog);
-            pig.draw(prog);
+            for(Animal a: animalList)
+            {
+                a.draw(prog);
+            }
             for(Pin p : pinList)
             {
                 p.draw(prog);
