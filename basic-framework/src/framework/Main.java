@@ -71,6 +71,9 @@ public class Main{
         Mesh pinMesh = zomMesh;
         Mesh planeMesh = new Mesh("assets/grassPlane.obj.mesh");
         
+        int numLaunches = 0;
+        int numHits = 0;
+        
         ArrayList<Animal> animalList = new ArrayList();
         animalList.add(new Animal(pigMesh,new vec4(-30,0,0,1), 3.0f));
         animalList.add(new Animal(giraffeMesh,new vec4(0,0,0,1), 3.0f));
@@ -149,7 +152,10 @@ public class Main{
             for(int i = 0; i < pinList.size(); i++)
             {
                 if(!pinList.get(i).mAlive)
+                {
                     pinList.remove(i);
+                    numHits++;
+                }
             }
             for(int i = 0; i < animalList.size(); i++)
             {
@@ -222,12 +228,19 @@ public class Main{
                 {
                     animalList.get(animalSelected).takeoff();
                     cam.follow(animalList.get(animalSelected), true);
+                    numLaunches++;
                 }
                 keys.remove(SDLK_SPACE);
             }
             if(keys.contains(SDLK_ESCAPE))
             {
                 System.exit(0);
+            }
+            if(keys.contains(SDLK_RETURN))
+            {
+                System.out.println("Number of launches: " + numLaunches);
+                System.out.println("Number of hits: " + numHits);
+                keys.remove(SDLK_RETURN);
             }
 
             //the fbo stuff is for later...
