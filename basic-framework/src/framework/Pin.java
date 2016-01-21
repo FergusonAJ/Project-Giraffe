@@ -53,19 +53,26 @@ public class Pin
         }
     }
     
-    void checkCollision(vec4 pos, float rad2)
+    boolean checkCollision(vec4 pos, float rad2, boolean animalMoving)
     {
         double dist = length(sub(pos, mPos));
         if(dist < mRad + rad2)
         {
-            mAlive = false;
+            if (animalMoving)
+                mAlive = false;
+            else
+                return true;
         }
+        
+        
+        return false;
+        
     }
     
     void takeoff(vec4 animalPos)
     {
         mVel = normalize(sub(animalPos, mPos));
-        mVel = mul(mVel, 2);
+        mVel = mul(mVel, 5);
         mMoving = true;
     }
     
@@ -74,7 +81,7 @@ public class Pin
         float dist = length(sub(mPos,animalPos));
         System.out.println(dist);
 
-        if(dist<=25f)
+        if(dist<=30f)
         {
 
             takeoff(animalPos);
