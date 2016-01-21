@@ -8,6 +8,7 @@ package framework;
 import framework.math3d.mat4;
 import static framework.math3d.math3d.*;
 import framework.math3d.vec4;
+import framework.math3d.vec3;
 
 /**
  *
@@ -22,11 +23,14 @@ public class Animal
     boolean mMoving = false;
     vec4 mVel;
     vec4 mForward;
+    float mYOffset;
     float mRad = 1.5f;
-    public Animal(Mesh mesh, vec4 position)
+    
+    public Animal(Mesh mesh, vec4 position, float yOffset)
     {
         mMesh = mesh;
         mPos = position;
+        mYOffset = yOffset;
     }
     
     public void update(float elapsed)
@@ -61,7 +65,7 @@ public class Animal
     
     public void draw(Program prog)
     {
-        prog.setUniform("worldMatrix", mul(axisRotation(new vec4(0.0f,1.0f,0.0f,0.0f), mRotY), translation(mPos)));
+        prog.setUniform("worldMatrix", mul(mul(axisRotation(new vec4(0.0f,1.0f,0.0f,0.0f), mRotY), translation(mPos)), translation(new vec3(0,mYOffset, 0))));
         mMesh.draw(prog);
     }
 }

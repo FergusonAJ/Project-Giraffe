@@ -65,16 +65,16 @@ public class Main{
         Mesh rockMesh = new Mesh("assets/toonRocks.obj.mesh");
         Mesh treeMesh = new Mesh("assets/bobbleTree.obj.mesh");
         Mesh giraffeMesh = new Mesh("assets/giraffe.obj.mesh");
-        Mesh earthMesh = new Mesh("assets/Earth.obj.mesh");
+        Mesh pigMesh = new Mesh("assets/goodPig.obj.mesh");
         Mesh zomMesh = new Mesh("assets/zom.obj.mesh");
         
         Mesh pinMesh = treeMesh;
         Mesh planeMesh = new Mesh("assets/grassPlane.obj.mesh");
         
         ArrayList<Animal> animalList = new ArrayList();
-        animalList.add(new Animal(earthMesh,new vec4(-30,0,0,1)));
-        animalList.add(new Animal(giraffeMesh,new vec4(0,0,0,1)));
-        animalList.add(new Animal(zomMesh,new vec4(30,1000,0,1)));
+        animalList.add(new Animal(pigMesh,new vec4(-30,0,0,1), 3.0f));
+        animalList.add(new Animal(giraffeMesh,new vec4(0,0,0,1), 3.0f));
+        animalList.add(new Animal(zomMesh,new vec4(30,1000,0,1), 0.0f));
         
         
         int animalSelected = 0;
