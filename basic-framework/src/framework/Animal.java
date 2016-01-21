@@ -26,9 +26,10 @@ public class Animal
     vec4 mVel;
     vec4 mForward;
     float mRad = 1.5f;
-    public Animal(Mesh mesh)
+    public Animal(Mesh mesh, vec4 position)
     {
         mMesh = mesh;
+        mPos = position;
     }
     
     public void update(float elapsed)

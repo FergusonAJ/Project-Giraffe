@@ -10,7 +10,9 @@ import static framework.math3d.math3d.sub;
 import static framework.math3d.math3d.mul;
 import static framework.math3d.math3d.translation;
 import static framework.math3d.math3d.axisRotation;
+import static framework.math3d.math3d.dot;
 import static framework.math3d.math3d.length;
+import static framework.math3d.math3d.normalize;
 import framework.math3d.vec4;
 
 /**
@@ -40,6 +42,7 @@ public class Pin
         {
             mPos = add(mPos, mul(mVel,elapsed));
         }
+            
     }
     
     void rotate(double angle)
@@ -52,19 +55,33 @@ public class Pin
     
     void checkCollision(vec4 pos, float rad2)
     {
-        double dist = length(sub(mPos, pos));
+        double dist = length(sub(pos, mPos));
         if(dist < mRad + rad2)
         {
             mAlive = false;
         }
     }
     
-    void takeoff()
+    void takeoff(vec4 animalPos)
     {
-        mVel = mul(new vec4(1,0,0,0), axisRotation(new vec4(0,1,0,0), mRotY));
-        mVel = mul(mVel, 5);
+        mVel = normalize(sub(animalPos, mPos));
+        mVel = mul(mVel, 2);
         mMoving = true;
     }
+    
+    void checkAnimalPosition(vec4 animalPos)
+    {
+        float dist = length(sub(mPos,animalPos));
+        System.out.println(dist);
+
+        if(dist<=25f)
+        {
+
+            takeoff(animalPos);
+
+        }
+    }
+    
     
     public void draw(Program prog)
     {
