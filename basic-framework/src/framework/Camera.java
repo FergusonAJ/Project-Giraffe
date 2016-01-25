@@ -56,6 +56,10 @@ public class Camera{
         {
             eye = add(mFollowTarget.mPos, mOffset);
             compute_view_matrix();
+            if(!mFollowTarget.mMoving)
+            {
+                mFollowing = false;
+            }
         }
     }
     
