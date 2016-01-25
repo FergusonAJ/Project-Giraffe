@@ -13,6 +13,10 @@ import static framework.math3d.math3d.scaling;
 import framework.math3d.vec2;
 import framework.math3d.vec4;
 import java.util.ArrayList;
+import TextRendering.*;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main{
     
@@ -80,8 +84,14 @@ public class Main{
         animalList.add(new Animal(zomMesh,new vec4(30,1000,0,1), 0.0f));
         
         
-        int animalSelected = 0;
         
+        int animalSelected = 0;
+        Font testFont = null;
+        try {
+            testFont = new Font("assets/CooperBlack.fnt");
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         ArrayList<Pin> pinList = new ArrayList();
         pinList.add(new Pin(pinMesh, new vec4(0,0,-30,1), 3.0f));
@@ -89,7 +99,6 @@ public class Main{
         pinList.add(new Pin(pinMesh, new vec4(-30,0,-30,1), 3.0f));
         usq = new UnitSquare();
         vec3 skyColor = new vec3(0.5,0.5,0.5);
-
         fbo1 = new Framebuffer(512,512);
         fbo2 = new Framebuffer(512,512);
 
@@ -101,7 +110,7 @@ public class Main{
         cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
         cam.mFollowTarget = animalList.get(0);
        
-
+        ImageTexture alphabet = new ImageTexture("assets/cooperBlack.png"); //so no one else interferes with us...;
 
         prev = (float)(System.nanoTime()*1E-9);
 
@@ -245,7 +254,8 @@ public class Main{
 
             //the fbo stuff is for later...
             //fbo1.bind();
-            
+            DrawableString scoreText = new DrawableString("Enemies hit: " + numHits, 10, 20, 20, testFont);
+            DrawableString launchText = new DrawableString("Launches: " + numLaunches, 10, 40, 20, testFont);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             prog.use();
             prog.setUniform("mode",0.1);
@@ -260,9 +270,9 @@ public class Main{
             prog.setUniform("lights["+i+"].position",new vec3(0,0,0));
             prog.setUniform("lights["+i+"].color",new vec3(0,0,0));
             }
+            cam.draw(prog);
             prog.setUniform("worldMatrix", mul(scaling(new vec3(100,1,100)),translation(new vec3(0,-1.0f,0))));
             planeMesh.draw(prog);
-            cam.draw(prog);
             for(Animal a: animalList)
             {
                 a.draw(prog);
@@ -279,11 +289,13 @@ public class Main{
             blurprog.use();
             blurprog.setUniform("diffuse_texture",fbo1.texture);
             usq.draw(blurprog);
-            blurprog.setUniform("diffuse_texture",dummytex);
-*/
-
+            blurprog.setUniform("diffuse_texture",dummytex);*/
+            prog.setUniform("diffuse_texture",alphabet);
+            prog.setUniform("unitSquare", 1.0f);
+            scoreText.draw(prog);
+            launchText.draw(prog);
+            prog.setUniform("unitSquare", 0.0f);
             SDL_GL_SwapWindow(win);
-
 
         }//endwhile
     }//end main
