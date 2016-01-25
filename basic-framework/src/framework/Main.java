@@ -76,7 +76,7 @@ public class Main{
         animalList.add(new Animal(giraffeMesh,new vec4(0,0,0,1), 3.0f));
         animalList.add(new Animal(zomMesh,new vec4(30,1000,0,1), 0.0f));
         
-        
+//        Audio audio;
         int animalSelected = 0;
         
         
@@ -97,6 +97,10 @@ public class Main{
         cam = new Camera();
         cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
         cam.mFollowTarget = animalList.get(0);
+        
+  //      audio = new Audio("assets/sounds/Up Like Trump (YK Jersey Club Remix).mp3");
+        
+        
        
 
 
@@ -268,7 +272,7 @@ public class Main{
             usq.draw(blurprog);
             blurprog.setUniform("diffuse_texture",dummytex);
 */
-
+//            audio.play();
             SDL_GL_SwapWindow(win);
 
 
