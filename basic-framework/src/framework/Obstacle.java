@@ -16,9 +16,9 @@ public class Obstacle
     float mRotY;
     vec3 mScale;
     vec4 collisionCorner;
-    vec4 U = new vec4(1,0,0,0);
-    vec4 V = new vec4(0,1,0,0);
-    vec4 W = new vec4(0,0,1,0);
+    vec4 U = new vec4(1,0,0);
+    vec4 V = new vec4(0,1,0);
+    vec4 W = new vec4(0,0,1);
     
     public Obstacle(Mesh mesh, vec4 position, float yRot)
     {
