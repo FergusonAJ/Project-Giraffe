@@ -71,6 +71,7 @@ public class Main{
         Mesh giraffeMesh = new Mesh("assets/giraffe.obj.mesh");
         Mesh pigMesh = new Mesh("assets/goodPig.obj.mesh");
         Mesh zomMesh = new Mesh("assets/basicZombie.obj.mesh");
+        Mesh wallMesh = new Mesh("assets/RockWall.obj.mesh");
         
         Mesh pinMesh = zomMesh;
         Mesh planeMesh = new Mesh("assets/grassPlane.obj.mesh");
@@ -83,7 +84,10 @@ public class Main{
         animalList.add(new Animal(giraffeMesh,new vec4(0,0,0,1), 3.0f));
         animalList.add(new Animal(zomMesh,new vec4(30,1000,0,1), 0.0f));
         
+        ArrayList<Obstacle> obstacleList = new ArrayList();
+        obstacleList.add(new Obstacle(wallMesh, new vec4(0,-1,-20,1), 0.0f));
         
+        String console = "";
         
         int animalSelected = 0;
         Font testFont = null;
@@ -94,9 +98,9 @@ public class Main{
         }
         
         ArrayList<Pin> pinList = new ArrayList();
-        pinList.add(new Pin(pinMesh, new vec4(0,0,-30,1), 3.0f));
-        pinList.add(new Pin(pinMesh, new vec4(30,0,-30,1), 3.0f));
-        pinList.add(new Pin(pinMesh, new vec4(-30,0,-30,1), 3.0f));
+        pinList.add(new Pin(pinMesh, new vec4(0,-1,-30,1), 3.0f));
+        pinList.add(new Pin(pinMesh, new vec4(30,-1,-30,1), 3.0f));
+        pinList.add(new Pin(pinMesh, new vec4(-30,-1,-30,1), 3.0f));
         usq = new UnitSquare();
         vec3 skyColor = new vec3(0.5,0.5,0.5);
         fbo1 = new Framebuffer(512,512);
@@ -110,7 +114,7 @@ public class Main{
         cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
         cam.mFollowTarget = animalList.get(0);
        
-        ImageTexture alphabet = new ImageTexture("assets/cooperBlack.png"); //so no one else interferes with us...;
+        ImageTexture alphabet = new ImageTexture("assets/cooperBlack.png");
 
         prev = (float)(System.nanoTime()*1E-9);
 
@@ -129,6 +133,7 @@ public class Main{
                 if( ev.type == SDL_KEYDOWN ){
                     //System.out.println("Key press "+ev.key.keysym.sym+" "+ev.key.keysym.sym);
                     keys.add(ev.key.keysym.sym);
+                    console += (char)ev.key.keysym.sym;
                 }
                 if( ev.type == SDL_KEYUP ){
                     keys.remove(ev.key.keysym.sym);
@@ -280,6 +285,10 @@ public class Main{
             for(Pin p : pinList)
             {
                 p.draw(prog);
+            }
+            for(Obstacle o : obstacleList)
+            {
+                o.draw(prog);
             }
             //fbo1.unbind();
 
