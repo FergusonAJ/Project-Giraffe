@@ -29,12 +29,12 @@ public class Texture {
     }
         
     public void bind(int unit){
-        if( Framebuffer.active_fbo != null ){
+        /*if( Framebuffer.active_fbo != null ){
             for(int i=0;i<Framebuffer.active_fbo.textures.length;++i){
                 if( Framebuffer.active_fbo.textures[i] == this )
                     throw new RuntimeException("This texture is part of an active FBO");
             }
-        }
+        }*/
         
         glActiveTexture(GL_TEXTURE0 + unit );
         glBindTexture(gltype,tex);
