@@ -47,7 +47,9 @@ public class Animal
             }
         }
     }
-    
+    void checkObstacleCollision(Obstacle o)
+    {
+    }
     void rotate(double angle)
     {
         if(!mMoving)
