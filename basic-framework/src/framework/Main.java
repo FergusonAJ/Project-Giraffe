@@ -76,6 +76,7 @@ public class Main{
         Mesh pinMesh = zomMesh;
         Mesh planeMesh = new Mesh("assets/grassPlane.obj.mesh");
         
+        
         int numLaunches = 0;
         int numHits = 0;
         
@@ -152,7 +153,7 @@ public class Main{
             {
                 for(Animal a: animalList)
                 {
-                    if(p.checkCollision(a.mPos, a.mRad,a.mMoving))
+                    if(p.checkCollision(a.mPos, a.mRad,a.mMoving) && p.mAggressive)
                     {
                         if(a.equals(animalList.get(animalSelected)))
                             animalSelected = 0;

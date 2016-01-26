@@ -13,17 +13,16 @@ import framework.math3d.vec3;
  *
  * @author ajart
  */
-public class Pin 
+public class Pin extends PhysicsObject
 {
     Mesh mMesh;
     String mName;
-    vec4 mPos = new vec4(0,2,-30,1);
     double mRotY = Math.PI / 2 * 3;
     boolean mMoving = false;
-    vec4 mVel;
     float mYOffset;
     float mRad = 3;
     boolean mAlive = true;
+    boolean mAggressive = true;
     
     public Pin(Mesh mesh, vec4 position, float yOffset)
     {
@@ -36,7 +35,7 @@ public class Pin
     {
         if(mMoving)
         {
-            mPos = add(mPos, mul(mVel,elapsed));
+            super.update(elapsed);   
         }
             
     }
@@ -51,7 +50,7 @@ public class Pin
     
     boolean checkCollision(vec4 pos, float rad2, boolean animalMoving)
     {
-        double dist = length(sub(pos, mPos));
+        double dist = length(sub(pos, super.mPos));
         if(dist < mRad + rad2)
         {
             if (animalMoving)
@@ -84,12 +83,17 @@ public class Pin
         }
     }
     
+    public void setAgression(boolean newAgression)
+    {
+        mAggressive = newAgression;
+    }
+    
     
     public void draw(Program prog)
     {
         if(mAlive)
         {
-            prog.setUniform("worldMatrix", mul(mul(axisRotation(new vec4(0.0f,1.0f,0.0f,0.0f), mRotY), translation(mPos), translation(new vec3(0,mYOffset, 0)))));
+            prog.setUniform("worldMatrix", mul(mul(axisRotation(new vec4(0.0f,1.0f,0.0f,0.0f), mRotY), translation(super.mPos), translation(new vec3(0,mYOffset, 0)))));
             mMesh.draw(prog);
         }
     }
