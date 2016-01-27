@@ -13,14 +13,13 @@ import framework.math3d.vec3;
  *
  * @author ajart
  */
-public class Pin 
+public class Pin extends PhysicsBody
 {
     Mesh mMesh;
     String mName;
-    vec4 mPos = new vec4(0,2,-30,1);
+    
     double mRotY = Math.PI / 2 * 3;
     boolean mMoving = false;
-    vec4 mVel;
     float mYOffset;
     float mRad = 3;
     boolean mAlive = true;
@@ -36,7 +35,7 @@ public class Pin
     {
         if(mMoving)
         {
-            mPos = add(mPos, mul(mVel,elapsed));
+            super.update(elapsed);
         }
             
     }
