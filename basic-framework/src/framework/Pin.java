@@ -21,9 +21,11 @@ public class Pin
     double mRotY = Math.PI / 2 * 3;
     boolean mMoving = false;
     vec4 mVel;
+    vec3 mScale = new vec3(1,1,1);
     float mYOffset;
     float mRad = 3;
     boolean mAlive = true;
+    boolean mIsStatic = false;
     
     public Pin(Mesh mesh, vec4 position, float yOffset)
     {
@@ -31,7 +33,13 @@ public class Pin
         mPos = position;
         mYOffset = yOffset;
     }
-    
+    public Pin(Mesh mesh, vec4 position, float yOffset, boolean isStatic)
+    {
+        mMesh = mesh;
+        mPos = position;
+        mYOffset = yOffset;
+        mIsStatic = isStatic;
+    }
     public void update(float elapsed)
     {
         if(mMoving)
@@ -74,13 +82,13 @@ public class Pin
     
     void checkAnimalPosition(vec4 animalPos)
     {
-        float dist = length(sub(mPos,animalPos));
-
-        if(dist<=30f)
+        if(!mIsStatic)
         {
-
-            takeoff(animalPos);
-
+            float dist = length(sub(mPos,animalPos));
+            if(dist<=30f)
+            {
+                takeoff(animalPos);
+            }
         }
     }
     
@@ -89,7 +97,7 @@ public class Pin
     {
         if(mAlive)
         {
-            prog.setUniform("worldMatrix", mul(mul(axisRotation(new vec4(0.0f,1.0f,0.0f,0.0f), mRotY), translation(mPos), translation(new vec3(0,mYOffset, 0)))));
+            prog.setUniform("worldMatrix", mul(mul(mul(scaling(mScale),axisRotation(new vec4(0.0f,1.0f,0.0f,0.0f), mRotY), translation(mPos), translation(new vec3(0,mYOffset, 0))))));
             mMesh.draw(prog);
         }
     }

@@ -72,6 +72,16 @@ public class GameLoop
         Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         prog = new Program("vs.txt","fs.txt");
+        
+        
+        if(animalList.size() > 0)
+        {
+            cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
+            cam.mFollowTarget = animalList.get(0);
+        }
+    }
+    protected void genBasic()
+    {
         animalList.add(new Animal(pigMesh,new vec4(-30,0,0,1), 3.0f));
         animalList.add(new Animal(giraffeMesh,new vec4(0,0,0,1), 3.0f));
         animalList.add(new Animal(zomMesh,new vec4(30,1000,0,1), 0.0f));
@@ -82,9 +92,11 @@ public class GameLoop
         pinList.add(new Pin(pinMesh, new vec4(0,-1,-30,1), 3.0f));
         pinList.add(new Pin(pinMesh, new vec4(30,-1,-30,1), 3.0f));
         pinList.add(new Pin(pinMesh, new vec4(-30,-1,-30,1), 3.0f));
-        
-        cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
-        cam.mFollowTarget = animalList.get(0);
+        if(animalList.size() > 0)
+        {
+            cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
+            cam.mFollowTarget = animalList.get(0);
+        }
     }
     public void runLoop()
     {
@@ -175,7 +187,7 @@ public class GameLoop
             p.update(elapsed);
         }
     }
-    private void CullDeadObjects()
+    protected void CullDeadObjects()
     {
         for(int i = 0; i < pinList.size(); i++)
         {
