@@ -30,11 +30,12 @@ public class GameLoop
     //<editor-fold defaultstate="collapsed" desc="Loop Variables">
     int numLaunches = 0;
     int numHits = 0;
-    String console = "";
     float prev;
     float elapsed;
     int animalSelected = 0;
     Camera cam = new Camera();
+    boolean inConsole = false;
+    String consoleText = "";
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Mesh variables">
     Mesh rockMesh = new Mesh("assets/toonRocks.obj.mesh");
@@ -99,7 +100,10 @@ public class GameLoop
             cam.update();
             UpdatePins();
             CullDeadObjects();
-            HandleInput();       
+            if(!inConsole)
+            {
+                HandleInput(); 
+            }
             Render();
         }
     }
@@ -116,14 +120,35 @@ public class GameLoop
                     //System.out.println("Mouse motion "+ev.motion.x+" "+ev.motion.y+" "+ev.motion.xrel+" "+ev.motion.yrel);
                 }
                 if( ev.type == SDL_KEYDOWN ){
-                    //System.out.println("Key press "+ev.key.keysym.sym+" "+ev.key.keysym.sym);
                     keys.add(ev.key.keysym.sym);
-                    console += (char)ev.key.keysym.sym;
+                    if(inConsole)
+                    {
+                        int id = ev.key.keysym.sym;
+                        System.out.println(id);
+                        if((id > 96 && id < 123) || id == 32)//Add a-z and spaces to the console line
+                        {
+                            consoleText += (char)ev.key.keysym.sym;
+                        }
+                        if(id == 13)//Enter
+                        {
+                            parseConsole();
+                            inConsole = false;
+                        }
+                        if(id == 1073741898)//Home?
+                        {
+                            inConsole = false;
+                            keys.remove(1073741898);
+                        }
+                    }
                 }
                 if( ev.type == SDL_KEYUP ){
                     keys.remove(ev.key.keysym.sym);
                 }
             }
+        if(keys.contains(SDLK_ESCAPE))
+        {
+            System.exit(0);
+        }
     }
     private void UpdateAnimals()
     {
@@ -238,21 +263,31 @@ public class GameLoop
                 }
                 keys.remove(SDLK_SPACE);
             }
-            if(keys.contains(SDLK_ESCAPE))
-            {
-                System.exit(0);
-            }
             if(keys.contains(SDLK_RETURN))
             {
                 System.out.println("Number of launches: " + numLaunches);
                 System.out.println("Number of hits: " + numHits);
                 keys.remove(SDLK_RETURN);
             }
+            if(keys.contains(SDLK_HOME))
+            {
+                inConsole = !inConsole;
+                consoleText = "";
+            }
+    }
+    private void parseConsole()
+    {
+        
     }
     private void Render()
     {
         DrawableString scoreText = new DrawableString("Enemies hit: " + numHits, 10, 20, 20, testFont);
         DrawableString launchText = new DrawableString("Launches: " + numLaunches, 10, 40, 20, testFont);
+        DrawableString console = null;
+        if(inConsole)
+        {
+            console = new DrawableString(consoleText, 10, 1040, 20, testFont);
+        }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         prog.use();
         prog.setUniform("mode",0.1);
@@ -292,6 +327,10 @@ public class GameLoop
         prog.setUniform("unitSquare", 1.0f);
         scoreText.draw(prog);
         launchText.draw(prog);
+        if(inConsole)
+        {
+            console.draw(prog);
+        }
         prog.setUniform("unitSquare", 0.0f);
         SDL_GL_SwapWindow(win);
     }
