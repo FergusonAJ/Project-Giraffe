@@ -13,17 +13,21 @@ import framework.math3d.*;
  */
 public class MainMenu extends GameLoop
 {
-    Mesh signMesh;
-    Pin startSign;
+    Mesh signMesh, sign2Mesh;
+    Pin startSign, exitSign;
     
     public MainMenu(long w) 
     {
         super(w);
         signMesh = new Mesh("assets/sign1.obj.mesh");
+        sign2Mesh = new Mesh("assets/sign2.obj.mesh");
         animalList.add(new Animal(pigMesh,new vec4(-30,0,0,1), 3.0f));
         startSign = new Pin(signMesh, new vec4(-30,0,-20,1), 0, true);
+        exitSign = new Pin(sign2Mesh, new vec4(-20,0,-20,1), 0, true);
         pinList.add(startSign);
-        pinList.get(0).mScale = new vec3(1,5,3);
+        pinList.add(exitSign);
+        startSign.mScale = new vec3(1,5,3);
+        exitSign.mScale = new vec3(1,5,3);
         cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
         cam.mFollowTarget = animalList.get(0);
     }
@@ -36,6 +40,10 @@ public class MainMenu extends GameLoop
             GameLoop mainGame = new GameLoop(win);
             mainGame.genBasic();
             mainGame.runLoop();
+        }
+        if(!exitSign.mAlive)
+        {
+            System.exit(0);
         }
     }
 }
