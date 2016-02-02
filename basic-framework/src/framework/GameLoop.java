@@ -36,6 +36,7 @@ public class GameLoop
     Camera cam = new Camera();
     boolean inConsole = false;
     String consoleText = "";
+    int totalPins;
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Mesh variables">
     Mesh rockMesh = new Mesh("assets/toonRocks.obj.mesh");
@@ -79,24 +80,26 @@ public class GameLoop
             cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
             cam.mFollowTarget = animalList.get(0);
         }
+        totalPins = pinList.size();
     }
     protected void genBasic()
     {
         animalList.add(new Animal(pigMesh,new vec4(-30,0,0,1), 3.0f));
-        animalList.add(new Animal(giraffeMesh,new vec4(0,0,0,1), 3.0f));
-        animalList.add(new Animal(zomMesh,new vec4(30,1000,0,1), 0.0f));
+        animalList.add(new Animal(giraffeMesh,new vec4(0,0,0,1), 2.0f));
+        //animalList.add(new Animal(zomMesh,new vec4(30,1000,0,1), 0.0f));
         
         
         obstacleList.add(new Obstacle(wallMesh, new vec4(0,-1,-20,1), 0.0f));
         
-        pinList.add(new Pin(pinMesh, new vec4(0,-1,-30,1), 3.0f));
-        pinList.add(new Pin(pinMesh, new vec4(30,-1,-30,1), 3.0f));
-        pinList.add(new Pin(pinMesh, new vec4(-30,-1,-30,1), 3.0f));
+        pinList.add(new Pin(pinMesh, new vec4(0,-1,-30,1), 2.0f));
+        pinList.add(new Pin(pinMesh, new vec4(30,-1,-30,1), 2.0f));
+        pinList.add(new Pin(pinMesh, new vec4(-30,-1,-30,1), 2.0f));
         if(animalList.size() > 0)
         {
             cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
             cam.mFollowTarget = animalList.get(0);
         }
+        totalPins = pinList.size();
     }
     public void runLoop()
     {
@@ -112,6 +115,10 @@ public class GameLoop
             cam.update();
             UpdatePins();
             CullDeadObjects();
+            if(pinList.size() <= 0 || animalList.size() <= 0)
+            {
+                Main.mainMenu(win);
+            }
             if(!inConsole)
             {
                 HandleInput(); 
@@ -167,12 +174,20 @@ public class GameLoop
         for(Animal a: animalList)
         {
             a.update(elapsed);
+            for(Obstacle o : obstacleList)
+            {
+               if(o.checkSphereCollision(a.mPos.xyz(), a.mRad))
+               {
+                   a.mVel = new vec4();
+               }
+            }
         }
     }
     private void UpdatePins()
     {
         for (Pin p : pinList)
         {
+            p.checkAnimalPositions(animalList);
             for(Animal a: animalList)
             {
                 if(p.checkCollision(a.mPos, a.mRad,a.mMoving))
@@ -183,6 +198,13 @@ public class GameLoop
                 }
 
                 p.checkAnimalPosition(a.mPos);
+            }
+            for(Obstacle o : obstacleList)
+            {
+               if(o.checkSphereCollision(p.mPos.xyz(), p.mRad))
+               {
+                   p.mVel = new vec4(0,0,0,0);
+               }
             }
             p.update(elapsed);
         }

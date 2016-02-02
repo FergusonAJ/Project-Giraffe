@@ -1,25 +1,11 @@
 package framework;
 
-import framework.math3d.vec3;
-import framework.math3d.mat4;
-import java.util.Set;
-import java.util.TreeSet;
 import static JGL.JGL.*;
 import static JSDL.JSDL.*;
-import static framework.math3d.math3d.mul;
-import static framework.math3d.math3d.sub;
-import static framework.math3d.math3d.translation;
-import static framework.math3d.math3d.scaling;
-import framework.math3d.vec2;
-import framework.math3d.vec4;
-import java.util.ArrayList;
-import TextRendering.*;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Main
 { 
+    static GameLoop curLoop = null;
     public static void main(String[] args)
     {
 //<editor-fold defaultstate="collapsed" desc="OpenGL Initialization">
@@ -49,14 +35,27 @@ public class Main
         glGenVertexArrays(1,tmp);
         int vao = tmp[0];
         glBindVertexArray(vao);
-
         glClearColor(0.2f,0.4f,0.6f,1.0f);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        GameLoop mainMenu = new MainMenu(win);
-        mainMenu.runLoop();
+        
+        mainMenu(win);
     }//end main
+    public static void mainMenu(long w)
+    {
+        curLoop = new MainMenu(w);
+        curLoop.runLoop();
+    }
+    public static void runLoop(long w, boolean genBasic)
+    {
+        curLoop = new GameLoop(w);
+        if(genBasic)
+        {
+            curLoop.genBasic();
+        }
+        curLoop.runLoop();
+    }
 }

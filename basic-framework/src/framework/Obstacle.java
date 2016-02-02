@@ -15,10 +15,13 @@ public class Obstacle
     vec4 mPos;
     float mRotY;
     vec3 mScale;
-    vec4 collisionCorner;
     vec4 U = new vec4(1,0,0,0);
     vec4 V = new vec4(0,1,0,0);
     vec4 W = new vec4(0,0,1,0);
+    int width = 6;
+    int height = 2;
+    float depth = 0.4f;
+    vec3 min,max;
     
     public Obstacle(Mesh mesh, vec4 position, float yRot)
     {
@@ -26,14 +29,43 @@ public class Obstacle
         mPos = position;
         mRotY = yRot;
         mScale = new vec3(1,2,1);
-        collisionCorner = mPos.add(new vec4(mScale.x * 2, mScale.y, mScale.z * 0.2f, 0));
+        min = new vec3(mPos.x - width / 2 * mScale.x, mPos.y - height / 2 * mScale.y, mPos.z - depth / 2 * mScale.z);
+        max = new vec3(mPos.x + width / 2 * mScale.x, mPos.y + height / 2 * mScale.y, mPos.z + depth / 2 * mScale.z);
         mat4 rot = axisRotation(new vec4(0.0f, 1.0f, 0.0f, 0.0f), mRotY);
         U = mul(U, rot);
         V = mul(V, rot);
         W = mul(W, rot);
-        vec4 midX = mul(U, dot(U, collisionCorner));
-        vec4 midY = mul(V, dot(V, collisionCorner));
-        vec4 midZ = mul(W, dot(W, collisionCorner));
+    }
+    public boolean checkSphereCollision(vec3 point, float rad)
+    {
+        vec3 closest = new vec3();
+        if(point.x < min.x)
+            closest.x = min.x;
+        else if(point.x > max.x)
+            closest.x = max.x;
+        else
+            closest.x = point.x;
+        
+        if(point.y < min.y)
+            closest.y = min.y;
+        else if(point.y > max.y)
+            closest.y = max.y;
+        else
+            closest.y = point.y;
+        
+        if(point.z < min.z)
+            closest.z = min.z;
+        else if(point.z > max.z)
+            closest.z = max.z;
+        else
+            closest.z = point.z;
+        
+        vec3 d = closest.sub(point);
+        if(length(d) < rad)
+        {
+            return true;
+        }
+        return false;
     }
     public void draw(Program prog)
     {

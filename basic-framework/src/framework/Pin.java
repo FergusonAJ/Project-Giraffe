@@ -8,6 +8,7 @@ package framework;
 import static framework.math3d.math3d.*;
 import framework.math3d.vec4;
 import framework.math3d.vec3;
+import java.util.ArrayList;
 
 /**
  *
@@ -20,10 +21,10 @@ public class Pin
     vec4 mPos = new vec4(0,2,-30,1);
     double mRotY = Math.PI / 2 * 3;
     boolean mMoving = false;
-    vec4 mVel;
+    vec4 mVel  = new vec4(0,0,0,0);
     vec3 mScale = new vec3(1,1,1);
     float mYOffset;
-    float mRad = 3;
+    float mRad = 1.5f;
     boolean mAlive = true;
     boolean mIsStatic = false;
     
@@ -82,7 +83,7 @@ public class Pin
     
     void checkAnimalPosition(vec4 animalPos)
     {
-        if(!mIsStatic)
+        if(!mIsStatic && mVel != null)
         {
             float dist = length(sub(mPos,animalPos));
             if(dist<=30f)
@@ -92,6 +93,31 @@ public class Pin
         }
     }
     
+    void checkAnimalPositions(ArrayList<Animal> aList)
+    {
+        float minDist = 10000.0f;
+        vec4 targetPos = null;
+        if(!mIsStatic && mVel != null)
+        {
+            for(Animal a : aList)
+            {
+                float dist = length(sub(mPos,a.mPos));
+                System.out.println(dist);
+                if(dist<=30f)
+                {
+                    if(dist < minDist)
+                    {
+                        minDist = dist;
+                        targetPos = a.mPos;
+                    }
+                }
+            }
+            if(targetPos != null)
+            {
+                takeoff(targetPos);
+            }
+        }
+    }
     
     public void draw(Program prog)
     {

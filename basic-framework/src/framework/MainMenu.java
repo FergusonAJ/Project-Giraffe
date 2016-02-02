@@ -37,9 +37,7 @@ public class MainMenu extends GameLoop
     {
         if(!startSign.mAlive)
         {
-            GameLoop mainGame = new GameLoop(win);
-            mainGame.genBasic();
-            mainGame.runLoop();
+            Main.runLoop(win, true);
         }
         if(!exitSign.mAlive)
         {
