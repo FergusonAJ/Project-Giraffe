@@ -8,6 +8,7 @@ package framework;
 import static framework.math3d.math3d.*;
 import framework.math3d.vec4;
 import framework.math3d.vec3;
+import java.util.ArrayList;
 
 /**
  *
@@ -20,9 +21,12 @@ public class Pin extends PhysicsBody
     
     double mRotY = Math.PI / 2 * 3;
     boolean mMoving = false;
+    vec4 mVel  = new vec4(0,0,0,0);
+    vec3 mScale = new vec3(1,1,1);
     float mYOffset;
-    float mRad = 3;
+    float mRad = 1.5f;
     boolean mAlive = true;
+    boolean mIsStatic = false;
     
     public Pin(Mesh mesh, vec4 position, float yOffset)
     {
@@ -30,7 +34,13 @@ public class Pin extends PhysicsBody
         mPos = position;
         mYOffset = yOffset;
     }
-    
+    public Pin(Mesh mesh, vec4 position, float yOffset, boolean isStatic)
+    {
+        mMesh = mesh;
+        mPos = position;
+        mYOffset = yOffset;
+        mIsStatic = isStatic;
+    }
     public void update(float elapsed)
     {
         if(mMoving)
@@ -73,22 +83,47 @@ public class Pin extends PhysicsBody
     
     void checkAnimalPosition(vec4 animalPos)
     {
-        float dist = length(sub(mPos,animalPos));
-
-        if(dist<=30f)
+        if(!mIsStatic && mVel != null)
         {
-
-            takeoff(animalPos);
-
+            float dist = length(sub(mPos,animalPos));
+            if(dist<=30f)
+            {
+                takeoff(animalPos);
+            }
         }
     }
     
+    void checkAnimalPositions(ArrayList<Animal> aList)
+    {
+        float minDist = 10000.0f;
+        vec4 targetPos = null;
+        if(!mIsStatic && mVel != null)
+        {
+            for(Animal a : aList)
+            {
+                float dist = length(sub(mPos,a.mPos));
+                System.out.println(dist);
+                if(dist<=30f)
+                {
+                    if(dist < minDist)
+                    {
+                        minDist = dist;
+                        targetPos = a.mPos;
+                    }
+                }
+            }
+            if(targetPos != null)
+            {
+                takeoff(targetPos);
+            }
+        }
+    }
     
     public void draw(Program prog)
     {
         if(mAlive)
         {
-            prog.setUniform("worldMatrix", mul(mul(axisRotation(new vec4(0.0f,1.0f,0.0f,0.0f), mRotY), translation(mPos), translation(new vec3(0,mYOffset, 0)))));
+            prog.setUniform("worldMatrix", mul(mul(mul(scaling(mScale),axisRotation(new vec4(0.0f,1.0f,0.0f,0.0f), mRotY), translation(mPos), translation(new vec3(0,mYOffset, 0))))));
             mMesh.draw(prog);
         }
     }

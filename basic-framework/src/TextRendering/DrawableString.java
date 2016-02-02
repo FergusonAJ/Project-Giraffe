@@ -26,7 +26,7 @@ public class DrawableString
             CharInfo info = font.getCharInfo((int)chars[i]);
             DrawableChar tempChar = new DrawableChar(chars[i], pointerX+info.mXOffset + info.mWidth/2, (int)(pointerY + info.mYOffset * (charHeight / 1080.0f)), charHeight / 1080.0f, font);
             dCharList.add(tempChar);
-            pointerX += info.mXAdvance/1.25f;
+            pointerX += info.mXAdvance/1.25f * (charHeight / 20.0f) ;
         }
     }
     public DrawableString(String s, Font font)

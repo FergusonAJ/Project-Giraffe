@@ -48,3 +48,5 @@ Temporary Items
 basic-framework/nbproject/project.properties
 basic-framework/nbproject/project.properties
 /basic-framework/dist/
+basic-framework/nbproject/private/private.xml
+*.class
