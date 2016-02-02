@@ -14,14 +14,14 @@ import framework.math3d.vec3;
  *
  * @author ajart
  */
-public class Animal 
+public class Animal extends PhysicsBody
 {
     Mesh mMesh;
     String mName;
-    vec4 mPos = new vec4(0,0,0,1);
+    
     double mRotY = Math.PI / 2;
     boolean mMoving = false;
-    vec4 mVel;
+    
     vec4 mForward;
     float mYOffset;
     float mRad = 1.5f;
@@ -38,9 +38,10 @@ public class Animal
     {
         if(mMoving)
         {
-            mPos = add(mPos, mul(mVel,elapsed));
+            //mPos = add(mPos, mul(mVel,elapsed));
+            super.update(elapsed);
             mVel = sub(mVel,mul(mVel, 0.5f * elapsed));
-            if(length(mVel) < 0.3f)
+            if(length(mVel) < 0.7f)
             {
                 mMoving = false;
                 mVel = new vec4(0,0,0,0);
