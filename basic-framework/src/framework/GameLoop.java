@@ -85,6 +85,7 @@ public class GameLoop
     protected void genBasic()
     {
         animalList.add(new Animal(pigMesh,new vec4(-30,0,0,1), 3.0f));
+        animalList.get(0).flip = true;
         animalList.add(new Animal(giraffeMesh,new vec4(0,0,0,1), 2.0f));
         //animalList.add(new Animal(zomMesh,new vec4(30,1000,0,1), 0.0f));
         
@@ -100,6 +101,7 @@ public class GameLoop
             cam.mFollowTarget = animalList.get(0);
         }
         totalPins = pinList.size();
+        cam.follow(animalList.get(animalSelected),false);
     }
     public void runLoop()
     {
