@@ -26,7 +26,7 @@ public class Animal extends PhysicsBody
     float mYOffset;
     float mRad = 1.5f;
     boolean mAlive = true;
-    
+    boolean flip = false;
     public Animal(Mesh mesh, vec4 position, float yOffset)
     {
         mMesh = mesh;

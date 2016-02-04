@@ -21,7 +21,6 @@ public class Pin extends PhysicsBody
     
     double mRotY = Math.PI / 2 * 3;
     boolean mMoving = false;
-    vec4 mVel  = new vec4(0,0,0,0);
     vec3 mScale = new vec3(1,1,1);
     float mYOffset;
     float mRad = 1.5f;
@@ -95,14 +94,13 @@ public class Pin extends PhysicsBody
     
     void checkAnimalPositions(ArrayList<Animal> aList)
     {
-        float minDist = 10000.0f;
-        vec4 targetPos = null;
         if(!mIsStatic && mVel != null)
         {
+            float minDist = 10000.0f;
+            vec4 targetPos = null;
             for(Animal a : aList)
             {
                 float dist = length(sub(mPos,a.mPos));
-                System.out.println(dist);
                 if(dist<=30f)
                 {
                     if(dist < minDist)

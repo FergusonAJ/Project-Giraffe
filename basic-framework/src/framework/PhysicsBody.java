@@ -11,7 +11,7 @@ import framework.math3d.vec4;
 public class PhysicsBody {
     
     vec4 mPos = new vec4(0,0,0,0);
-    vec4 mVel;
+    vec4 mVel = new vec4(0,0,0,0);
     vec4 mGravity = new vec4(0,-100,0,0);
     boolean toggleGravity = false;
     
