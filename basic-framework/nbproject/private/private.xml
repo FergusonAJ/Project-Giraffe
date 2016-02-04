@@ -3,12 +3,23 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+<<<<<<< HEAD
             <file>file:/C:/Users/ajart/School/Spring%202016/Graphics%202/Animal%20Bowling/basic-framework/src/framework/PhysicsBody.java</file>
             <file>file:/C:/Users/ajart/School/Spring%202016/Graphics%202/Animal%20Bowling/basic-framework/src/framework/MainMenu.java</file>
             <file>file:/C:/Users/ajart/School/Spring%202016/Graphics%202/Animal%20Bowling/basic-framework/src/framework/GameLoop.java</file>
             <file>file:/C:/Users/ajart/School/Spring%202016/Graphics%202/Animal%20Bowling/basic-framework/src/framework/Pin.java</file>
             <file>file:/C:/Users/ajart/School/Spring%202016/Graphics%202/Animal%20Bowling/basic-framework/src/framework/Main.java</file>
             <file>file:/C:/Users/ajart/School/Spring%202016/Graphics%202/Animal%20Bowling/basic-framework/src/framework/Animal.java</file>
+=======
+            <file>file:/C:/Users/Dude%20XPS/Downloads/Documents/GitHub/Project-Giraffe/basic-framework/src/framework/Statistics.java</file>
+            <file>file:/C:/Users/Dude%20XPS/Downloads/Documents/GitHub/Project-Giraffe/basic-framework/src/framework/GameLoop.java</file>
+            <file>file:/C:/Users/Dude%20XPS/Downloads/Documents/GitHub/Project-Giraffe/basic-framework/src/framework/Obstacle.java</file>
+            <file>file:/C:/Users/Dude%20XPS/Downloads/Documents/GitHub/Project-Giraffe/basic-framework/src/framework/Terrain.java</file>
+            <file>file:/C:/Users/Dude%20XPS/Downloads/Documents/GitHub/Project-Giraffe/basic-framework/src/framework/MainMenu.java</file>
+            <file>file:/C:/Users/Dude%20XPS/Downloads/Documents/GitHub/Project-Giraffe/basic-framework/src/framework/Mesh.java</file>
+            <file>file:/C:/Users/Dude%20XPS/Downloads/Documents/GitHub/Project-Giraffe/basic-framework/src/framework/Sound.java</file>
+            <file>file:/C:/Users/Dude%20XPS/Downloads/Documents/GitHub/Project-Giraffe/basic-framework/src/framework/Main.java</file>
+>>>>>>> 79ef4d20e9abffb8395469db0d31a1bfb58d39f8
         </group>
     </open-files>
 </project-private>

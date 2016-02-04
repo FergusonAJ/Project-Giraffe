@@ -47,6 +47,8 @@ public class GameLoop
     Mesh wallMesh = new Mesh("assets/RockWall.obj.mesh");
     Mesh pinMesh = zomMesh;
     Mesh planeMesh = new Mesh("assets/grassPlane.obj.mesh");
+    Sound sounds = new Sound("assets/audio/2016-02-01-1038-12.wav");
+    //Sound sounds = new Sound("assets/audio/trump.wav");
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Fonts">
     Font testFont = null;
@@ -64,7 +66,9 @@ public class GameLoop
 
     public GameLoop(long w)
     {
+        
         win = w;
+       
         try {
         testFont = new Font("assets/CooperBlack.fnt");
         } 
@@ -91,6 +95,10 @@ public class GameLoop
         
         
         obstacleList.add(new Obstacle(wallMesh, new vec4(0,-1,-20,1), 0.0f));
+        obstacleList.add(new Obstacle(treeMesh, new vec4(-30,1,20,1), 0.0f));
+        obstacleList.add(new Obstacle(treeMesh, new vec4(0,1,-40,1), 0.0f));
+        obstacleList.add(new Obstacle(treeMesh, new vec4(30,1,-40,1), 0.0f));
+        
         
         pinList.add(new Pin(pinMesh, new vec4(0,-1,-30,1), 2.0f));
         pinList.add(new Pin(pinMesh, new vec4(30,-1,-30,1), 2.0f));
@@ -105,6 +113,7 @@ public class GameLoop
     }
     public void runLoop()
     {
+        
         prev = (float)(System.nanoTime()*1E-9);
         ev=new JSDL.SDL_Event();
         while(true)
@@ -119,7 +128,9 @@ public class GameLoop
             CullDeadObjects();
             if(pinList.size() <= 0 || animalList.size() <= 0)
             {
+                
                 Main.mainMenu(win);
+                
             }
             if(!inConsole)
             {
