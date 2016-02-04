@@ -51,6 +51,8 @@ public class Main
     }
     public static void runLoop(long w, boolean genBasic)
     {
+        
+        
         curLoop = new GameLoop(w);
         if(genBasic)
         {

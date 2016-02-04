@@ -19,6 +19,7 @@ public class MainMenu extends GameLoop
     public MainMenu(long w) 
     {
         super(w);
+        sounds.play();
         signMesh = new Mesh("assets/sign1.obj.mesh");
         sign2Mesh = new Mesh("assets/sign2.obj.mesh");
         animalList.add(new Animal(pigMesh,new vec4(-30,0,0,1), 3.0f));

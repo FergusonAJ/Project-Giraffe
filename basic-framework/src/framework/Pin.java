@@ -21,7 +21,6 @@ public class Pin extends PhysicsBody
     
     double mRotY = Math.PI / 2 * 3;
     boolean mMoving = false;
-    vec4 mVel  = new vec4(0,0,0,0);
     vec3 mScale = new vec3(1,1,1);
     float mYOffset;
     float mRad = 1.5f;
