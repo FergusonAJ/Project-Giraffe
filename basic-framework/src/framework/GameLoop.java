@@ -157,7 +157,7 @@ public class GameLoop
                     {
                         int id = ev.key.keysym.sym;
                         System.out.println(id);
-                        if((id > 96 && id < 123) || id == 32)//Add a-z and spaces to the console line
+                        if((id > 96 && id < 123) || id == 32 || (id > 47 && id < 58) || id == 46)//Add a-z and spaces to the console line
                         {
                             consoleText += (char)ev.key.keysym.sym;
                         }
@@ -316,7 +316,7 @@ public class GameLoop
                 System.out.println("Number of hits: " + numHits);
                 keys.remove(SDLK_RETURN);
             }
-            if(keys.contains(SDLK_HOME))
+            if(keys.contains(SDLK_BACKQUOTE))
             {
                 inConsole = !inConsole;
                 consoleText = "";
@@ -324,7 +324,58 @@ public class GameLoop
     }
     private void parseConsole()
     {
-        
+        String[] parts = consoleText.split("\\s");
+        System.out.println(parts.length);
+        for(int i = 0; i < parts.length; i++)
+        {
+            System.out.println(parts[i] + " " + i);
+        }
+        switch(parts[0])
+        {
+            case "spawn":
+                if (parts[1].equals("pig"))
+                {
+                    spawnAnimal(pigMesh, parts);
+                }
+                if (parts[1].equals("giraffe"))
+                {
+                    spawnAnimal(giraffeMesh, parts);
+                }
+                break;
+        }
+    }
+    private void spawnAnimal(Mesh m, String[] s)
+    {
+        if (s == null || s.length <= 2)
+        {
+            animalList.add(new Animal(m, new vec4(0,0,0,1), 3.0f));
+        }
+        else
+        {
+            if(s[2].equals("here") || s[2].equals("me"))
+            {
+                if(s.length != 6)
+                {
+                    animalList.add(new Animal(m, animalList.get(animalSelected).mPos, 3.0f));
+                }
+                else
+                {
+                    vec4 tempVec = new vec4(animalList.get(animalSelected).mPos);
+                    tempVec.x += Float.parseFloat(s[3]);
+                    tempVec.y += Float.parseFloat(s[4]);
+                    tempVec.z += Float.parseFloat(s[5]);
+                    animalList.add(new Animal(m, tempVec, 3.0f));
+                }
+            }
+            else if(s.length == 5)
+            {
+                vec4 tempVec = new vec4(0,0,0,0);
+                tempVec.x += Float.parseFloat(s[2]);
+                tempVec.y += Float.parseFloat(s[3]);
+                tempVec.z += Float.parseFloat(s[4]);
+                animalList.add(new Animal(m, tempVec, 3.0f));
+            }
+        }
     }
     private void Render()
     {
