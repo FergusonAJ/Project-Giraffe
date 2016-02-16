@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import Terrains.*;
 
 public class GameLoop 
 {
@@ -52,6 +53,7 @@ public class GameLoop
     //Sound sounds = new Sound("assets/audio/2016-02-01-1038-12.wav");
     ImageTexture dummyTex = new ImageTexture("assets/blank.png");
     static Sound sounds = new Sound("assets/audio/2016-02-01-1038-12.wav");
+    Water water= new Water(new vec4(0,0,0,1), 0f);
     //Sound sounds = new Sound("assets/audio/trump.wav");
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Fonts">
@@ -132,6 +134,7 @@ public class GameLoop
             cam.update();
             UpdatePins();
             CullDeadObjects();
+            water.update(elapsed);
             if(pinList.size() <= 0 || animalList.size() <= 0)
             {
                 
@@ -410,6 +413,7 @@ public class GameLoop
         {
             o.draw(prog);
         }
+        water.draw(prog);
         //if(portals != null)
         //{
         //   portals.draw(prog);
@@ -479,6 +483,7 @@ public class GameLoop
         {
             portals.draw(prog, fbo1, fbo2);
         }
+        water.draw(prog);
         //fbo1.unbind();
 
         //this is also for later...
