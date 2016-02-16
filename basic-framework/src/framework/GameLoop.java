@@ -1,5 +1,6 @@
 package framework;
 
+import Animals.*;
 import static JGL.JGL.*;
 import JSDL.JSDL;
 import static JSDL.JSDL.*;
@@ -48,8 +49,9 @@ public class GameLoop
     Mesh pinMesh = zomMesh;
     Mesh planeMesh = new Mesh("assets/grassPlane.obj.mesh");
     Mesh portalMesh = new Mesh("assets/portalPlane.obj.mesh");
-    Sound sounds = new Sound("assets/audio/2016-02-01-1038-12.wav");
+    //Sound sounds = new Sound("assets/audio/2016-02-01-1038-12.wav");
     ImageTexture dummyTex = new ImageTexture("assets/blank.png");
+    static Sound sounds = new Sound("assets/audio/2016-02-01-1038-12.wav");
     //Sound sounds = new Sound("assets/audio/trump.wav");
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Fonts">
@@ -92,6 +94,7 @@ public class GameLoop
     {
         animalList.add(new Animal(pigMesh,new vec4(-30,0,0,1), 3.0f));
         animalList.get(0).flip = true;
+        animalList.add(new Cheetah(pigMesh,new vec4(80,0,0,1), 3.0f));
         animalList.add(new Animal(giraffeMesh,new vec4(0,0,0,1), 2.0f));
         //animalList.add(new Animal(zomMesh,new vec4(30,1000,0,1), 0.0f));
         
@@ -328,7 +331,7 @@ public class GameLoop
     private void parseConsole()
     {
         String[] parts = consoleText.split("\\s");
-        System.out.println(parts.length);
+        //System.out.println(parts.length);
         for(int i = 0; i < parts.length; i++)
         {
             System.out.println(parts[i] + " " + i);

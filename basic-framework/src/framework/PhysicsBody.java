@@ -10,12 +10,12 @@ import framework.math3d.vec4;
  */
 public class PhysicsBody {
     
-    vec4 mPos = new vec4(0,0,0,0);
-    vec4 mVel = new vec4(0,0,0,0);
-    vec4 mGravity = new vec4(0,-100,0,0);
-    boolean toggleGravity = false;
+    public vec4 mPos = new vec4(0,0,0,0);
+    public vec4 mVel = new vec4(0,0,0,0);
+    public vec4 mGravity = new vec4(0,-100,0,0);
+    public boolean toggleGravity = false;
     
-    void update(float elapsed)
+    public void update(float elapsed)
     {
         if(toggleGravity)
             mVel = add(mVel,mul(mGravity,elapsed));
@@ -25,6 +25,23 @@ public class PhysicsBody {
     public void setToggleGravity(boolean toggleGravity) {
         this.toggleGravity = toggleGravity;
     }
+
+    public vec4 getmPos() {
+        return mPos;
+    }
+
+    public vec4 getmVel() {
+        return mVel;
+    }
+
+    public vec4 getmGravity() {
+        return mGravity;
+    }
+
+    public boolean isToggleGravity() {
+        return toggleGravity;
+    }
+    
     
     
     

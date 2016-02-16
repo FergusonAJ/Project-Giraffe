@@ -5,6 +5,14 @@
  */
 package framework;
 
+import framework.Mesh;
+import framework.Mesh;
+import framework.Obstacle;
+import framework.Obstacle;
+import framework.PhysicsBody;
+import framework.PhysicsBody;
+import framework.Program;
+import framework.Program;
 import framework.math3d.mat4;
 import static framework.math3d.math3d.*;
 import framework.math3d.vec4;
@@ -16,17 +24,17 @@ import framework.math3d.vec3;
  */
 public class Animal extends PhysicsBody
 {
-    Mesh mMesh;
-    String mName;
+    protected Mesh mMesh;
+    protected String mName;
     
-    double mRotY = Math.PI / 2;
-    boolean mMoving = false;
+    protected double mRotY = Math.PI / 2;
+    protected boolean mMoving = false;
     
-    vec4 mForward;
-    float mYOffset;
-    float mRad = 1.5f;
-    boolean mAlive = true;
-    boolean flip = false;
+    protected vec4 mForward;
+    protected float mYOffset;
+    protected float mRad = 1.5f;
+    protected boolean mAlive = true;
+    protected boolean flip = false;
     public Animal(Mesh mesh, vec4 position, float yOffset)
     {
         mMesh = mesh;
@@ -51,7 +59,7 @@ public class Animal extends PhysicsBody
     void checkObstacleCollision(Obstacle o)
     {
     }
-    void rotate(double angle)
+    protected void rotate(double angle)
     {
         if(!mMoving)
         {
@@ -60,7 +68,7 @@ public class Animal extends PhysicsBody
         }
     }
     
-    void takeoff()
+    protected void takeoff()
     {
         mVel = mul(new vec4(1,0,0,0), axisRotation(new vec4(0,1,0,0), mRotY));
         mVel = mul(mVel, 25);
@@ -72,4 +80,5 @@ public class Animal extends PhysicsBody
         prog.setUniform("worldMatrix", mul(mul(axisRotation(new vec4(0.0f,1.0f,0.0f,0.0f), mRotY), translation(mPos)), translation(new vec3(0,mYOffset, 0))));
         mMesh.draw(prog);
     }
+    
 }
