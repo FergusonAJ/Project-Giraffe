@@ -16,7 +16,7 @@ import framework.math3d.vec3;
 
 
 
-class Mesh {
+public class Mesh {
     Texture texture;
     Texture spec_texture;
     Texture emit_texture;
@@ -190,7 +190,7 @@ class Mesh {
         
     }
     
-    void draw(Program prog){
+    public void draw(Program prog){
         if(this.texture != null )
             prog.setUniform("diffuse_texture",this.texture);
         if(this.emit_texture != null )
