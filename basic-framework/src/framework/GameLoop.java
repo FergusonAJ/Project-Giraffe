@@ -47,7 +47,9 @@ public class GameLoop
     Mesh wallMesh = new Mesh("assets/RockWall.obj.mesh");
     Mesh pinMesh = zomMesh;
     Mesh planeMesh = new Mesh("assets/grassPlane.obj.mesh");
+    Mesh portalMesh = new Mesh("assets/portalPlane.obj.mesh");
     Sound sounds = new Sound("assets/audio/2016-02-01-1038-12.wav");
+    ImageTexture dummyTex = new ImageTexture("assets/blank.png");
     //Sound sounds = new Sound("assets/audio/trump.wav");
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Fonts">
@@ -58,12 +60,12 @@ public class GameLoop
 
     UnitSquare usq = new UnitSquare();
     vec3 skyColor = new vec3(0.5,0.5,0.5);
-    //fbo1 = new Framebuffer(512,512);
-    //fbo2 = new Framebuffer(512,512);
+    Framebuffer fbo1 = new Framebuffer(512,512);
+    Framebuffer fbo2 = new Framebuffer(512,512);
 
     //blurprog = new Program("blurvs.txt","blurfs.txt");
 //</editor-fold>
-
+    PortalPair portals;
     public GameLoop(long w)
     {
         
@@ -95,14 +97,15 @@ public class GameLoop
         
         
         obstacleList.add(new Obstacle(wallMesh, new vec4(0,-1,-20,1), 0.0f));
-        obstacleList.add(new Obstacle(treeMesh, new vec4(-30,1,20,1), 0.0f));
-        obstacleList.add(new Obstacle(treeMesh, new vec4(0,1,-40,1), 0.0f));
-        obstacleList.add(new Obstacle(treeMesh, new vec4(30,1,-40,1), 0.0f));
+        obstacleList.add(new Obstacle(treeMesh, new vec4(-30,-2,20,1), 0.0f));
+        obstacleList.add(new Obstacle(treeMesh, new vec4(0,-2,-40,1), 0.0f));
+        obstacleList.add(new Obstacle(treeMesh, new vec4(30,-2,-40,1), 0.0f));
         
         
         pinList.add(new Pin(pinMesh, new vec4(0,-1,-30,1), 2.0f));
         pinList.add(new Pin(pinMesh, new vec4(30,-1,-30,1), 2.0f));
         pinList.add(new Pin(pinMesh, new vec4(-30,-1,-30,1), 2.0f));
+        portals = new PortalPair(portalMesh, new vec4(10,-2,0,1),(float)animalList.get(0).mRotY);
         if(animalList.size() > 0)
         {
             cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
@@ -377,6 +380,50 @@ public class GameLoop
             }
         }
     }
+    private void DrawWorld(Camera c)
+    {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        prog.setUniform("mode",0.1);
+        prog.setUniform("skyColor",skyColor);
+        prog.setUniform("lights[0].position",new vec3(cam.eye.x, cam.eye.y, cam.eye.z));
+        prog.setUniform("lights[0].color",new vec3(1,1,1));
+        for(int i =1;i<8;i++)
+        {
+            prog.setUniform("lights["+i+"].position",new vec3(0,0,0));
+            prog.setUniform("lights["+i+"].color",new vec3(0,0,0));
+        }
+        c.draw(prog);
+        prog.setUniform("worldMatrix", mul(scaling(new vec3(100,1,100)),translation(new vec3(0,-1.0f,0))));
+        planeMesh.draw(prog);
+        for(Animal a: animalList)
+        {
+            a.draw(prog);
+        }
+        for(Pin p : pinList)
+        {
+            p.draw(prog);
+        }
+        for(Obstacle o : obstacleList)
+        {
+            o.draw(prog);
+        }
+        //if(portals != null)
+        //{
+        //   portals.draw(prog);
+        //}
+        //fbo1.unbind();
+
+        //this is also for later...
+/*
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        blurprog.use();
+        blurprog.setUniform("diffuse_texture",fbo1.texture);
+        usq.draw(blurprog);
+        blurprog.setUniform("diffuse_texture",dummytex);*/
+        prog.setUniform("diffuse_texture",alphabet);
+        prog.setUniform("unitSquare", 1.0f);
+        prog.setUniform("unitSquare", 0.0f);
+    }
     private void Render()
     {
         DrawableString scoreText = new DrawableString("Enemies hit: " + numHits, 10, 20, 20, testFont);
@@ -386,8 +433,21 @@ public class GameLoop
         {
             console = new DrawableString(consoleText, 10, 1040, 20, testFont);
         }
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         prog.use();
+        if(portals != null)
+        {
+            fbo1.bind();
+            vec4 temp = portals.getPortal1Pos().sub(cam.eye);
+            vec3 tempVec3 = new vec3(temp.x, 0, temp.z);
+            //portals.cam1LookAt(tempVec3.neg());
+            DrawWorld(portals.getCam1());
+            fbo1.unbind();
+            fbo2.bind();
+            //portals.cam2LookAt(tempVec3);
+            DrawWorld(portals.getCam2());
+            fbo2.unbind();
+        }
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         prog.setUniform("mode",0.1);
         prog.setUniform("skyColor",skyColor);
         prog.setUniform("lights[0].position",new vec3(cam.eye.x, cam.eye.y, cam.eye.z));
@@ -412,6 +472,10 @@ public class GameLoop
         {
             o.draw(prog);
         }
+        if(portals != null)
+        {
+            portals.draw(prog, fbo1, fbo2);
+        }
         //fbo1.unbind();
 
         //this is also for later...
@@ -430,6 +494,7 @@ public class GameLoop
             console.draw(prog);
         }
         prog.setUniform("unitSquare", 0.0f);
+        prog.setUniform("diffuse_texture", dummyTex);
         SDL_GL_SwapWindow(win);
     }
 }
