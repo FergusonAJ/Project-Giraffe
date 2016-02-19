@@ -25,6 +25,7 @@ public class Pin extends PhysicsBody
     float mYOffset;
     float mRad = 1.5f;
     boolean mAlive = true;
+    float mHealth = 10;
     boolean mIsStatic = false;
     
     public Pin(Mesh mesh, vec4 position, float yOffset)
@@ -46,6 +47,7 @@ public class Pin extends PhysicsBody
         {
             super.update(elapsed);
         }
+        
             
     }
     
@@ -57,13 +59,18 @@ public class Pin extends PhysicsBody
         }
     }
     
-    boolean checkCollision(vec4 pos, float rad2, boolean animalMoving)
+    boolean checkCollision(vec4 pos, float rad2, boolean animalMoving, vec4 vel, int dmg)
     {
         double dist = length(sub(pos, mPos));
         if(dist < mRad + rad2)
         {
             if (animalMoving)
-                mAlive = false;
+            {
+                calculateDamage(vel, dmg);
+                if (mHealth<=0)
+                    mAlive = false;
+            }
+            
             else
                 return true;
         }
@@ -71,6 +78,12 @@ public class Pin extends PhysicsBody
         
         return false;
         
+    }
+    
+    void calculateDamage(vec4 vel, int mDmg)
+    {
+        double result = length(mul(vel,mDmg));
+        mHealth-= result;
     }
     
     void takeoff(vec4 animalPos)

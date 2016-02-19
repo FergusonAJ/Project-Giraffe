@@ -25,7 +25,6 @@ import framework.math3d.vec3;
 public class Animal extends PhysicsBody
 {
     protected Mesh mMesh;
-    protected String mName;
     
     protected double mRotY = Math.PI / 2;
     protected boolean mMoving = false;
@@ -35,6 +34,8 @@ public class Animal extends PhysicsBody
     protected float mRad = 1.5f;
     protected boolean mAlive = true;
     protected boolean flip = false;
+    protected int mDmg;
+    protected float mHealth;
     public Animal(Mesh mesh, vec4 position, float yOffset)
     {
         mMesh = mesh;

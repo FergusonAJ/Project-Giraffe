@@ -16,11 +16,11 @@ import framework.math3d.vec4;
 public class Pig extends Animal
 {
 
-    int mDmg = 25;
+    
     public Pig(Mesh mesh, vec4 position, float yOffset)
     {
         super(mesh, position, yOffset);
-    
+        mDmg = 25;
     }
     
 }

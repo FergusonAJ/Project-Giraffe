@@ -17,8 +17,11 @@ import framework.math3d.vec4;
  */
 public class Cheetah extends Animal{
 
+    
     public Cheetah(Mesh mesh, vec4 position, float yOffset) {
         super(mesh, position, yOffset);
+        mDmg = 30;
+        
     }
     
     protected void takeoff()
@@ -26,6 +29,7 @@ public class Cheetah extends Animal{
         mVel = mul(new vec4(1,0,0,0), axisRotation(new vec4(0,1,0,0), mRotY));
         mVel = mul(mVel, 100);
         mMoving = true;
+        
     }
     
 }

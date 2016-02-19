@@ -15,9 +15,10 @@ import framework.math3d.vec4;
  */
 public class Giraffe extends Animal{
     
-    int mDmg = 50;
+    
     public Giraffe(Mesh mesh, vec4 position, float yOffset) {
         super(mesh, position, yOffset);
+        mDmg = 50;
     }
     
 }

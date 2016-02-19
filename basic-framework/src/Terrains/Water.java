@@ -8,6 +8,7 @@ import framework.Mesh;
 import framework.Program;
 import static framework.math3d.math3d.axisRotation;
 import static framework.math3d.math3d.mul;
+import static framework.math3d.math3d.scaling;
 import static framework.math3d.math3d.translation;
 import framework.math3d.vec3;
 import framework.math3d.vec4;
@@ -17,6 +18,7 @@ public class Water
     vec4 mPos;
     float mYOffset;
     boolean upDir = true;
+    float mode = 3;
     public Water(vec4 position, float yOffset)
     {
         mPos = position;
@@ -37,16 +39,17 @@ public class Water
         else
             mPos.y-= 1*elapsed;
         //System.out.println(mPos.y);
-        if(mPos.y >=3)
+        if(mPos.y >=1)
             upDir = false;
-        if(mPos.y <=-3)
+        if(mPos.y <=-6)
             upDir = true;
         
     }
     
     public void draw(Program prog)
     {
-        prog.setUniform("worldMatrix", translation(mPos));
+       
+        prog.setUniform("worldMatrix", scaling(5,5,5).mul(translation(mPos)));
         mMesh.draw(prog);
     }
     

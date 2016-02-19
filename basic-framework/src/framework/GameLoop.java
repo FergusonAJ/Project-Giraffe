@@ -52,7 +52,7 @@ public class GameLoop
     Mesh portalMesh = new Mesh("assets/portalPlane.obj.mesh");
     //Sound sounds = new Sound("assets/audio/2016-02-01-1038-12.wav");
     ImageTexture dummyTex = new ImageTexture("assets/blank.png");
-    static Sound sounds = new Sound("assets/audio/2016-02-01-1038-12.wav");
+    static Sound sounds = new Sound("assets/audio/funkbox_music_stuff.wav");
     Water water= new Water(new vec4(0,0,0,1), 0f);
     //Sound sounds = new Sound("assets/audio/trump.wav");
     //</editor-fold>
@@ -212,7 +212,7 @@ public class GameLoop
             p.checkAnimalPositions(animalList);
             for(Animal a: animalList)
             {
-                if(p.checkCollision(a.mPos, a.mRad,a.mMoving))
+                if(p.checkCollision(a.mPos, a.mRad,a.mMoving, a.mVel,a.mDmg))
                 {
                     if(a.equals(animalList.get(animalSelected)))
                         animalSelected = 0;

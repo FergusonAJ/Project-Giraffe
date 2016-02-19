@@ -15,9 +15,10 @@ import framework.math3d.vec4;
  */
 public class Ram extends Animal{
 
-    int mDmg = 35;
+    
     public Ram(Mesh mesh, vec4 position, float yOffset) {
         super(mesh, position, yOffset);
+        mDmg = 35;
     }
     
 }

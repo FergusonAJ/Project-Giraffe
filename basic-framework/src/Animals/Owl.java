@@ -15,9 +15,9 @@ import framework.math3d.vec4;
  */
 public class Owl extends Animal{
 
-    int mDmg = 10;
     public Owl(Mesh mesh, vec4 position, float yOffset) {
         super(mesh, position, yOffset);
+        mDmg = 10;
     }
     
 }
