@@ -48,7 +48,7 @@ public class GameLoop
     Mesh zomMesh = new Mesh("assets/basicZombie.obj.mesh");
     Mesh wallMesh = new Mesh("assets/RockWall.obj.mesh");
     Mesh pinMesh = zomMesh;
-    Mesh planeMesh = new Mesh("assets/grassPlane.obj.mesh");
+    Mesh planeMesh = new Mesh("assets/SimplexPlane.obj.mesh", true);
     Mesh portalMesh = new Mesh("assets/portalPlane.obj.mesh");
     //Sound sounds = new Sound("assets/audio/2016-02-01-1038-12.wav");
     ImageTexture dummyTex = new ImageTexture("assets/blank.png");

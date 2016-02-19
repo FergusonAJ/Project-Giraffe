@@ -28,7 +28,7 @@ public class Mesh {
     int vbuff,ibuff;
     int itype;
     int vao;
-    
+    boolean simplex = false;
     vec3 bbmin,bbmax;
     vec3 centroid;
     
@@ -54,8 +54,9 @@ public class Mesh {
         }
     }
       
-    public  Mesh(String filename){
-        
+    public  Mesh(String filename, boolean doSimplex)
+    {
+        simplex = doSimplex;
         texture=null;
         this.filename = filename;
 
@@ -108,6 +109,30 @@ public class Mesh {
                     din.readFully(vdata);
                 } catch (IOException ex) {
                     throw new RuntimeException("Short read "+filename);
+                }
+                if(simplex)
+                {
+                    //System.out.println(vdata);
+                    for(int i = 0; i < numbytes; i+=32)
+                    {
+                        OpenSimplexNoise noise = new OpenSimplexNoise();
+                        float x = ByteBuffer.wrap(vdata, i, 4).order(ByteOrder.nativeOrder()).getFloat();
+                        //float y = ByteBuffer.wrap(vdata, i + 4, 4).order(ByteOrder.nativeOrder()).getFloat();
+                        float z = ByteBuffer.wrap(vdata, i + 8, 4).order(ByteOrder.nativeOrder()).getFloat();
+                        float y  = (float)noise.eval(x*4, z*4) * 10.0f;
+                        //System.out.println("Y:" + y);
+                        if (y < 0.0f)
+                        {
+                            y = 0.0f;
+                        }
+                        byte[] b = ByteBuffer.allocate(4).order(ByteOrder.nativeOrder()).putFloat(y).array();
+                        //System.out.println(b);
+                        vdata[i + 4] = b[0];
+                        vdata[i + 5] = b[1];
+                        vdata[i + 6] = b[2];
+                        vdata[i + 7] = b[3];
+                        //System.out.println("After mod:" + ByteBuffer.wrap(b).order(ByteOrder.nativeOrder()).getFloat());
+                    }
                 }
             }
             else if(lst[0].equals("bits_per_index"))
@@ -188,6 +213,11 @@ public class Mesh {
         glVertexAttribPointer(Program.NORMAL_INDEX, 3, GL_FLOAT, false, floats_per_vertex*4,     5*4);
         glBindVertexArray(0);    //so no one else interferes with us...
         
+    }
+    
+    public Mesh(String filename)
+    {
+        this(filename, false);
     }
     
     public void draw(Program prog){
