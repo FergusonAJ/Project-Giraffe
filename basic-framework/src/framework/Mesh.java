@@ -220,6 +220,11 @@ public class Mesh {
         
     }
     
+    public Mesh(String filename, boolean simplex)
+    {
+        this(filename, simplex, false);
+    }
+    
     public Mesh(String filename)
     {
         this(filename, false, false);

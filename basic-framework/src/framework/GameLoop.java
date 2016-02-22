@@ -45,15 +45,15 @@ public class GameLoop
     
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Mesh variables">
-    Mesh rockMesh = new Mesh("assets/toonRocks.obj.mesh");
-    Mesh treeMesh = new Mesh("assets/bobbleTree.obj.mesh");
-    Mesh giraffeMesh = new Mesh("assets/giraffe.obj.mesh");
-    Mesh pigMesh = new Mesh("assets/goodPig.obj.mesh");
-    Mesh zomMesh = new Mesh("assets/basicZombie.obj.mesh");
-    Mesh wallMesh = new Mesh("assets/RockWall.obj.mesh");
+    Mesh rockMesh = MeshManager.getInstance().get("rock");
+    Mesh treeMesh = MeshManager.getInstance().get("tree");
+    Mesh giraffeMesh = MeshManager.getInstance().get("giraffe");
+    Mesh pigMesh = MeshManager.getInstance().get("pig");
+    Mesh zomMesh = MeshManager.getInstance().get("zombie");
+    Mesh wallMesh = MeshManager.getInstance().get("rockWall");
     Mesh pinMesh = zomMesh;
-    Mesh planeMesh = new Mesh("assets/SimplexPlane.obj.mesh", true, false);
-    Mesh portalMesh = new Mesh("assets/portalPlane.obj.mesh");
+    Mesh planeMesh = MeshManager.getInstance().get("plane");
+    Mesh portalMesh = MeshManager.getInstance().get("portal");
     //Sound sounds = new Sound("assets/audio/2016-02-01-1038-12.wav");
     ImageTexture dummyTex = new ImageTexture("assets/blank.png");
     static Sound sounds = new Sound("assets/audio/funkbox_music_stuff.wav");
@@ -64,16 +64,16 @@ public class GameLoop
     Font testFont = null;
     ImageTexture alphabet = new ImageTexture("assets/cooperBlack.png");
 //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Future code provided by Jim?">
+    //<editor-fold defaultstate="collapsed" desc="Portals and Misc.">
 
     UnitSquare usq = new UnitSquare();
-    vec3 skyColor = new vec3(0.5,0.5,0.5);
+    vec3 skyColor = new vec3(0.2f,0.4f,0.6f);
     Framebuffer fbo1 = new Framebuffer(512,512);
     Framebuffer fbo2 = new Framebuffer(512,512);
-
+    PortalPair portals;
     //blurprog = new Program("blurvs.txt","blurfs.txt");
 //</editor-fold>
-    PortalPair portals;
+    OpenSimplexNoise noise = new OpenSimplexNoise();
     public GameLoop(long w)
     {
         
@@ -116,7 +116,7 @@ public class GameLoop
         pinList.add(new Pin(pinMesh, new vec4(0,-1,-30,1), 2.0f));
         pinList.add(new Pin(pinMesh, new vec4(30,-1,-30,1), 2.0f));
         pinList.add(new Pin(pinMesh, new vec4(-30,-1,-30,1), 2.0f));
-        portals = new PortalPair(portalMesh, new vec4(10,-2,0,1),(float)animalList.get(0).mRotY);
+        portals = new PortalPair(portalMesh, new vec4(10,-2,0,1), (float)Math.PI/4);
         if(animalList.size() > 0)
         {
             cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
@@ -127,7 +127,6 @@ public class GameLoop
     }
     public void runLoop()
     {
-        
         prev = (float)(System.nanoTime()*1E-9);
         ev=new JSDL.SDL_Event();
         while(true)
@@ -143,9 +142,7 @@ public class GameLoop
             water.update(elapsed);
             if(pinList.size() <= 0 || animalList.size() <= 0)
             {
-                
-                Main.mainMenu(win);
-                
+                StateManager.getInstance().MainMenu();      
             }
             if(!inConsole)
             {
@@ -202,7 +199,11 @@ public class GameLoop
         for(Animal a: animalList)
         {
             a.update(elapsed);
-            
+            a.mPos.y  = (float)noise.eval(a.mPos.x/100*4, a.mPos.z/100*4) * 10;
+            if(a.mPos.y < 0)
+            {
+                a.mPos.y = 0;
+            }
             for(Obstacle o : obstacleList)
             {
                if(o.checkSphereCollision(a.mPos.xyz(), a.mRad))
@@ -222,24 +223,28 @@ public class GameLoop
     {
         for (Pin p : pinList)
         {
+            p.mPos.y  = (float)noise.eval(p.mPos.x/100*4, p.mPos.z/100*4) * 10;
+            if(p.mPos.y < 0)
+            {
+                p.mPos.y = 0;
+            }
             p.checkAnimalPositions(animalList);
             for(Animal a: animalList)
             {
                 if(p.checkCollision(a.mPos, a.mRad,a.mMoving, a.mVel,a.mDmg))
                 {
-                    if(a.equals(animalList.get(animalSelected)))
-                        animalSelected = 0;
+                    //if(a.equals(animalList.get(animalSelected)))
+                    //    animalSelected = 0;
                     animalList.get(animalSelected).mAlive = false;
                 }
 
-                p.checkAnimalPosition(a.mPos);
+                //p.checkAnimalPosition(a.mPos);
             }
             for(Obstacle o : obstacleList)
             {
                if(o.checkSphereCollision(p.mPos.xyz(), p.mRad))
                {
                    p.mVel = new vec4(0,0,0,0);
-                   
                }
             }
             p.update(elapsed);
@@ -247,46 +252,33 @@ public class GameLoop
     }
     protected void CullDeadObjects()
     {
-        
-        //I changed this from doing a
-        //for(int i = 0; i<=pinList;
-        for(Pin p: pinList)
+        for(int i = 0; i < pinList.size(); i++)
         {
-            if(!p.mAlive)
+            if(!pinList.get(i).mAlive)
             {
-                pinList.remove(pinList.indexOf(p));
+                pinList.remove(i);
                 numHits++;
             }
         }
-        for(Animal a: animalList)
+        for(int i = 0; i < animalList.size(); i++)
         {
-            if(!a.mAlive)
-                animalList.remove(animalList.indexOf(a));
+            if(!animalList.get(i).mAlive)
+            {
+                getPrevAnimal();
+                animalList.remove(i);
+            }
         }
-        for(Obstacle o: obstacleList)
+        for(Obstacle o : obstacleList)
         {
             if(!o.mAlive)
                 obstacleList.remove(obstacleList.indexOf(o));
         }
     }
-    
     private void HandleInput()
     {
         if( keys.contains(SDLK_z))
             {
-                animalSelected--;
-                if(animalSelected < 0)
-                    animalSelected = animalList.size()-1;
-                cam.follow(animalList.get(animalSelected),false);
-                cam.mFollowTarget = animalList.get(animalSelected);
-                if(animalList.get(animalSelected).mMoving)
-                {
-                    cam.follow(animalList.get(animalSelected), true);
-                }
-                else
-                {
-                    cam.mFollowing = false;
-                }
+                getPrevAnimal();
                 keys.remove(SDLK_z);
             }
             
@@ -344,8 +336,8 @@ public class GameLoop
             }
             if(keys.contains(SDLK_RETURN))
             {
-                System.out.println("Number of launches: " + numLaunches);
-                System.out.println("Number of hits: " + numHits);
+                //System.out.println("Number of launches: " + numLaunches);
+                //System.out.println("Number of hits: " + numHits);
                 keys.remove(SDLK_RETURN);
             }
             if(keys.contains(SDLK_BACKQUOTE))
@@ -353,6 +345,22 @@ public class GameLoop
                 inConsole = !inConsole;
                 consoleText = "";
             }
+    }
+    private void getPrevAnimal()
+    {
+        animalSelected--;
+        if(animalSelected < 0)
+            animalSelected = animalList.size()-1;
+        cam.follow(animalList.get(animalSelected),false);
+        cam.mFollowTarget = animalList.get(animalSelected);
+        if(animalList.get(animalSelected).mMoving)
+        {
+            cam.follow(animalList.get(animalSelected), true);
+        }
+        else
+        {
+            cam.mFollowing = false;
+        }
     }
     private void parseConsole()
     {
@@ -437,19 +445,6 @@ public class GameLoop
             o.draw(prog);
         }
         water.draw(prog);
-        //if(portals != null)
-        //{
-        //   portals.draw(prog);
-        //}
-        //fbo1.unbind();
-
-        //this is also for later...
-/*
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        blurprog.use();
-        blurprog.setUniform("diffuse_texture",fbo1.texture);
-        usq.draw(blurprog);
-        blurprog.setUniform("diffuse_texture",dummytex);*/
         prog.setUniform("diffuse_texture",alphabet);
         prog.setUniform("unitSquare", 1.0f);
         prog.setUniform("unitSquare", 0.0f);

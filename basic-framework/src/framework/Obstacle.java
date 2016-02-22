@@ -6,6 +6,7 @@ import static framework.math3d.math3d.*;
 import framework.math3d.vec3;
 public class Obstacle 
 {
+    static OpenSimplexNoise noise = new OpenSimplexNoise();
     Mesh mMesh;
     vec4 mPos;
     float mRotY;
@@ -22,6 +23,13 @@ public class Obstacle
     
     public Obstacle(Mesh mesh, vec4 position, float yRot)
     {
+        float yOffset = position.y;
+        position.y  = (float)noise.eval(position.x/100*4, position.z/100*4) * 10;
+        if(position.y < 0)
+        {
+            position.y = 0;
+        }
+        position.y += yOffset;
         mMesh = mesh;
         mPos = position;
         mRotY = yRot;
