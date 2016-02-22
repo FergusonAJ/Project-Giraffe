@@ -29,6 +29,7 @@ public class Mesh {
     int itype;
     int vao;
     boolean simplex = false;
+    boolean wave = false;
     vec3 bbmin,bbmax;
     vec3 centroid;
     
@@ -54,7 +55,7 @@ public class Mesh {
         }
     }
       
-    public  Mesh(String filename, boolean doSimplex)
+    public  Mesh(String filename, boolean doSimplex, boolean doWave)
     {
         simplex = doSimplex;
         texture=null;
@@ -133,6 +134,10 @@ public class Mesh {
                         vdata[i + 7] = b[3];
                         //System.out.println("After mod:" + ByteBuffer.wrap(b).order(ByteOrder.nativeOrder()).getFloat());
                     }
+                }
+                if(wave)
+                {
+                    
                 }
             }
             else if(lst[0].equals("bits_per_index"))
@@ -217,7 +222,7 @@ public class Mesh {
     
     public Mesh(String filename)
     {
-        this(filename, false);
+        this(filename, false, false);
     }
     
     public void draw(Program prog){

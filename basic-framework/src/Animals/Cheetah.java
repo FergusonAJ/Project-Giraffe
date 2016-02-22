@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Animals;
 
 import framework.Animal;
@@ -24,6 +19,7 @@ public class Cheetah extends Animal{
         
     }
     
+    @Override
     protected void takeoff()
     {
         mVel = mul(new vec4(1,0,0,0), axisRotation(new vec4(0,1,0,0), mRotY));

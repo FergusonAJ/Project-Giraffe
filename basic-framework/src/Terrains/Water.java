@@ -14,7 +14,7 @@ import framework.math3d.vec3;
 import framework.math3d.vec4;
 public class Water 
 {
-    Mesh mMesh = new Mesh("assets/waterPlane.obj.mesh");
+    Mesh mMesh = new Mesh("assets/waterPlane.obj.mesh",false, true);
     vec4 mPos;
     float mYOffset;
     boolean upDir = true;
@@ -46,9 +46,14 @@ public class Water
         
     }
     
+    void waves()
+    {
+        
+    }
+    
     public void draw(Program prog)
     {
-       
+        prog.setUniform("mode", mode);
         prog.setUniform("worldMatrix", scaling(5,5,5).mul(translation(mPos)));
         mMesh.draw(prog);
     }

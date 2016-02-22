@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Animals;
 
 import framework.Animal;
@@ -21,6 +16,21 @@ public class Pig extends Animal
     {
         super(mesh, position, yOffset);
         mDmg = 25;
+        specialTimer = 1;
+        
+    }
+    @Override
+    public void specialAbility()
+    {
+        isSpecialActive = true;
+        usedSpecial = true;
+        if(isSpecialActive && specialTimer>0)
+        {
+            mMoving = false;
+            mDmg = 1000;
+            mRad = 10;
+            mAlive = false;
+        }
     }
     
 }
