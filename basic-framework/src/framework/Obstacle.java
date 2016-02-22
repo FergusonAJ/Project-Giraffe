@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package framework;
 
 import framework.math3d.mat4;
@@ -15,6 +10,7 @@ public class Obstacle
     vec4 mPos;
     float mRotY;
     vec3 mScale;
+    boolean mAlive = true;
     vec4 U = new vec4(1,0,0,0);
     vec4 V = new vec4(0,1,0,0);
     vec4 W = new vec4(0,0,1,0);
@@ -22,6 +18,7 @@ public class Obstacle
     int height = 2;
     float depth = 0.4f;
     vec3 min,max;
+    float mHealth = 20;
     
     public Obstacle(Mesh mesh, vec4 position, float yRot)
     {
@@ -67,6 +64,16 @@ public class Obstacle
         }
         return false;
     }
+    
+     void calculateDamage(vec4 vel, int mDmg)
+    {
+        double result = length(mul(vel,mDmg));
+        mHealth-= result;
+        if(mHealth<=0)
+            mAlive = false;
+        
+    }
+     
     public void draw(Program prog)
     {
         prog.setUniform("worldMatrix", mul(scaling(mScale), mul(axisRotation(new vec4(0.0f,1.0f,0.0f,0.0f), mRotY), translation(mPos))));

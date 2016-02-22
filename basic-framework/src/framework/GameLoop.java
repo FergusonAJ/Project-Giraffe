@@ -39,6 +39,10 @@ public class GameLoop
     boolean inConsole = false;
     String consoleText = "";
     int totalPins;
+    //implement this when it comes near to controller development
+    String gameState;   //GameState should be either:  "Default","Launching","Paused" 
+    
+    
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Mesh variables">
     Mesh rockMesh = new Mesh("assets/toonRocks.obj.mesh");
@@ -48,7 +52,7 @@ public class GameLoop
     Mesh zomMesh = new Mesh("assets/basicZombie.obj.mesh");
     Mesh wallMesh = new Mesh("assets/RockWall.obj.mesh");
     Mesh pinMesh = zomMesh;
-    Mesh planeMesh = new Mesh("assets/SimplexPlane.obj.mesh", true);
+    Mesh planeMesh = new Mesh("assets/SimplexPlane.obj.mesh", true, false);
     Mesh portalMesh = new Mesh("assets/portalPlane.obj.mesh");
     //Sound sounds = new Sound("assets/audio/2016-02-01-1038-12.wav");
     ImageTexture dummyTex = new ImageTexture("assets/blank.png");
@@ -90,14 +94,16 @@ public class GameLoop
             cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
             cam.mFollowTarget = animalList.get(0);
         }
-        totalPins = pinList.size();
+          totalPins = pinList.size();
     }
     protected void genBasic()
     {
-        animalList.add(new Animal(pigMesh,new vec4(-30,0,0,1), 3.0f));
+        animalList.add(new Pig(pigMesh,new vec4(-30,0,0,1), 3.0f));
         animalList.get(0).flip = true;
         animalList.add(new Cheetah(pigMesh,new vec4(80,0,0,1), 3.0f));
-        animalList.add(new Animal(giraffeMesh,new vec4(0,0,0,1), 2.0f));
+        animalList.add(new Giraffe(giraffeMesh,new vec4(0,0,0,1), 2.0f));
+        animalList.add(new Ram(giraffeMesh,new vec4(60,0,0,1), 2.0f));
+        
         //animalList.add(new Animal(zomMesh,new vec4(30,1000,0,1), 0.0f));
         
         
@@ -196,10 +202,17 @@ public class GameLoop
         for(Animal a: animalList)
         {
             a.update(elapsed);
+            
             for(Obstacle o : obstacleList)
             {
                if(o.checkSphereCollision(a.mPos.xyz(), a.mRad))
                {
+                   
+                   //if animal selected is a ram and special is active then you can dmg obstacles
+                   if (a instanceof Ram && a.isSpecialActive) 
+                   {
+                        o.calculateDamage(a.mVel,a.mDmg);
+                   }
                    a.mVel = new vec4();
                }
             }
@@ -226,6 +239,7 @@ public class GameLoop
                if(o.checkSphereCollision(p.mPos.xyz(), p.mRad))
                {
                    p.mVel = new vec4(0,0,0,0);
+                   
                }
             }
             p.update(elapsed);
@@ -233,20 +247,29 @@ public class GameLoop
     }
     protected void CullDeadObjects()
     {
-        for(int i = 0; i < pinList.size(); i++)
+        
+        //I changed this from doing a
+        //for(int i = 0; i<=pinList;
+        for(Pin p: pinList)
         {
-            if(!pinList.get(i).mAlive)
+            if(!p.mAlive)
             {
-                pinList.remove(i);
+                pinList.remove(pinList.indexOf(p));
                 numHits++;
             }
         }
-        for(int i = 0; i < animalList.size(); i++)
+        for(Animal a: animalList)
         {
-            if(!animalList.get(i).mAlive)
-                animalList.remove(i);
+            if(!a.mAlive)
+                animalList.remove(animalList.indexOf(a));
+        }
+        for(Obstacle o: obstacleList)
+        {
+            if(!o.mAlive)
+                obstacleList.remove(obstacleList.indexOf(o));
         }
     }
+    
     private void HandleInput()
     {
         if( keys.contains(SDLK_z))

@@ -36,6 +36,13 @@ public class Animal extends PhysicsBody
     protected boolean flip = false;
     protected int mDmg;
     protected float mHealth;
+    
+    
+    //variables purely for special abilities
+    protected boolean isSpecialActive;
+    protected boolean usedSpecial;
+    protected float specialTimer;
+    
     public Animal(Mesh mesh, vec4 position, float yOffset)
     {
         mMesh = mesh;
@@ -43,6 +50,7 @@ public class Animal extends PhysicsBody
         mYOffset = yOffset;
     }
     
+    @Override
     public void update(float elapsed)
     {
         if(mMoving)
@@ -50,11 +58,16 @@ public class Animal extends PhysicsBody
             //mPos = add(mPos, mul(mVel,elapsed));
             super.update(elapsed);
             mVel = sub(mVel,mul(mVel, 0.5f * elapsed));
-            if(length(mVel) < 0.7f)
+            if(length(mVel) < 1f)
             {
                 mMoving = false;
                 mVel = new vec4(0,0,0,0);
+                resetSpecialAbility();
             }
+        }
+        if(isSpecialActive)
+        {
+            specialTimer-=elapsed;
         }
     }
     void checkObstacleCollision(Obstacle o)
@@ -68,6 +81,20 @@ public class Animal extends PhysicsBody
             mForward = mul(new vec4(0,0,-1,0), axisRotation(new vec4(0,1,0,0), mRotY));
         }
     }
+    
+    public void specialAbility()
+    {
+        isSpecialActive = true;
+        usedSpecial = true;
+    }
+    
+    protected void resetSpecialAbility()
+    {
+        isSpecialActive = false;
+        usedSpecial = false;
+    }
+    
+    
     
     protected void takeoff()
     {
