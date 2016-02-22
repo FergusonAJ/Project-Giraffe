@@ -15,7 +15,7 @@ public class PortalPair
     public PortalPair(Mesh m, vec4 pos1, float yRot1)
     {
         mPos1 = pos1.add(new vec4(0,2,0,0));
-        vec4 temp = new vec4(Math.cos(yRot1), 0 , Math.sin(yRot1), 0);
+        vec4 temp = new vec4(Math.cos(yRot1), 0 , -Math.sin(yRot1), 0);
         mYRot1 = yRot1;
         mYRot2 = yRot1 + (float)Math.PI;
         mPos2 = pos1.add(temp.mul(20));
@@ -23,9 +23,9 @@ public class PortalPair
         mMesh = m;
         mMesh.texture = null;
         mCam1 = new Camera();
-        mCam1.lookAt(mPos1.xyz(), mPos1.sub(temp).xyz(), new vec4(0,1,0,0).xyz());
+        mCam1.lookAt(mPos1.xyz().add(new vec3(0,2,0)), mPos1.sub(temp).xyz().add(new vec3(0,2,0)), new vec4(0,1,0,0).xyz());
         mCam2 = new Camera();
-        mCam2.lookAt(mPos2.xyz(), mPos2.add(temp).xyz(), new vec4(0,1,0,0).xyz());
+        mCam2.lookAt(mPos2.xyz().add(new vec3(0,2,0)), mPos2.add(temp).xyz().add(new vec3(0,2,0)), new vec4(0,1,0,0).xyz());
         mCam1.fov_h = 22.5f;
         mCam2.fov_h = 22.5f;
     }
@@ -60,10 +60,10 @@ public class PortalPair
     public void draw(Program prog, Framebuffer fbo1, Framebuffer fbo2)
     {
         prog.setUniform("diffuse_texture", fbo2.texture);
-        prog.setUniform("worldMatrix", scaling(2,3,2).mul(axisRotation(new vec4(0,1,0,0), mYRot1).mul(translation(mPos1))));
+        prog.setUniform("worldMatrix", scaling(2,3,2).mul(axisRotation(new vec4(0,1,0,0), mYRot2).mul(translation(mPos1))));
         mMesh.draw(prog);
         prog.setUniform("diffuse_texture", fbo1.texture);
-        prog.setUniform("worldMatrix", scaling(2,3,2).mul(axisRotation(new vec4(0,1,0,0), mYRot2).mul(translation(mPos2))));
+        prog.setUniform("worldMatrix", scaling(2,3,2).mul(axisRotation(new vec4(0,1,0,0), mYRot1).mul(translation(mPos2))));
         mMesh.draw(prog);
     }
 }
