@@ -5,30 +5,15 @@
  */
 package TextRendering;
 
-import static JGL.JGL.GL_ARRAY_BUFFER;
-import static JGL.JGL.GL_FLOAT;
-import static JGL.JGL.GL_STATIC_DRAW;
-import static JGL.JGL.GL_TRIANGLES;
-import static JGL.JGL.glBindBuffer;
-import static JGL.JGL.glBindVertexArray;
-import static JGL.JGL.glBufferData;
-import static JGL.JGL.glDrawArrays;
-import static JGL.JGL.glEnableVertexAttribArray;
-import static JGL.JGL.glGenBuffers;
-import static JGL.JGL.glDeleteBuffers;
-import static JGL.JGL.glGenVertexArrays;
-import static JGL.JGL.glDeleteVertexArrays;
-import static JGL.JGL.glVertexAttribPointer;
+import static JGL.JGL.*;
 import framework.Program;
 import framework.math3d.mat4;
-import static framework.math3d.math3d.mul;
-import static framework.math3d.math3d.scaling;
-import static framework.math3d.math3d.translation;
+import static framework.math3d.math3d.*;
 import framework.math3d.vec3;
 
 /**
- *
- * @author ajart
+ * Contains all the data necessary for a character that can be drawn to the screen
+ * @author Austin Ferguson
  */
 public class DrawableChar 
 {
@@ -38,16 +23,38 @@ public class DrawableChar
     CharInfo mInfo;
     int vbuff;
     
+    /**
+     * Generates a basic vao for the character
+     * @param c The desired character
+     * @param font The desired font
+     */
     public DrawableChar(char c, Font font)
     {
         genVAO(c, font);
     }
+    
+    /**
+     * Generates a vao for the character, at the specified coordinates
+     * @param c The desired character
+     * @param x The x coordinate in screen space
+     * @param y The y coordinate in screen space
+     * @param font The desired font
+     */
     public DrawableChar(char c, int x, int y, Font font)
     {
         mX = x;
         mY = y;
         genVAO(c, font);
     }
+    
+    /**
+     * Generates a vao for the character, at the specified coordinates
+     * @param c The desired character
+     * @param x The x coordinate in screen space
+     * @param y The y coordinate in screen space
+     * @param scale Factor to scale the mesh by
+     * @param font The desired font
+     */
     public DrawableChar(char c, int x, int y, float scale, Font font)
     {
         mX = x;
@@ -55,6 +62,12 @@ public class DrawableChar
         mScale = scale;
         genVAO(c, font);
     }
+    
+    /**
+     * Generates the actual vertex array object for the mesh
+     * @param c The desired character
+     * @param font The desired font
+     */
     private void genVAO(char c, Font font)
     {
         mInfo = font.getCharInfo((int)c);
@@ -67,7 +80,7 @@ public class DrawableChar
         glGenVertexArrays(1,tmp);
         vao = tmp[0];
         glBindVertexArray(vao);
-        //set the vao data
+        //Set the vao data
         glEnableVertexAttribArray(Program.POSITION_INDEX);
         glEnableVertexAttribArray(Program.TEXCOORD_INDEX);
         glEnableVertexAttribArray(Program.NORMAL_INDEX);
@@ -76,6 +89,11 @@ public class DrawableChar
         glVertexAttribPointer(Program.NORMAL_INDEX, 3, GL_FLOAT, false, 8*4,     5*4);
         glBindVertexArray(0);
     }
+    
+    /**
+     * Renders the character to the screen
+     * @param prog The program to use for rendering
+     */
     public void draw(Program prog)
     {
         prog.setUniform("worldMatrix", mul(scaling(new vec3(mScale, mScale, 1.0f)), translation(-1.0f + (mX / 1920.0f) * 2, 1.0f - (mY / 1080.0f) * 2, 0.0f)));

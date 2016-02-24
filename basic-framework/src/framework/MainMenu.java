@@ -3,11 +3,18 @@ package framework;
 import Animals.*;
 import framework.math3d.*;
 
+/**
+ * MainMenu refers to a GameLoop that has two signs, one to start the game and one to exit
+ */
 public class MainMenu extends GameLoop
 {
     Mesh signMesh, sign2Mesh;
     Pin startSign, exitSign;
     
+    /**
+     * Creates a new Main Menu, and initializes a pig and two signs.
+     * @param w The long that OpenGL assigned to the current window
+     */
     public MainMenu(long w) 
     {
         super(w);
@@ -29,6 +36,9 @@ public class MainMenu extends GameLoop
     }
 
     
+    /**
+     * Either starts or exits the game depending on which sign was hit
+     */
     protected void CullDeadObjects()
     {
         if(!startSign.mAlive)

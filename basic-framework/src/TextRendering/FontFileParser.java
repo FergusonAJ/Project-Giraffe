@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package TextRendering;
 
 import java.io.BufferedReader;
@@ -17,13 +12,20 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 /**
- *
- * @author ajart
+ * Opens and reads a font file (saved as a .txt)
+ * And generates a font object for that file
+ * @author Austin Ferguson
  */
 public class FontFileParser 
 {
     HashMap<Integer, CharInfo> mCharacters = new HashMap();
     private int mLineHeight, mBase, mWidth, mHeight;
+    
+    /**
+     * Takes in the file name of font file, and extracts all the necessary information
+     * @param filename The file to parse through (Should be a .txt)
+     * @throws IOException 
+     */
     public FontFileParser(String filename) throws IOException
     {
         BufferedReader br = new BufferedReader(new FileReader(filename));
@@ -102,22 +104,47 @@ public class FontFileParser
             }
         }
     }
+    
+    /**
+     * Returns the character hashMap
+     * @return A HashMap of all the character infomation objects
+     */
     public HashMap<Integer, CharInfo> getCharacters()
     {
         return mCharacters;
     }
+    
+    /**
+     * Returns the width from the file
+     * @return The width from the file
+     */
     public int getWidth()
     {
         return mWidth;
     }
+    
+    /**
+     * Returns the height from the file
+     * @return The height from the file
+     */
     public int getHeight()
     {
         return mHeight;
     }
+    
+    /**
+     * Returns the base attribute from the file
+     * @return The base attribute from the file
+     */
     public int getBase()
     {
         return mBase;
     }
+    
+    /**
+     * Returns the line height from the file
+     * @return The line height from the file
+     */
     public int getLineHeight()
     {
         return mLineHeight;

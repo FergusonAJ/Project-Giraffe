@@ -1,5 +1,8 @@
 package framework.math3d;
 
+/**
+ * Code provided by Jim Hudson (From Google)
+ */
 public class mat4{
     public float[] _M = new float[16];
     

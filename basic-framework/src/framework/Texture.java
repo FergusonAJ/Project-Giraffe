@@ -8,8 +8,7 @@ import static JGL.JGL.*;
 
 
 /**
- *
- * @author jhudson
+ * Code provided by Jim Hudson
  */
 public class Texture {
     private int tex;      //GL texture name

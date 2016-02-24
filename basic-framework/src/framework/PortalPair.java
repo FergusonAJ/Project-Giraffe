@@ -1,5 +1,4 @@
 package framework;
-
 import framework.math3d.*;
 import static framework.math3d.math3d.axisRotation;
 import static framework.math3d.math3d.scaling;

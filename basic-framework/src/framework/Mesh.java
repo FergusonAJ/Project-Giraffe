@@ -15,8 +15,11 @@ import static framework.math3d.math3d.translation;
 import framework.math3d.vec3;
 
 
-
-public class Mesh {
+/**
+ * Written by Jim Hudson with a few edits by us
+ */
+public class Mesh 
+{
     Texture texture;
     Texture spec_texture;
     Texture emit_texture;
@@ -111,28 +114,24 @@ public class Mesh {
                 } catch (IOException ex) {
                     throw new RuntimeException("Short read "+filename);
                 }
+                //If the flag is true, modify the plane based on Simplex Noise
                 if(simplex)
                 {
-                    //System.out.println(vdata);
                     for(int i = 0; i < numbytes; i+=32)
                     {
                         OpenSimplexNoise noise = new OpenSimplexNoise();
                         float x = ByteBuffer.wrap(vdata, i, 4).order(ByteOrder.nativeOrder()).getFloat();
-                        //float y = ByteBuffer.wrap(vdata, i + 4, 4).order(ByteOrder.nativeOrder()).getFloat();
                         float z = ByteBuffer.wrap(vdata, i + 8, 4).order(ByteOrder.nativeOrder()).getFloat();
                         float y  = (float)noise.eval(x*4, z*4) * 10.0f;
-                        //System.out.println("Y:" + y);
                         if (y < 0.0f)
                         {
                             y = 0.0f;
                         }
                         byte[] b = ByteBuffer.allocate(4).order(ByteOrder.nativeOrder()).putFloat(y).array();
-                        //System.out.println(b);
                         vdata[i + 4] = b[0];
                         vdata[i + 5] = b[1];
                         vdata[i + 6] = b[2];
                         vdata[i + 7] = b[3];
-                        //System.out.println("After mod:" + ByteBuffer.wrap(b).order(ByteOrder.nativeOrder()).getFloat());
                     }
                 }
                 if(wave)

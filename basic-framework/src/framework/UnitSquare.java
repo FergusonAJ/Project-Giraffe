@@ -1,16 +1,7 @@
 package framework;
 
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
-
 /*
- */
-/**
- *
- * @author jhudson
+ * Written by Jim Hudson
  */
 public class UnitSquare {
     Mesh m;

@@ -41,8 +41,6 @@ public class GameLoop
     int totalPins;
     //implement this when it comes near to controller development
     String gameState;   //GameState should be either:  "Default","Launching","Paused" 
-    
-    
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Mesh variables">
     Mesh rockMesh = MeshManager.getInstance().get("rock");
@@ -84,7 +82,7 @@ public class GameLoop
         } 
         catch (IOException ex) 
         {
-        Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        Logger.getLogger(StateManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         prog = new Program("vs.txt","fs.txt");
         

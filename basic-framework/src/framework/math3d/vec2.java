@@ -1,6 +1,8 @@
 package framework.math3d;
 
-
+/**
+ * Code provided by Jim Hudson (From Google)
+ */
 public class vec2{
     public float x,y;
     

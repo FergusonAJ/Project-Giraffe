@@ -1,5 +1,3 @@
-/*
- */
 package framework;
 
 import java.awt.image.BufferedImage;
@@ -11,8 +9,7 @@ import static JGL.JGL.*;
 
 
 /**
- *
- * @author jhudson
+ * Written by Jim Hudson
  */
 public class ImageTexture  extends Texture2D{
     int w,h;

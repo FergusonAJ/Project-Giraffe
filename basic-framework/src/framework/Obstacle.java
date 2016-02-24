@@ -4,9 +4,13 @@ import framework.math3d.mat4;
 import framework.math3d.vec4;
 import static framework.math3d.math3d.*;
 import framework.math3d.vec3;
+
+/**
+ * Basic Obstacle class, that can use any mesh, but does collision with an AABB
+ */
 public class Obstacle 
 {
-    static OpenSimplexNoise noise = new OpenSimplexNoise();
+    static OpenSimplexNoise noise = new OpenSimplexNoise(); //Used for placing the obstacle on the ground
     Mesh mMesh;
     vec4 mPos;
     float mRotY;
@@ -21,6 +25,12 @@ public class Obstacle
     vec3 min,max;
     float mHealth = 20;
     
+    /**
+     * Basic Obstacle constructor that calculates the position and the AABB
+     * @param mesh The Mesh to use for this obstacle
+     * @param position The obstacle's position (Y coordinate is calculated)
+     * @param yRot The obstacle's rotation around the Y Axis
+     */
     public Obstacle(Mesh mesh, vec4 position, float yRot)
     {
         float yOffset = position.y;
@@ -41,6 +51,13 @@ public class Obstacle
         V = mul(V, rot);
         W = mul(W, rot);
     }
+    
+    /**
+     * Checks the passed sphere against the obstacle's Axis-Aligned Bounding Box
+     * @param point Origin of the sphere
+     * @param rad Radius of the sphere
+     * @return 
+     */
     public boolean checkSphereCollision(vec3 point, float rad)
     {
         vec3 closest = new vec3();
@@ -73,15 +90,23 @@ public class Obstacle
         return false;
     }
     
+    /**
+     * Calculates the damage an animal deals to the obstacle
+     * @param vel Animal's velocity
+     * @param mDmg Base Damage
+     */
      void calculateDamage(vec4 vel, int mDmg)
     {
         double result = length(mul(vel,mDmg));
         mHealth-= result;
         if(mHealth<=0)
-            mAlive = false;
-        
+            mAlive = false;   
     }
      
+     /**
+      * Renders the obstacle to the screen
+      * @param prog The program to use for rendering.
+      */
     public void draw(Program prog)
     {
         prog.setUniform("worldMatrix", mul(scaling(mScale), mul(axisRotation(new vec4(0.0f,1.0f,0.0f,0.0f), mRotY), translation(mPos))));
