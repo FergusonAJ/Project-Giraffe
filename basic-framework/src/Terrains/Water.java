@@ -14,7 +14,7 @@ import framework.math3d.vec3;
 import framework.math3d.vec4;
 public class Water 
 {
-    Mesh mMesh = new Mesh("assets/waterPlane.obj.mesh",false, true);
+    Mesh mMesh = new Mesh("assets/Models/waterPlane.obj.mesh",false, true);
     vec4 mPos;
     float mYOffset;
     boolean upDir = true;

@@ -8,6 +8,9 @@ import static JGL.JGL.*;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
+/**
+ * Code provided by Jim Hudson
+ */
 public class SolidTexture extends Texture2D{
     int fmt;
     int w=1, h=1;

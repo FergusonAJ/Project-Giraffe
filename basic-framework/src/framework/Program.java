@@ -7,7 +7,11 @@ import static JGL.JGL.*;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 
-public class Program{
+/**
+ * Written by Jim Hudson with minor edits by us
+ */
+public class Program
+{
 
     //indices of attributes
     public static final int POSITION_INDEX = 0;

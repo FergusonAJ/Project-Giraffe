@@ -7,6 +7,9 @@ import framework.math3d.vec4;
 import static java.lang.Math.*;
 import static framework.math3d.math3d.*;
 
+/**
+ * Camera class created by Jim Hudson with minor edits by us.
+ */
 public class Camera{
     float fov_h = 45;
     float hither = 0.1f;

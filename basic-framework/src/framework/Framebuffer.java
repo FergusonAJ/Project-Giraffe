@@ -4,8 +4,7 @@ package framework;
 import static JGL.JGL.*;
 
 /**
- *
- * @author jhudson
+ * FrameBuffer class created by Jim Hudson
  */
 public class Framebuffer {
     int width,height;       //size of FBO

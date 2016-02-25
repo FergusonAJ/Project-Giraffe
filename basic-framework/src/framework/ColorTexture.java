@@ -1,11 +1,9 @@
-/*
- */
 package framework;
+
 import static JGL.JGL.*;
 
 /**
- *
- * @author jhudson
+ * Written by Jim Hudson
  */
 public class ColorTexture extends Texture2D {
     int fmt;

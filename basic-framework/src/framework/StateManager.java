@@ -3,30 +3,37 @@ package framework;
 import static JGL.JGL.*;
 import static JSDL.JSDL.*;
 
+/**
+ * Singleton designed state manager. Accessible from anywhere to allow easy control of game flow.
+ */
 public class StateManager
 {
     static private StateManager instance_ = new StateManager();
     static private GameLoop currentLoop_;
     static private long win_;
     
-    private StateManager()
-    {
-        
-    }
-    
+    /** Initializes the necessities for GL and fires up the MeshManager
+     */
     public static void main(String[] args)
     {
         initGL();
-        MeshManager.initialize();
+        MeshManager.init();
         instance_.MainMenu();
     }
-     
+    
+    /**
+     * Sets the current loop to a new instance of the main menu and then runs it.
+     */
     public void MainMenu()
     {
         currentLoop_ = new MainMenu(win_);
         currentLoop_.runLoop();
     }
     
+    /**
+     * Creates and runs a new main game loop. (New level)
+     * @param genBasic If true, spawns in a few animals, pins, and obstacles for testing.
+     */
     public void NewLoop(boolean genBasic)
     {
         currentLoop_ = new GameLoop(win_);
@@ -37,11 +44,19 @@ public class StateManager
         currentLoop_.runLoop();
     }
     
+    /**
+     * Gets the current instance of the StateManager
+     * @return current StateManager instance
+     */
     public static StateManager getInstance()
     {
         return instance_;
     }
     
+    /**
+     * Gets the window, and all supporting GL attributes ready for the game. 
+     * Most code by Jim Hudson
+     */
     private static void initGL()
     {
         SDL_Init(SDL_INIT_VIDEO);
