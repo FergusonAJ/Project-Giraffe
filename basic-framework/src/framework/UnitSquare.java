@@ -7,7 +7,7 @@ public class UnitSquare {
     Mesh m;
     
     public UnitSquare(){
-        m = new Mesh("assets/usq.obj.mesh");
+        m = new Mesh("assets/Models/usq.obj.mesh");
     }
     
     public void draw(Program p){

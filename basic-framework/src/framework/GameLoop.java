@@ -53,14 +53,14 @@ public class GameLoop
     Mesh planeMesh = MeshManager.getInstance().get("plane");
     Mesh portalMesh = MeshManager.getInstance().get("portal");
     //Sound sounds = new Sound("assets/audio/2016-02-01-1038-12.wav");
-    ImageTexture dummyTex = new ImageTexture("assets/blank.png");
-    static Sound sounds = new Sound("assets/audio/funkbox_music_stuff.wav");
+    ImageTexture dummyTex = new ImageTexture("assets/Models/blank.png");
+    static Sound sounds = new Sound("assets/Audio/funkbox_music_stuff.wav");
     Water water= new Water(new vec4(0,0,0,1), 0f);
     //Sound sounds = new Sound("assets/audio/trump.wav");
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Fonts">
     Font testFont = null;
-    ImageTexture alphabet = new ImageTexture("assets/cooperBlack.png");
+    ImageTexture alphabet = new ImageTexture("assets/Fonts/cooperBlack.png");
 //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Portals and Misc.">
 
@@ -78,7 +78,7 @@ public class GameLoop
         win = w;
        
         try {
-        testFont = new Font("assets/CooperBlack.fnt");
+        testFont = new Font("assets/Fonts/CooperBlack.fnt");
         } 
         catch (IOException ex) 
         {

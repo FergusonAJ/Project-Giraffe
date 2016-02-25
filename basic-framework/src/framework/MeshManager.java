@@ -15,16 +15,15 @@ public class MeshManager
      */
     private MeshManager()
     {
-        meshMap_.put("tree", new Mesh("assets/bobbleTree.obj.mesh"));
-        meshMap_.put("rock", new Mesh("assets/toonRocks.obj.mesh"));
-        meshMap_.put("giraffe", new Mesh("assets/giraffe.obj.mesh"));
-        meshMap_.put("pig", new Mesh("assets/goodPig.obj.mesh"));
-        meshMap_.put("zombie", new Mesh("assets/basicZombie.obj.mesh"));
-        meshMap_.put("rockWall", new Mesh("assets/RockWall.obj.mesh"));
-        meshMap_.put("plane", new Mesh("assets/SimplexPlane.obj.mesh", true));
-        meshMap_.put("portal", new Mesh("assets/portalPlane.obj.mesh"));
-        meshMap_.put("sign1", new Mesh("assets/sign1.obj.mesh"));
-        meshMap_.put("sign2", new Mesh("assets/sign2.obj.mesh"));
+        meshMap_.put("tree", new Mesh("assets/Models/bobbleTree.obj.mesh"));
+        meshMap_.put("giraffe", new Mesh("assets/Models/giraffe.obj.mesh"));
+        meshMap_.put("pig", new Mesh("assets/Models/goodPig.obj.mesh"));
+        meshMap_.put("zombie", new Mesh("assets/Models/basicZombie.obj.mesh"));
+        meshMap_.put("rockWall", new Mesh("assets/Models/RockWall.obj.mesh"));
+        meshMap_.put("plane", new Mesh("assets/Models/SimplexPlane.obj.mesh", true));
+        meshMap_.put("portal", new Mesh("assets/Models/portalPlane.obj.mesh"));
+        meshMap_.put("sign1", new Mesh("assets/Models/sign1.obj.mesh"));
+        meshMap_.put("sign2", new Mesh("assets/Models/sign2.obj.mesh"));
         
     }
     
