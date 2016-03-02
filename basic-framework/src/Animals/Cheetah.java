@@ -2,6 +2,7 @@ package Animals;
 
 import framework.Animal;
 import framework.Mesh;
+import framework.MeshManager;
 import static framework.math3d.math3d.axisRotation;
 import static framework.math3d.math3d.mul;
 import framework.math3d.vec4;
@@ -13,10 +14,12 @@ import framework.math3d.vec4;
 public class Cheetah extends Animal{
 
     
-    public Cheetah(Mesh mesh, vec4 position, float yOffset) {
-        super(mesh, position, yOffset);
+    public Cheetah(vec4 position, float yRot) 
+    {
+        super(MeshManager.getInstance().get("cheetah"), position, 3.0f);
         mDmg = 30;
-        
+        mSpecies = "cheetah";
+        mRotY = yRot;
     }
     
     @Override

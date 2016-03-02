@@ -2,6 +2,7 @@ package Animals;
 
 import framework.Animal;
 import framework.Mesh;
+import framework.MeshManager;
 import framework.math3d.vec4;
 
 /**
@@ -12,12 +13,13 @@ public class Pig extends Animal
 {
 
     
-    public Pig(Mesh mesh, vec4 position, float yOffset)
+    public Pig(vec4 position, float yRot)
     {
-        super(mesh, position, yOffset);
+        super(MeshManager.getInstance().get("pig"), position, 3.0f);
         mDmg = 25;
         specialTimer = 1;
-        
+        mSpecies = "pig";
+        mRotY = yRot;
     }
     @Override
     public void specialAbility()

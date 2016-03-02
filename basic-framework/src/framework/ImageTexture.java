@@ -60,6 +60,8 @@ public class ImageTexture  extends Texture2D{
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
         }
     }
-    
+    //boolean isPowerOf2(int x){
+    //    return  ((x-1)&x) == 0;
+    //}
 }
         

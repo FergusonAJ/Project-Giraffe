@@ -21,6 +21,7 @@ public class MeshManager
         meshMap_.put("ram", new Mesh("assets/Models/ram.obj.mesh"));
         meshMap_.put("zombie", new Mesh("assets/Models/basicZombie.obj.mesh"));
         meshMap_.put("cheetah", new Mesh("assets/Models/cheetah.obj.mesh"));
+        meshMap_.put("owlStanding", new Mesh("assets/Models/owlStanding.obj.mesh"));
         meshMap_.put("rockWall", new Mesh("assets/Models/RockWall.obj.mesh"));
         meshMap_.put("plane", new Mesh("assets/Models/SimplexPlane.obj.mesh", true));
         meshMap_.put("portal", new Mesh("assets/Models/portalPlane.obj.mesh"));

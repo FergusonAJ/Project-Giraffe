@@ -2,6 +2,7 @@ package Animals;
 
 import framework.Animal;
 import framework.Mesh;
+import framework.MeshManager;
 import static framework.math3d.math3d.axisRotation;
 import static framework.math3d.math3d.mul;
 import framework.math3d.vec4;
@@ -13,10 +14,12 @@ import framework.math3d.vec4;
 public class Ram extends Animal{
 
     
-    public Ram(Mesh mesh, vec4 position, float yOffset) {
-        super(mesh, position, yOffset);
+    public Ram(vec4 position, float yRot) {
+        super(MeshManager.getInstance().get("ram"), position, 2.0f);
         mDmg = 35;
         specialTimer = 2f;
+        mSpecies = "ram";
+        mRotY = yRot;
     }
     
     @Override
@@ -31,7 +34,6 @@ public class Ram extends Animal{
     @Override
     public void specialAbility()
     {
-        System.out.println("ram");
         isSpecialActive = true;
         usedSpecial = true;
         

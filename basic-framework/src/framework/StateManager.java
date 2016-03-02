@@ -2,6 +2,9 @@ package framework;
 
 import static JGL.JGL.*;
 import static JSDL.JSDL.*;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Singleton designed state manager. Accessible from anywhere to allow easy control of game flow.
@@ -40,6 +43,11 @@ public class StateManager
         if(genBasic)
         {
             currentLoop_.genBasic();
+        }
+        try {
+            currentLoop_.saveFile();
+        } catch (IOException ex) {
+            Logger.getLogger(StateManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         currentLoop_.runLoop();
     }

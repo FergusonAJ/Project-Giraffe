@@ -12,6 +12,7 @@ public class Obstacle
 {
     static OpenSimplexNoise noise = new OpenSimplexNoise(); //Used for placing the obstacle on the ground
     Mesh mMesh;
+    String mMeshString;
     vec4 mPos;
     float mRotY;
     vec3 mScale;
@@ -24,6 +25,7 @@ public class Obstacle
     float depth = 0.4f;
     vec3 min,max;
     float mHealth = 20;
+    float mYOffset;
     
     /**
      * Basic Obstacle constructor that calculates the position and the AABB
@@ -31,18 +33,19 @@ public class Obstacle
      * @param position The obstacle's position (Y coordinate is calculated)
      * @param yRot The obstacle's rotation around the Y Axis
      */
-    public Obstacle(Mesh mesh, vec4 position, float yRot)
+    public Obstacle(String meshName, vec4 position, float yOffset)
     {
-        float yOffset = position.y;
+        //mYOffset = position.y;
         position.y  = (float)noise.eval(position.x/100*4, position.z/100*4) * 10;
         if(position.y < 0)
         {
             position.y = 0;
         }
-        position.y += yOffset;
-        mMesh = mesh;
+        position.y += mYOffset;
+        mMesh = MeshManager.getInstance().get(meshName);
+        mMeshString = meshName;
         mPos = position;
-        mRotY = yRot;
+        mRotY = 0;
         mScale = new vec3(1,2,1);
         min = new vec3(mPos.x - width / 2 * mScale.x, mPos.y - height / 2 * mScale.y, mPos.z - depth / 2 * mScale.z);
         max = new vec3(mPos.x + width / 2 * mScale.x, mPos.y + height / 2 * mScale.y, mPos.z + depth / 2 * mScale.z);
@@ -109,7 +112,7 @@ public class Obstacle
       */
     public void draw(Program prog)
     {
-        prog.setUniform("worldMatrix", mul(scaling(mScale), mul(axisRotation(new vec4(0.0f,1.0f,0.0f,0.0f), mRotY), translation(mPos))));
+        prog.setUniform("worldMatrix", mul(scaling(mScale), mul(axisRotation(new vec4(0.0f,1.0f,0.0f,0.0f), mRotY), translation(new vec4(0,mYOffset,0,0)).mul(translation(mPos)))));
         mMesh.draw(prog);
     }
 }
