@@ -1,0 +1,19 @@
+#version 150
+in vec3 a_position;
+
+out float v_pw;
+
+uniform mat4 projMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 worldMatrix;
+
+
+void main()
+{
+	vec4 p = vec4( a_position.xyz, 1.0 );
+	p = p * worldMatrix;
+	p = p * viewMatrix;
+	v_pw = -p.z;
+	p = p * projMatrix;
+	gl_Position = p;	
+}

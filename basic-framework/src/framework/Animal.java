@@ -28,7 +28,6 @@ public class Animal extends PhysicsBody
     protected Mesh mMesh;
     protected double mRotY = Math.PI / 2;
     protected boolean mMoving = false;
-  
     
     protected vec4 mForward;
     protected float mYOffset;
@@ -38,6 +37,7 @@ public class Animal extends PhysicsBody
     protected boolean flip = false;
     protected int mDmg;
     protected float mHealth;
+    protected String mSpecies;
     
     
     //Variables purely for special abilities

@@ -28,6 +28,7 @@ public class Pin extends PhysicsBody
     boolean mAlive = true;
     float mHealth = 10;
     boolean mIsStatic = false;
+    String mMeshString;
     
     /**
      * Basic constructor
@@ -50,9 +51,10 @@ public class Pin extends PhysicsBody
      * @param yOffset A scalar to translate the pin up the y axis.
      * @param isStatic If true, the pin will not move
      */
-    public Pin(Mesh mesh, vec4 position, float yOffset, boolean isStatic)
+    public Pin(String meshStr, vec4 position, float yOffset, boolean isStatic)
     {
-        mMesh = mesh;
+        mMeshString = meshStr;
+        mMesh = MeshManager.getInstance().get(mMeshString);
         mPos = position;
         mYOffset = yOffset;
         mIsStatic = isStatic;

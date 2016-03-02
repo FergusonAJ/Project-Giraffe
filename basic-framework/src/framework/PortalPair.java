@@ -10,21 +10,24 @@ public class PortalPair
     private Mesh mMesh;
     private Camera mCam1, mCam2;
     private float mYRot1, mYRot2;
+    private float mTimer = 0.0f;
+    private float mMaxTimer = 1.0f;
+    private vec4 mForwardVec;
     
     public PortalPair(Mesh m, vec4 pos1, float yRot1)
     {
         mPos1 = pos1.add(new vec4(0,2,0,0));
-        vec4 temp = new vec4(Math.cos(yRot1), 0 , -Math.sin(yRot1), 0);
+        mForwardVec = new vec4(Math.cos(yRot1), 0 , -Math.sin(yRot1), 0);
         mYRot1 = yRot1;
         mYRot2 = yRot1 + (float)Math.PI;
-        mPos2 = pos1.add(temp.mul(20));
+        mPos2 = pos1.add(mForwardVec.mul(20));
         mPos2 = mPos2.add(new vec4(0,2,0,0));
         mMesh = m;
         mMesh.texture = null;
         mCam1 = new Camera();
-        mCam1.lookAt(mPos1.xyz().add(new vec3(0,2,0)), mPos1.sub(temp).xyz().add(new vec3(0,2,0)), new vec4(0,1,0,0).xyz());
+        mCam1.lookAt(mPos1.xyz().add(new vec3(0,2,0)), mPos1.sub(mForwardVec).xyz().add(new vec3(0,2,0)), new vec4(0,1,0,0).xyz());
         mCam2 = new Camera();
-        mCam2.lookAt(mPos2.xyz().add(new vec3(0,2,0)), mPos2.add(temp).xyz().add(new vec3(0,2,0)), new vec4(0,1,0,0).xyz());
+        mCam2.lookAt(mPos2.xyz().add(new vec3(0,2,0)), mPos2.add(mForwardVec).xyz().add(new vec3(0,2,0)), new vec4(0,1,0,0).xyz());
         mCam1.fov_h = 22.5f;
         mCam2.fov_h = 22.5f;
     }
@@ -54,6 +57,27 @@ public class PortalPair
     public vec4 getPortal2Pos()
     {
         return mPos2;
+    }
+    
+    public void update(Animal a, float deltaTime)
+    {
+        if(mTimer <= 0)
+        {
+            if(math3d.length(a.mPos.sub(mPos1)) < a.mRad)
+            {
+                a.mPos = mPos2.add(mForwardVec);
+                mTimer = mMaxTimer;
+            }
+            else if(math3d.length(a.mPos.sub(mPos2)) < a.mRad)
+            {
+                a.mPos = mPos1.sub(mForwardVec);
+                mTimer = mMaxTimer;
+            }
+        }
+        else
+        {
+            mTimer -= deltaTime;
+        }
     }
     
     public void draw(Program prog, Framebuffer fbo1, Framebuffer fbo2)

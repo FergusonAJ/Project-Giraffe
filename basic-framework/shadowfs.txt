@@ -1,0 +1,21 @@
+#version 150
+
+uniform vec3 eyePos;
+uniform float hither;
+uniform float yon;
+
+in float v_pw;
+
+in float visibility;
+out vec4 color;
+in float true_z;
+
+const float levels = 4;
+
+void main()
+{
+	float z = v_pw;
+	float dist = (z - hither) / (yon - hither);
+    color = vec4(dist, dist, dist, 1);
+}
+

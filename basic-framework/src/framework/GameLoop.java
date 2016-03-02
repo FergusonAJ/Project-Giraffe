@@ -15,11 +15,18 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import Terrains.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.Iterator;
+import java.util.stream.Stream;
 
 public class GameLoop 
 {
     //<editor-fold defaultstate="collapsed" desc="Application Variables">
-    Program prog;
+    Program prog, shadowProg;
     Set<Integer> keys = new TreeSet<>();
     long win;
     JSDL.SDL_Event ev;
@@ -70,10 +77,14 @@ public class GameLoop
     vec3 skyColor = new vec3(0.2f,0.4f,0.6f);
     Framebuffer fbo1 = new Framebuffer(512,512);
     Framebuffer fbo2 = new Framebuffer(512,512);
+    Framebuffer shadowBuffer = new Framebuffer(1920,1080);
+    Camera lightCam = new Camera();
     PortalPair portals;
     //blurprog = new Program("blurvs.txt","blurfs.txt");
 //</editor-fold>
     OpenSimplexNoise noise = new OpenSimplexNoise();
+    vec3 sunPosition = new vec3(0,100,0);
+    
     public GameLoop(long w)
     {
         
@@ -87,7 +98,7 @@ public class GameLoop
         Logger.getLogger(StateManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         prog = new Program("vs.txt","fs.txt");
-        
+        shadowProg = new Program("shadowvs.txt", "shadowfs.txt");
         
         if(animalList.size() > 0)
         {
@@ -98,24 +109,24 @@ public class GameLoop
     }
     protected void genBasic()
     {
-        animalList.add(new Pig(pigMesh,new vec4(-30,0,0,1), 3.0f));
+        animalList.add(new Pig(new vec4(-30,0,0,1), (float)Math.PI / 2));
         animalList.get(0).flip = true;
-        animalList.add(new Cheetah(cheetahMesh,new vec4(80,0,0,1), 3.0f));
-        animalList.add(new Giraffe(giraffeMesh,new vec4(0,0,0,1), 2.0f));
-        animalList.add(new Ram(ramMesh,new vec4(60,0,0,1), 2.0f));
+        animalList.add(new Cheetah(new vec4(80,0,0,1), (float)Math.PI / 2));
+        animalList.add(new Giraffe(new vec4(0,0,0,1), (float)Math.PI / 2));
+        animalList.add(new Ram(new vec4(60,0,0,1), (float)Math.PI / 2));
+        animalList.add(new Owl(new vec4(-50,0,0,1), (float)Math.PI / 2));
         
         //animalList.add(new Animal(zomMesh,new vec4(30,1000,0,1), 0.0f));
         
+        obstacleList.add(new Obstacle("rockWall", new vec4(0,-1,-20,1), -1.0f));
+        obstacleList.add(new Obstacle("tree", new vec4(-30,-2,20,1), -2.0f));
+        obstacleList.add(new Obstacle("tree", new vec4(0,-2,-40,1), -2.0f));
+        obstacleList.add(new Obstacle("tree", new vec4(30,-2,-40,1), -2.0f));
         
-        obstacleList.add(new Obstacle(wallMesh, new vec4(0,-1,-20,1), 0.0f));
-        obstacleList.add(new Obstacle(treeMesh, new vec4(-30,-2,20,1), 0.0f));
-        obstacleList.add(new Obstacle(treeMesh, new vec4(0,-2,-40,1), 0.0f));
-        obstacleList.add(new Obstacle(treeMesh, new vec4(30,-2,-40,1), 0.0f));
         
-        
-        pinList.add(new Pin(pinMesh, new vec4(0,-1,-30,1), 2.0f));
-        pinList.add(new Pin(pinMesh, new vec4(30,-1,-30,1), 2.0f));
-        pinList.add(new Pin(pinMesh, new vec4(-30,-1,-30,1), 2.0f));
+        pinList.add(new Pin("zombie", new vec4(0,-1,-30,1), 2.0f, false));
+        pinList.add(new Pin("zombie", new vec4(30,-1,-30,1), 2.0f, false));
+        pinList.add(new Pin("zombie", new vec4(-30,-1,-30,1), 2.0f, false));
         portals = new PortalPair(portalMesh, new vec4(10,-2,0,1), (float)Math.PI/4);
         if(animalList.size() > 0)
         {
@@ -148,6 +159,9 @@ public class GameLoop
             {
                 HandleInput(); 
             }
+            shadowBuffer.bind();
+            calculateShadowMap();
+            shadowBuffer.unbind();
             Render();
         }
     }
@@ -213,14 +227,16 @@ public class GameLoop
                    if (a instanceof Ram && a.isSpecialActive) 
                    {
                         o.calculateDamage(a.mVel,a.mDmg);
-                        System.out.println(o.mHealth);
                    }
                    a.mVel = new vec4();
                }
             }
         }
+        if(portals != null)
+        {
+            //portals.update(animalList.get(animalSelected), elapsed);
+        }
     }
-    
     private void UpdatePins()
     {
         for (Pin p : pinList)
@@ -237,7 +253,11 @@ public class GameLoop
                 {
                     //if(a.equals(animalList.get(animalSelected)))
                     //    animalSelected = 0;
-                    animalList.get(animalSelected).mAlive = false;
+                    a.mAlive = false;
+                    if(a.equals(animalList.get(animalSelected)))
+                    {
+                        getPrevAnimal();
+                    }
                 }
 
                 //p.checkAnimalPosition(a.mPos);
@@ -356,6 +376,124 @@ public class GameLoop
                 inConsole = !inConsole;
                 consoleText = "";
             }
+        if(keys.contains(SDLK_o))
+        {
+            try {
+                saveFile();
+            } catch (IOException ex) {
+                Logger.getLogger(GameLoop.class.getName()).log(Level.SEVERE, null, ex);
+    }
+        }
+        if(keys.contains(SDLK_p))
+        {
+            loadFile("Test.txt");
+            keys.remove(SDLK_p);
+        }
+    }
+    public void saveFile() throws IOException
+    {
+        BufferedWriter writer;
+        writer = new BufferedWriter(new FileWriter("Test.txt"));
+        for(Animal a : animalList)
+        {
+            writer.write("A " + a.mSpecies + " " + a.mPos.toString() + " " + a.mRotY + "\n");
+        }
+        for(Pin p : pinList)
+        {
+            //System.out.println(p.mPos);
+            writer.write("P " + p.mMeshString + " " + p.mPos.toString() + " " + p.mRotY + " " + p.mIsStatic + " " + p.mYOffset + " " + p.mScale + "\n");
+        }
+        
+        for(Obstacle o : obstacleList)
+        {
+            writer.write("O " + o.mMeshString + " " + o.mPos.toString() + " " + o.mRotY + " " + o.mScale + " " + o.mYOffset + "\n");
+        }
+        writer.close();
+    }
+    public void loadFile(String filename)
+    {
+        BufferedReader br = null;
+        try
+        {
+            br = new BufferedReader(new FileReader(filename));
+        }
+        catch(FileNotFoundException e)
+        {
+            
+        }
+        if(br != null)
+        {
+            Stream<String> lines = br.lines();
+            Iterator I = lines.iterator();
+            while(I.hasNext())
+            {
+                String line = I.next().toString();
+                String[] parts = line.split("\\s");
+                //Animal
+                if(parts[0].contains("A"))
+                {
+                    parts[2] = parts[2].substring(1);
+                    parts[4] = parts[4].substring(0, parts[4].length() - 1);
+                    vec4 pos = new vec4(Float.parseFloat(parts[2]),Float.parseFloat(parts[3]),Float.parseFloat(parts[4]), 1);
+                    float yRot = Float.parseFloat(parts[6]);
+                    switch(parts[1])
+                    {
+                        case "pig":
+                            animalList.add(new Pig(pos, yRot));
+                            break;
+                        case "giraffe":
+                            animalList.add(new Giraffe(pos, yRot));
+                            break;
+                        case "ram":
+                            animalList.add(new Ram(pos, yRot));
+                            break;
+                        case "cheetah":
+                            animalList.add(new Cheetah(pos, yRot));
+                            break;
+                        case "owl":
+                            animalList.add(new Owl(pos, yRot));
+                            break;
+                    }
+                }
+                //Pin
+                else if(parts[0].contains("P"))
+                {
+                    String meshStr = parts[1];
+                    parts[2] = parts[2].substring(1);
+                    parts[5] = parts[5].substring(0, parts[5].length() - 1);
+                    parts[9] = parts[9].substring(1);
+                    parts[11] = parts[11].substring(0, parts[11].length() - 1);
+                    vec4 pos = new vec4(Float.parseFloat(parts[2]),Float.parseFloat(parts[3]),Float.parseFloat(parts[4]), 1);
+                    double yRot = Double.parseDouble(parts[6]);
+                    boolean isStatic = (parts[7].toString().equals("true"));
+                    float yOffset = Float.parseFloat(parts[8]);
+                    vec3 scale = new vec3(Float.parseFloat(parts[9]),Float.parseFloat(parts[10]),Float.parseFloat(parts[11]));
+                    //System.out.println(meshStr + " " + pos + " " + yRot + " " + isStatic + " " + yOffset);
+                    Pin p = new Pin(meshStr, pos, yOffset, isStatic);
+                    p.mRotY = yRot;
+                    p.mScale = scale;
+                    pinList.add(p);
+                }
+                //Pin
+                else if(parts[0].contains("O"))
+                {
+                    String meshStr = parts[1];
+                    parts[2] = parts[2].substring(1);
+                    parts[5] = parts[5].substring(0, parts[5].length() - 1);
+                    parts[7] = parts[7].substring(1);
+                    parts[9] = parts[9].substring(0, parts[9].length() - 1);
+                    vec4 pos = new vec4(Float.parseFloat(parts[2]),Float.parseFloat(parts[3]),Float.parseFloat(parts[4]), 1);
+                    float yRot = Float.parseFloat(parts[6]);
+                    vec3 scale = new vec3(Float.parseFloat(parts[7]),Float.parseFloat(parts[8]),Float.parseFloat(parts[9]));
+                    float yOffset = Float.parseFloat(parts[10]);
+                    Obstacle o = new Obstacle(meshStr, pos, yOffset);
+                    o.mRotY = yRot;
+                    o.mScale = scale;
+                    obstacleList.add(o);
+                }
+            }
+        }
+    
     }
     private void getPrevAnimal()
     {
@@ -376,11 +514,6 @@ public class GameLoop
     private void parseConsole()
     {
         String[] parts = consoleText.split("\\s");
-        //System.out.println(parts.length);
-        for(int i = 0; i < parts.length; i++)
-        {
-            System.out.println(parts[i] + " " + i);
-        }
         switch(parts[0])
         {
             case "spawn":
@@ -431,6 +564,28 @@ public class GameLoop
                 animalList.add(new Animal(m, tempVec, 3.0f));
             }
         }
+    }
+    private void calculateShadowMap()
+    {
+        shadowProg.use();
+        lightCam.lookAt(sunPosition, new vec3(0,0,0), new vec3(0,0,1));
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        lightCam.draw(shadowProg);
+        shadowProg.setUniform("worldMatrix", mul(scaling(new vec3(100,1,100)),translation(new vec3(0,-1.0f,0))));
+        planeMesh.draw(shadowProg);
+        for(Animal a: animalList)
+        {
+            a.draw(shadowProg);
+        }
+        for(Pin p : pinList)
+        {
+            p.draw(shadowProg);
+        }
+        for(Obstacle o : obstacleList)
+        {
+            o.draw(shadowProg);
+        }
+        water.draw(shadowProg);
     }
     private void DrawWorld(Camera c)
     {
@@ -490,8 +645,11 @@ public class GameLoop
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         prog.setUniform("mode",0.1);
         prog.setUniform("skyColor",skyColor);
-        prog.setUniform("lights[0].position",new vec3(cam.eye.x, cam.eye.y, cam.eye.z));
+        prog.setUniform("lights[0].position",new vec3(0,50,0));//cam.eye.x, cam.eye.y, cam.eye.z));
         prog.setUniform("lights[0].color",new vec3(1,1,1));
+        prog.setUniform("shadowBufferTex", shadowBuffer.texture);
+        prog.setUniform("lightProjMatrix", lightCam.projMatrix);
+        prog.setUniform("lightViewMatrix", lightCam.viewMatrix);
         for(int i =1;i<8;i++)
         {
             prog.setUniform("lights["+i+"].position",new vec3(0,0,0));
@@ -536,6 +694,7 @@ public class GameLoop
         }
         prog.setUniform("unitSquare", 0.0f);
         prog.setUniform("diffuse_texture", dummyTex);
+        prog.setUniform("shadowBufferTex", dummyTex);
         SDL_GL_SwapWindow(win);
     }
 }

@@ -21,10 +21,10 @@ public class MainMenu extends GameLoop
         sounds.play();
         signMesh = MeshManager.getInstance().get("sign1");
         sign2Mesh = MeshManager.getInstance().get("sign2");
-        animalList.add(new Pig(pigMesh,new vec4(-30,0,0,1), 3.0f));
+        animalList.add(new Pig(new vec4(-30,0,0,1), (float)Math.PI / 2));
         animalList.get(0).flip = true;
-        startSign = new Pin(signMesh, new vec4(-30,0,-20,1), 0, true);
-        exitSign = new Pin(sign2Mesh, new vec4(-20,0,-20,1), 0, true);
+        startSign = new Pin("sign1", new vec4(-30,0,-20,1), 0, true);
+        exitSign = new Pin("sign2", new vec4(-20,0,-20,1), 0, true);
         pinList.add(startSign);
         pinList.add(exitSign);
         startSign.mScale = new vec3(1,5,3);
