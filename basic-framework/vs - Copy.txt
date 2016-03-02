@@ -1,0 +1,70 @@
+#version 150
+
+in vec3 a_position;
+in vec2 a_texcoord;
+in vec3 a_normal;
+
+out vec2 v_texcoord;
+out vec3 v_normal;
+out vec3 v_pw;
+
+
+out float visibility;
+
+uniform mat4 projMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 worldMatrix;
+uniform mat4 scale;
+uniform mat4 translation;
+uniform float mode;
+
+uniform vec3 cameraU;
+uniform vec3 cameraV;
+uniform vec3 cameraW;
+uniform vec3 eyePos;
+
+uniform float hither,yon_minus_hither;
+
+const float density = 0.007;
+const float gradient = 2;
+
+out float true_z;
+
+void main(){
+
+    v_texcoord = a_texcoord;
+    if(mode == 0.1)
+    {
+        
+        vec4 p = vec4( a_position.xyz, 1.0 );
+        p = p * worldMatrix;
+        v_pw = p.xyz;
+        p = p * viewMatrix;
+        p = p * projMatrix;
+	gl_Position = p;
+	v_normal = (vec4(a_normal,0.0) * worldMatrix).xyz;
+	true_z = (-p.z-hither)/yon_minus_hither;
+
+
+	float distance = length(p.xyz);
+	visibility = exp(-pow((distance*density),gradient));
+	visibility = clamp(visibility,0.0,1.0);
+    }
+    if(mode == 3)
+    {
+        
+        vec4 p = vec4( a_position.xyz, 1.0 );
+        p = p * worldMatrix;
+        v_pw = p.xyz;
+        p = p * viewMatrix;
+        p = p * projMatrix;
+	gl_Position = p;
+	v_normal = (vec4(a_normal,0.0) * worldMatrix).xyz;
+	true_z = (-p.z-hither)/yon_minus_hither;
+
+
+	float distance = length(p.xyz);
+	visibility = exp(-pow((distance*density),gradient));
+	visibility = clamp(visibility,0.0,1.0);
+    }
+}

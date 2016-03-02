@@ -59,5 +59,9 @@ public class Texture {
     protected int getId(){
         return tex;
     }
+    static boolean isPowerOf2(int x){
+        return  ((x-1)&x) == 0;
+    }
+    
     
 }

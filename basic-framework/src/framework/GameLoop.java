@@ -46,6 +46,8 @@ public class GameLoop
     Mesh rockMesh = MeshManager.getInstance().get("rock");
     Mesh treeMesh = MeshManager.getInstance().get("tree");
     Mesh giraffeMesh = MeshManager.getInstance().get("giraffe");
+    Mesh ramMesh = MeshManager.getInstance().get("ram");
+    Mesh cheetahMesh = MeshManager.getInstance().get("cheetah");
     Mesh pigMesh = MeshManager.getInstance().get("pig");
     Mesh zomMesh = MeshManager.getInstance().get("zombie");
     Mesh wallMesh = MeshManager.getInstance().get("rockWall");
@@ -98,9 +100,9 @@ public class GameLoop
     {
         animalList.add(new Pig(pigMesh,new vec4(-30,0,0,1), 3.0f));
         animalList.get(0).flip = true;
-        animalList.add(new Cheetah(pigMesh,new vec4(80,0,0,1), 3.0f));
+        animalList.add(new Cheetah(cheetahMesh,new vec4(80,0,0,1), 3.0f));
         animalList.add(new Giraffe(giraffeMesh,new vec4(0,0,0,1), 2.0f));
-        animalList.add(new Ram(giraffeMesh,new vec4(60,0,0,1), 2.0f));
+        animalList.add(new Ram(ramMesh,new vec4(60,0,0,1), 2.0f));
         
         //animalList.add(new Animal(zomMesh,new vec4(30,1000,0,1), 0.0f));
         
@@ -211,12 +213,14 @@ public class GameLoop
                    if (a instanceof Ram && a.isSpecialActive) 
                    {
                         o.calculateDamage(a.mVel,a.mDmg);
+                        System.out.println(o.mHealth);
                    }
                    a.mVel = new vec4();
                }
             }
         }
     }
+    
     private void UpdatePins()
     {
         for (Pin p : pinList)
@@ -324,12 +328,21 @@ public class GameLoop
                 cam.tilt(-0.4f*elapsed);
             if( keys.contains(SDLK_SPACE))
             {
+                //if the animal is currently being launched then you can activate your special ability
+                if(cam.mFollowTarget.mMoving)
+                {
+                    
+                    animalList.get(animalSelected).specialAbility();
+                }
+                //if the animal is first launched then do launch logic
                 if(!cam.mFollowTarget.mMoving)
                 {
                     animalList.get(animalSelected).takeoff();
+                    animalList.get(animalSelected).resetSpecialAbility();
                     cam.follow(animalList.get(animalSelected), true);
                     numLaunches++;
                 }
+                
                 keys.remove(SDLK_SPACE);
             }
             if(keys.contains(SDLK_RETURN))
@@ -376,6 +389,10 @@ public class GameLoop
                     spawnAnimal(pigMesh, parts);
                 }
                 if (parts[1].equals("giraffe"))
+                {
+                    spawnAnimal(giraffeMesh, parts);
+                }
+                if (parts[1].equals("ram"))
                 {
                     spawnAnimal(giraffeMesh, parts);
                 }
