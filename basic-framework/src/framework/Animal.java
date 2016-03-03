@@ -127,9 +127,9 @@ public class Animal extends PhysicsBody
         mMoving = true;
     }
     
-    protected void stampedeTakeoff()
+    protected void stampedeTakeoff(float angle)
     {
-        mVel = mul(new vec4(1,0,0,0), axisRotation(new vec4(0,1,0,0), mRotY));
+        mVel = mul(new vec4(1,0,0,0), axisRotation(new vec4(0,1,0,0), angle));
         mVel = mul(mVel, 25);
         mMoving = true;
     }

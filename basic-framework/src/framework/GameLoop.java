@@ -80,7 +80,7 @@ public class GameLoop
     Framebuffer fbo2 = new Framebuffer(512,512);
     Framebuffer2D shadowBuffer = new Framebuffer2D(1920,1080, GL_R32F, GL_FLOAT);//, GL_R32F, GL_FLOAT);
     Camera lightCam = new Camera();
-    PortalPair portals;
+    public PortalPair portals;
     //blurprog = new Program("blurvs.txt","blurfs.txt");
 //</editor-fold>
     OpenSimplexNoise noise = new OpenSimplexNoise();
@@ -88,7 +88,7 @@ public class GameLoop
     
     public GameLoop(long w)
     {
-        
+        System.out.println("yo");
         win = w;
        
         try {
@@ -129,7 +129,7 @@ public class GameLoop
         pinList.add(new Pin("zombie", new vec4(0,-1,-30,1), 2.0f, false));
         pinList.add(new Pin("zombie", new vec4(30,-1,-30,1), 2.0f, false));
         pinList.add(new Pin("zombie", new vec4(-30,-1,-30,1), 2.0f, false));
-        portals = new PortalPair(portalMesh, new vec4(10,-2,0,1), (float)Math.PI/4);
+        portals = new PortalPair(new vec4(10,-2,0,1), (float)Math.PI/4);
         if(animalList.size() > 0)
         {
             cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
@@ -194,6 +194,10 @@ public class GameLoop
                         {
                             parseConsole();
                             inConsole = false;
+                        }
+                        if(id == 45)
+                        {
+                            consoleText += "-";
                         }
                         if(id == 1073741898)//Home?
                         {
@@ -362,7 +366,6 @@ public class GameLoop
                 //if the animal is currently being launched then you can activate your special ability
                 if(cam.mFollowTarget.mMoving)
                 {
-                    
                     animalList.get(animalSelected).specialAbility();
                 }
                 //if the animal is first launched then do launch logic
@@ -371,11 +374,13 @@ public class GameLoop
                     animalList.get(animalSelected).takeoff();
                     animalList.get(animalSelected).resetSpecialAbility();
                     cam.follow(animalList.get(animalSelected), true);
+                    float rot = (float)animalList.get(animalSelected).mRotY;
                     for(int i=0;i<animalList.size();i++)
                     {
+                        
                         if(animalList.get(i).isInStampede)
                         {
-                            animalList.get(i).stampedeTakeoff();
+                            animalList.get(i).stampedeTakeoff(rot);
                             //this is just to disable stuff for later
                             animalList.get(i).isInStampede = false;
                         }
@@ -417,12 +422,16 @@ public class GameLoop
                     {
                         if(!cam.mFollowTarget.mMoving)
                         {
-                            if(cam.mFollowTarget.canStampede(animalList.get(i).mPos))
+                            if(cam.mFollowTarget.canStampede(animalList.get(i).mPos) && !cam.mFollowTarget.equals(animalList.get(i)))
                             {
                                 animalList.get(i).prevPos = animalList.get(i).mPos;
                                 animalList.get(i).mPos = new vec4(add(cam.mFollowTarget.mPos,mul(stampedeDirection,sizeStampede*4)));
                                 animalList.get(i).isInStampede = true;
                                 sizeStampede++;
+                            }
+                            else if(i == animalSelected)
+                            {
+                                animalList.get(i).prevPos = animalList.get(i).mPos;
                             }
                         }
                     }
@@ -431,6 +440,7 @@ public class GameLoop
                 {
                     for(int i=0;i<animalList.size();i++)
                     {
+
                         animalList.get(i).mPos = animalList.get(i).prevPos;
                     }
                 }
@@ -443,15 +453,22 @@ public class GameLoop
     }
     public void saveFile(String filename)
     {
+        saveFile(filename, true);
+    }
+    public void saveFile(String filename, boolean saveAnimals)
+    {
         BufferedWriter writer = null;
         try
         {
             writer = new BufferedWriter(new FileWriter(filename));
             if(writer != null)
             {
-                for(Animal a : animalList)
+                if(saveAnimals)
                 {
-                    writer.write("A " + a.mSpecies + " " + a.mPos.toString() + " " + a.mRotY + "\n");
+                    for(Animal a : animalList)
+                    {
+                        writer.write("A " + a.mSpecies + " " + a.mPos.toString() + " " + a.mRotY + "\n");
+                    }
                 }
                 for(Pin p : pinList)
                 {
@@ -589,6 +606,20 @@ public class GameLoop
                 {
                     spawnAnimal(giraffeMesh, parts);
                 }
+                if (parts[1].equals("cheetah"))
+                {
+                    spawnAnimal(cheetahMesh, parts);
+                }
+                
+                if (parts[1].equals("zombie"))
+                {
+                    spawnZombie(parts);
+                }
+                if (parts[1].equals("wall"))
+                {
+                    System.out.println("Wall Spawned");
+                    spawnObstacle(parts);
+                }
                 break;
             case "save":
                 if(parts.length > 1)
@@ -598,6 +629,17 @@ public class GameLoop
                 else
                 {
                     this.saveFile("Test.txt");
+                }
+                break;
+                
+            case "savenoa":
+                if(parts.length > 1)
+                {
+                    this.saveFile(parts[1] + ".txt", false);
+                }
+                else
+                {
+                    this.saveFile("Test.txt", false);
                 }
                 break;
                 
@@ -612,13 +654,23 @@ public class GameLoop
                 }
                 break;
             case "clear":
-                for(int i = 1; i < animalList.size(); i++)
-                {
-                    animalList.remove(i);
-                }
+                Animal selected = animalList.get(animalSelected);
+                //for(int i = 0; i < animalList.size(); i++)
+                //{
+                //    System.out.println(animalList.get(i).mSpecies);
+                //    System.out.println(animalList.toString());
+                //    if(i != animalSelected)
+                //    {
+                //        animalList.remove(i);
+                //    }
+                //}
                 pinList = new ArrayList();
                 obstacleList = new ArrayList();
+                animalList = new ArrayList();
+                animalList.add(selected);
                 animalSelected = 0;
+                portals = null;
+                break;
         }
     }
     private void spawnAnimal(Mesh m, String[] s)
@@ -651,6 +703,72 @@ public class GameLoop
                 tempVec.y += Float.parseFloat(s[3]);
                 tempVec.z += Float.parseFloat(s[4]);
                 animalList.add(new Animal(m, tempVec, 3.0f));
+            }
+        }
+    }
+    private void spawnZombie(String[] s)
+    {
+        if (s == null || s.length <= 2)
+        {
+            pinList.add(new Pin("zombie", new vec4(0,0,0,1), 3.0f, false));
+        }
+        else
+        {
+            if(s[2].equals("here") || s[2].equals("me"))
+            {
+                if(s.length != 6)
+                {
+                    pinList.add(new Pin("zombie", animalList.get(animalSelected).mPos, 3.0f, false));
+                }
+                else
+                {
+                    vec4 tempVec = new vec4(animalList.get(animalSelected).mPos);
+                    tempVec.x += Float.parseFloat(s[3]);
+                    tempVec.y += Float.parseFloat(s[4]);
+                    tempVec.z += Float.parseFloat(s[5]);
+                    pinList.add(new Pin("zombie", tempVec, 3.0f, false));
+                }
+            }
+            else if(s.length == 5)
+            {
+                vec4 tempVec = new vec4(0,0,0,0);
+                tempVec.x += Float.parseFloat(s[2]);
+                tempVec.y += Float.parseFloat(s[3]);
+                tempVec.z += Float.parseFloat(s[4]);
+                pinList.add(new Pin("zombie", tempVec, 3.0f, false));
+            }
+        }
+    }
+    private void spawnObstacle(String[] s)
+    {
+        if (s == null || s.length <= 2)
+        {
+            obstacleList.add(new Obstacle("rockWall", new vec4(0,0,0,1), 0));
+        }
+        else
+        {
+            if(s[2].equals("here") || s[2].equals("me"))
+            {
+                if(s.length != 6)
+                {
+                    obstacleList.add(new Obstacle("rockWall", animalList.get(animalSelected).mPos, 0));
+                }
+                else
+                {
+                    vec4 tempVec = new vec4(animalList.get(animalSelected).mPos);
+                    tempVec.x += Float.parseFloat(s[3]);
+                    tempVec.y += Float.parseFloat(s[4]);
+                    tempVec.z += Float.parseFloat(s[5]);
+                    obstacleList.add(new Obstacle("rockWall", tempVec, 0));
+                }
+            }
+            else if(s.length == 5)
+            {
+                vec4 tempVec = new vec4(0,0,0,0);
+                tempVec.x += Float.parseFloat(s[2]);
+                tempVec.y += Float.parseFloat(s[3]);
+                tempVec.z += Float.parseFloat(s[4]);
+                obstacleList.add(new Obstacle("rockWall", tempVec, 0));
             }
         }
     }

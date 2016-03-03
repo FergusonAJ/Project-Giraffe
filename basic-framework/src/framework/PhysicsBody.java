@@ -10,11 +10,11 @@ import framework.math3d.vec4;
  */
 public class PhysicsBody {
     
-    protected vec4 mPos = new vec4(0,0,0,0);
+    protected vec4 mPos = new vec4(0,0,0,1);
     protected vec4 mVel = new vec4(0,0,0,0);
     protected vec4 mGravity = new vec4(0,-100,0,0);
     protected boolean toggleGravity = false;
-    protected vec4 prevPos;
+    protected vec4 prevPos = new vec4(0,0,0,1);
     
     public void update(float elapsed)
     {

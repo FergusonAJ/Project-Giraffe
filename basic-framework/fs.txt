@@ -35,7 +35,7 @@ void main(){
 	vec4 shadowTC = ((ps / ps.w)+1)/2.0;
 	vec4 shadowTexel = texture(shadowBufferTex, shadowTC.xy) * (yon-hither) + hither;
 	color = vec4(0,shadowTexel.g,0,1);
-	if(-pe.z < shadowTexel.r+0.010)
+	if(-pe.z < shadowTexel.r+0.010 && shadowTC.x > 0 && shadowTC.x < 1 && shadowTC.y > 0 && shadowTC.y < 1)
 	{
 		vec3 N = normalize(v_normal);
 		vec3 V = normalize(eyePos - v_pw);

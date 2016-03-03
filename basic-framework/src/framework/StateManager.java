@@ -55,7 +55,10 @@ public class StateManager
     {
         return instance_;
     }
-    
+    public GameLoop getLoop()
+    {
+        return currentLoop_;
+    }
     /**
      * Gets the window, and all supporting GL attributes ready for the game. 
      * Most code by Jim Hudson
