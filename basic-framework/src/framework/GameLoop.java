@@ -42,6 +42,7 @@ public class GameLoop
     float prev;
     float elapsed;
     int animalSelected = 0;
+    boolean stampedeActive = false;
     Camera cam = new Camera();
     boolean inConsole = false;
     String consoleText = "";
@@ -77,7 +78,7 @@ public class GameLoop
     vec3 skyColor = new vec3(0.2f,0.4f,0.6f);
     Framebuffer fbo1 = new Framebuffer(512,512);
     Framebuffer fbo2 = new Framebuffer(512,512);
-    Framebuffer shadowBuffer = new Framebuffer(1920,1080);
+    Framebuffer2D shadowBuffer = new Framebuffer2D(1920,1080, GL_R32F, GL_FLOAT);//, GL_R32F, GL_FLOAT);
     Camera lightCam = new Camera();
     PortalPair portals;
     //blurprog = new Program("blurvs.txt","blurfs.txt");
@@ -99,6 +100,7 @@ public class GameLoop
         }
         prog = new Program("vs.txt","fs.txt");
         shadowProg = new Program("shadowvs.txt", "shadowfs.txt");
+        
         
         if(animalList.size() > 0)
         {
@@ -151,10 +153,10 @@ public class GameLoop
             UpdatePins();
             CullDeadObjects();
             water.update(elapsed);
-            if(pinList.size() <= 0 || animalList.size() <= 0)
-            {
-                StateManager.getInstance().MainMenu();      
-            }
+            //if(pinList.size() <= 0 || animalList.size() <= 0)
+            //{
+            //   StateManager.getInstance().MainMenu();      
+            //}
             if(!inConsole)
             {
                 HandleInput(); 
@@ -163,6 +165,7 @@ public class GameLoop
             calculateShadowMap();
             shadowBuffer.unbind();
             Render();
+            //SDL_GL_SwapWindow(win);
         }
     }
     private void HandleEvents()
@@ -234,7 +237,7 @@ public class GameLoop
         }
         if(portals != null)
         {
-            //portals.update(animalList.get(animalSelected), elapsed);
+            portals.update(animalList.get(animalSelected), elapsed);
         }
     }
     private void UpdatePins()
@@ -280,6 +283,10 @@ public class GameLoop
             {
                 pinList.remove(i);
                 numHits++;
+                if(pinList.size() <= 0)
+                {
+                    StateManager.getInstance().MainMenu();      
+                }
             }
         }
         for(int i = 0; i < animalList.size(); i++)
@@ -288,6 +295,10 @@ public class GameLoop
             {
                 getPrevAnimal();
                 animalList.remove(i);
+                if(animalList.size() <= 0)
+                {
+                    StateManager.getInstance().MainMenu();      
+                }
             }
         }
         for(Obstacle o : obstacleList)
@@ -360,6 +371,15 @@ public class GameLoop
                     animalList.get(animalSelected).takeoff();
                     animalList.get(animalSelected).resetSpecialAbility();
                     cam.follow(animalList.get(animalSelected), true);
+                    for(int i=0;i<animalList.size();i++)
+                    {
+                        if(animalList.get(i).isInStampede)
+                        {
+                            animalList.get(i).stampedeTakeoff();
+                            //this is just to disable stuff for later
+                            animalList.get(i).isInStampede = false;
+                        }
+                    }
                     numLaunches++;
                 }
                 
@@ -378,37 +398,77 @@ public class GameLoop
             }
         if(keys.contains(SDLK_o))
         {
-            try {
-                saveFile();
-            } catch (IOException ex) {
-                Logger.getLogger(GameLoop.class.getName()).log(Level.SEVERE, null, ex);
-    }
+                saveFile("Test.txt");
         }
         if(keys.contains(SDLK_p))
         {
             loadFile("Test.txt");
             keys.remove(SDLK_p);
         }
+        if(keys.contains(SDLK_LSHIFT)||keys.contains(SDLK_RSHIFT))
+            {
+                int sizeStampede = 1;
+                vec4 stampedeDirection = cam.mFollowTarget.getDirection();
+                stampedeActive = !stampedeActive;
+                
+                if(stampedeActive)
+                {
+                    for(int i=0;i<animalList.size();i++)
+                    {
+                        if(!cam.mFollowTarget.mMoving)
+                        {
+                            if(cam.mFollowTarget.canStampede(animalList.get(i).mPos))
+                            {
+                                animalList.get(i).prevPos = animalList.get(i).mPos;
+                                animalList.get(i).mPos = new vec4(add(cam.mFollowTarget.mPos,mul(stampedeDirection,sizeStampede*4)));
+                                animalList.get(i).isInStampede = true;
+                                sizeStampede++;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    for(int i=0;i<animalList.size();i++)
+                    {
+                        animalList.get(i).mPos = animalList.get(i).prevPos;
+                    }
+                }
+                if(keys.contains(SDLK_LSHIFT))
+                keys.remove(SDLK_LSHIFT);
+                if(keys.contains(SDLK_RSHIFT))
+                keys.remove(SDLK_RSHIFT);
+            }
+            
     }
-    public void saveFile() throws IOException
+    public void saveFile(String filename)
     {
-        BufferedWriter writer;
-        writer = new BufferedWriter(new FileWriter("Test.txt"));
-        for(Animal a : animalList)
+        BufferedWriter writer = null;
+        try
         {
-            writer.write("A " + a.mSpecies + " " + a.mPos.toString() + " " + a.mRotY + "\n");
+            writer = new BufferedWriter(new FileWriter(filename));
+            if(writer != null)
+            {
+                for(Animal a : animalList)
+                {
+                    writer.write("A " + a.mSpecies + " " + a.mPos.toString() + " " + a.mRotY + "\n");
+                }
+                for(Pin p : pinList)
+                {
+                    //System.out.println(p.mPos);
+                    writer.write("P " + p.mMeshString + " " + p.mPos.toString() + " " + p.mRotY + " " + p.mIsStatic + " " + p.mYOffset + " " + p.mScale + "\n");
+                }
+
+                for(Obstacle o : obstacleList)
+                {
+                    writer.write("O " + o.mMeshString + " " + o.mPos.toString() + " " + o.mRotY + " " + o.mScale + " " + o.mYOffset + "\n");
+                }
+                writer.close();
+            }
         }
-        for(Pin p : pinList)
+        catch(IOException e)
         {
-            //System.out.println(p.mPos);
-            writer.write("P " + p.mMeshString + " " + p.mPos.toString() + " " + p.mRotY + " " + p.mIsStatic + " " + p.mYOffset + " " + p.mScale + "\n");
         }
-        
-        for(Obstacle o : obstacleList)
-        {
-            writer.write("O " + o.mMeshString + " " + o.mPos.toString() + " " + o.mRotY + " " + o.mScale + " " + o.mYOffset + "\n");
-        }
-        writer.close();
     }
     public void loadFile(String filename)
     {
@@ -530,6 +590,35 @@ public class GameLoop
                     spawnAnimal(giraffeMesh, parts);
                 }
                 break;
+            case "save":
+                if(parts.length > 1)
+                {
+                    this.saveFile(parts[1] + ".txt");
+                }
+                else
+                {
+                    this.saveFile("Test.txt");
+                }
+                break;
+                
+            case "load":
+                if(parts.length > 1)
+                {
+                    this.loadFile(parts[1] + ".txt");
+                }
+                else
+                {
+                    this.loadFile("Test.txt");
+                }
+                break;
+            case "clear":
+                for(int i = 1; i < animalList.size(); i++)
+                {
+                    animalList.remove(i);
+                }
+                pinList = new ArrayList();
+                obstacleList = new ArrayList();
+                animalSelected = 0;
         }
     }
     private void spawnAnimal(Mesh m, String[] s)

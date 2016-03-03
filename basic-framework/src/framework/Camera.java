@@ -13,8 +13,8 @@ import static framework.math3d.math3d.*;
 public class Camera{
     float fov_h = 45;
     float hither = 0.1f;
-    float yon = 500;
-    float aspect_ratio = 1.0f;
+    float yon = 1000;
+    float aspect_ratio = 0.1f;
     float fov_v = fov_h;
     mat4 projMatrix;
     mat4 viewMatrix;
