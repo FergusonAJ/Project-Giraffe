@@ -44,11 +44,6 @@ public class StateManager
         {
             currentLoop_.genBasic();
         }
-        try {
-            currentLoop_.saveFile();
-        } catch (IOException ex) {
-            Logger.getLogger(StateManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
         currentLoop_.runLoop();
     }
     

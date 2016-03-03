@@ -44,6 +44,9 @@ public class Animal extends PhysicsBody
     protected boolean isSpecialActive;
     protected boolean usedSpecial;
     protected float specialTimer;
+    
+    
+    protected boolean isInStampede = false;
 //</editor-fold>
     
     /**
@@ -122,6 +125,32 @@ public class Animal extends PhysicsBody
         mVel = mul(new vec4(1,0,0,0), axisRotation(new vec4(0,1,0,0), mRotY));
         mVel = mul(mVel, 25);
         mMoving = true;
+    }
+    
+    protected void stampedeTakeoff()
+    {
+        mVel = mul(new vec4(1,0,0,0), axisRotation(new vec4(0,1,0,0), mRotY));
+        mVel = mul(mVel, 25);
+        mMoving = true;
+    }
+    
+    protected float distanceFromOtherAnimal(vec4 otherPos)
+    {
+        float length = length(sub(mPos,otherPos));
+        return length;
+    }
+    
+    protected boolean canStampede(vec4 otherPos)
+    {
+        float length = distanceFromOtherAnimal(otherPos);
+        if(length <= 50)
+            return true;
+        return false;
+    }
+    
+    protected vec4 getDirection()
+    {
+        return new vec4(Math.cos(mRotY),0,Math.sin(mRotY),0);
     }
     
     /**
