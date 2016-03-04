@@ -2,6 +2,7 @@ package framework;
 
 import static JGL.JGL.*;
 import static JSDL.JSDL.*;
+import framework.math3d.vec2;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,6 +14,7 @@ public class StateManager
 {
     static private StateManager instance_ = new StateManager();
     static private GameLoop currentLoop_;
+    public static vec2 resolution = new vec2(1920,1080);
     static private long win_;
     
     /** Initializes the necessities for GL and fires up the MeshManager
@@ -66,7 +68,7 @@ public class StateManager
     private static void initGL()
     {
         SDL_Init(SDL_INIT_VIDEO);
-        win_ = SDL_CreateWindow("Animal Bowling",40,60, 1920,1080, SDL_WINDOW_OPENGL );
+        win_ = SDL_CreateWindow("Animal Bowling",40,60, (int)resolution.x,(int)resolution.y, SDL_WINDOW_OPENGL );
         SDL_SetWindowFullscreen(win_, SDL_WINDOW_FULLSCREEN);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,24);
