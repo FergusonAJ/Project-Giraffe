@@ -1,6 +1,7 @@
 package TextRendering;
 
 import framework.Program;
+import framework.StateManager;
 import java.util.ArrayList;
 
 /**
@@ -28,7 +29,7 @@ public class DrawableString
         for(int i = 0; i < chars.length; i++)
         {
             CharInfo info = font.getCharInfo((int)chars[i]);
-            DrawableChar tempChar = new DrawableChar(chars[i], pointerX+info.mXOffset + info.mWidth/2, (int)(pointerY + info.mYOffset * (charHeight / 1080.0f)), charHeight / 1080.0f, font);
+            DrawableChar tempChar = new DrawableChar(chars[i], pointerX+info.mXOffset + info.mWidth/2, (int)(pointerY + info.mYOffset * (charHeight / StateManager.resolution.y)), charHeight / StateManager.resolution.y, font);
             dCharList.add(tempChar);
             pointerX += info.mXAdvance/1.25f * (charHeight / 20.0f) ;
         }

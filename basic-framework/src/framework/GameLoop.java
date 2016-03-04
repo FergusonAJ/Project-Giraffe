@@ -15,6 +15,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import Terrains.*;
+import framework.math3d.mat4;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -39,6 +40,7 @@ public class GameLoop
     //<editor-fold defaultstate="collapsed" desc="Loop Variables">
     int numLaunches = 0;
     int numHits = 0;
+    int stampedeLaunches = 0;
     float prev;
     float elapsed;
     int animalSelected = 0;
@@ -64,6 +66,7 @@ public class GameLoop
     Mesh portalMesh = MeshManager.getInstance().get("portal");
     //Sound sounds = new Sound("assets/audio/2016-02-01-1038-12.wav");
     ImageTexture dummyTex = new ImageTexture("assets/Models/blank.png");
+    UnitSquare stampedeUS = new UnitSquare();
     static Sound sounds = new Sound("assets/Audio/funkbox_music_stuff.wav");
     Water water= new Water(new vec4(0,0,0,1), 0f);
     //Sound sounds = new Sound("assets/audio/trump.wav");
@@ -71,6 +74,7 @@ public class GameLoop
     //<editor-fold defaultstate="collapsed" desc="Fonts">
     Font testFont = null;
     ImageTexture alphabet = new ImageTexture("assets/Fonts/cooperBlack.png");
+    ImageTexture stampedeImg = new ImageTexture("assets/Models/stampede.png");
 //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Portals and Misc.">
 
@@ -88,7 +92,7 @@ public class GameLoop
     
     public GameLoop(long w)
     {
-        System.out.println("yo");
+//        System.out.println("yo");
         win = w;
        
         try {
@@ -383,8 +387,13 @@ public class GameLoop
                             animalList.get(i).stampedeTakeoff(rot);
                             //this is just to disable stuff for later
                             animalList.get(i).isInStampede = false;
+                            
                         }
                     }
+                    
+                    if(stampedeActive)
+                    stampedeLaunches++;
+                    stampedeActive = false;
                     numLaunches++;
                 }
                 
@@ -825,6 +834,11 @@ public class GameLoop
         prog.setUniform("diffuse_texture",alphabet);
         prog.setUniform("unitSquare", 1.0f);
         prog.setUniform("unitSquare", 0.0f);
+        
+        
+        prog.setUniform("diffuse_texture",stampedeImg);
+        prog.setUniform("unitSquare", 1.0f);
+        prog.setUniform("unitSquare", 0.0f);
     }
     private void Render()
     {
@@ -893,8 +907,20 @@ public class GameLoop
         blurprog.setUniform("diffuse_texture",dummytex);*/
         prog.setUniform("diffuse_texture",alphabet);
         prog.setUniform("unitSquare", 1.0f);
+        
+        
+        
         scoreText.draw(prog);
         launchText.draw(prog);
+        if(stampedeActive)
+        {
+            prog.setUniform("worldMatrix", mul(scaling(new vec3(.25f, .25f, 1.0f)), translation(-1.0f +
+                    (250 / StateManager.getInstance().resolution.x) * 2, 1.0f -
+                            (150 / StateManager.getInstance().resolution.y) * 2, 0.0f)));
+            prog.setUniform("diffuse_texture",stampedeImg);
+            //prog.setUniform("worldMatrix", mat4.identity());
+            stampedeUS.draw(prog);
+        }
         if(inConsole)
         {
             console.draw(prog);
