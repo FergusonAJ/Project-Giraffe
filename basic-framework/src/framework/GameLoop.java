@@ -1,4 +1,4 @@
-package framework;
+    package framework;
 
 import Animals.*;
 import static JGL.JGL.*;
@@ -88,7 +88,6 @@ public class GameLoop
     
     public GameLoop(long w)
     {
-        System.out.println("yo");
         win = w;
        
         try {
