@@ -18,6 +18,7 @@ public class Giraffe extends Animal{
         specialTimer = 2f;
         mSpecies = "giraffe";
         mRotY = yRot;
+        at = AnimalType.GIRAFFE;
         
     }
     

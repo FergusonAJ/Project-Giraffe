@@ -10,11 +10,18 @@ import framework.math3d.vec4;
  */
 public class PhysicsBody {
     
-    protected vec4 mPos = new vec4(0,0,0,1);
+    public vec4 mPos = new vec4(0,0,0,1);
+    public float mRad = 0;
     protected vec4 mVel = new vec4(0,0,0,0);
     protected vec4 mGravity = new vec4(0,-100,0,0);
     protected boolean toggleGravity = false;
     protected vec4 prevPos = new vec4(0,0,0,1);
+    public ObjectType ot;
+    
+    public enum ObjectType
+    {
+        ANIMAL, PIN, OBSTACLE
+    }
     
     public void update(float elapsed)
     {
@@ -22,6 +29,7 @@ public class PhysicsBody {
             mVel = add(mVel,mul(mGravity,elapsed));
         mPos = add(mPos, mul(mVel,elapsed));
     }
+    
 
     public void setToggleGravity(boolean toggleGravity) {
         this.toggleGravity = toggleGravity;

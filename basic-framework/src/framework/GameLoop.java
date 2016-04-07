@@ -1,9 +1,14 @@
 package framework;
 
 import Animals.*;
+import Collisions.HashSet;
+import Collisions.LinkedList;
+import Collisions.LinkedListIterator;
+import Collisions.QuadTreeSolver;
 import static JGL.JGL.*;
 import JSDL.JSDL;
 import static JSDL.JSDL.*;
+import Pins.Melt;
 import TextRendering.*;
 import static framework.math3d.math3d.*;
 import framework.math3d.vec3;
@@ -15,6 +20,9 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import Terrains.*;
+import framework.Animal.AnimalType;
+import framework.PhysicsBody.ObjectType;
+import framework.Pin.PinType;
 import framework.math3d.mat4;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -33,8 +41,10 @@ public class GameLoop
     JSDL.SDL_Event ev;
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Initialize Animals, Pins, and Obstacles">
+        ArrayList<ArrayList> bowlingList = new ArrayList();
         ArrayList<Animal> animalList = new ArrayList();
         ArrayList<Obstacle> obstacleList = new ArrayList();
+        LinkedList mCircles = new LinkedList();
         ArrayList<Pin> pinList = new ArrayList();
 //</editor-fold> 
     //<editor-fold defaultstate="collapsed" desc="Loop Variables">
@@ -45,8 +55,11 @@ public class GameLoop
     float elapsed;
     int animalSelected = 0;
     boolean stampedeActive = false;
+    boolean firstRun = true;
     Camera cam = new Camera();
     boolean inConsole = false;
+    
+    QuadTreeSolver mSolver = new QuadTreeSolver(mCircles,100,100,5);
     String consoleText = "";
     int totalPins;
     //implement this when it comes near to controller development
@@ -101,6 +114,7 @@ public class GameLoop
         catch (IOException ex) 
         {
         Logger.getLogger(StateManager.class.getName()).log(Level.SEVERE, null, ex);
+        
         }
         prog = new Program("vs.txt","fs.txt");
         shadowProg = new Program("shadowvs.txt", "shadowfs.txt");
@@ -116,11 +130,15 @@ public class GameLoop
     protected void genBasic()
     {
         animalList.add(new Pig(new vec4(-30,0,0,1), (float)Math.PI / 2));
-        animalList.get(0).flip = true;
+        //animalList.add(new Pig(new vec4(-30,0,0,1), (float)Math.PI / 2));
+        //animalList.add(new Pig(new vec4(-30,0,0,1), (float)Math.PI / 2));
+        //animalList.get(0).flip = true;
         animalList.add(new Cheetah(new vec4(80,0,0,1), (float)Math.PI / 2));
         animalList.add(new Giraffe(new vec4(0,0,0,1), (float)Math.PI / 2));
         animalList.add(new Ram(new vec4(60,0,0,1), (float)Math.PI / 2));
         animalList.add(new Owl(new vec4(-50,0,0,1), (float)Math.PI / 2));
+        
+        
         
         //animalList.add(new Animal(zomMesh,new vec4(30,1000,0,1), 0.0f));
         
@@ -130,9 +148,16 @@ public class GameLoop
         obstacleList.add(new Obstacle("tree", new vec4(30,-2,-40,1), -2.0f));
         
         
+        
+        
         pinList.add(new Pin("zombie", new vec4(0,-1,-30,1), 2.0f, false));
         pinList.add(new Pin("zombie", new vec4(30,-1,-30,1), 2.0f, false));
         pinList.add(new Pin("zombie", new vec4(-30,-1,-30,1), 2.0f, false));
+        pinList.add(new Melt("angus",new vec4(-45,-1,-45, 1), 2.0f, false));
+        
+
+        updateCollisionList();
+        
         portals = new PortalPair(new vec4(10,-2,0,1), (float)Math.PI/4);
         if(animalList.size() > 0)
         {
@@ -155,12 +180,16 @@ public class GameLoop
             UpdateAnimals();
             cam.update();
             UpdatePins();
+            
             CullDeadObjects();
+           // System.out.println(mCircles.toString());
+            if(!firstRun)
+            mSolver.updateList(mCircles);
             water.update(elapsed);
-            //if(pinList.size() <= 0 || animalList.size() <= 0)
-            //{
-            //   StateManager.getInstance().MainMenu();      
-            //}
+            if(pinList.size() <= 0 || animalList.size() <= 0)
+            {
+               StateManager.getInstance().MainMenu();      
+            }
             if(!inConsole)
             {
                 HandleInput(); 
@@ -189,7 +218,6 @@ public class GameLoop
                     if(inConsole)
                     {
                         int id = ev.key.keysym.sym;
-                        System.out.println(id);
                         if((id > 96 && id < 123) || id == 32 || (id > 47 && id < 58) || id == 46)//Add a-z and spaces to the console line
                         {
                             consoleText += (char)ev.key.keysym.sym;
@@ -229,14 +257,16 @@ public class GameLoop
             {
                 a.mPos.y = 0;
             }
+            
             for(Obstacle o : obstacleList)
             {
                if(o.checkSphereCollision(a.mPos.xyz(), a.mRad))
                {
                    
                    //if animal selected is a ram and special is active then you can dmg obstacles
-                   if (a instanceof Ram && a.isSpecialActive) 
+                   if (a.at == AnimalType.RAM && a.isSpecialActive) 
                    {
+                       //System.out.println("ram");
                         o.calculateDamage(a.mVel,a.mDmg);
                    }
                    a.mVel = new vec4();
@@ -270,6 +300,16 @@ public class GameLoop
                         getPrevAnimal();
                     }
                 }
+                
+                //Does hit detection for melts bullet list to animals
+                if (p.pt == PinType.MELT) 
+                {
+                    for(int i = 0; i < ((Melt)p).getBulletListSize(); i++)
+                    {
+                        if(((Melt)p).checkBulletCollision(a.mPos,a.mRad,i))
+                            a.mAlive = false;
+                    }
+                }
 
                 //p.checkAnimalPosition(a.mPos);
             }
@@ -279,9 +319,55 @@ public class GameLoop
                {
                    p.mVel = new vec4(0,0,0,0);
                }
+             
             }
+            
             p.update(elapsed);
         }
+    }
+    
+    public void updateCollisionList()
+    {
+        LinkedList temp = new LinkedList();
+        //LinkedListIterator I = temp.iterator();
+//        LinkedListIterator J = mCircles.iterator();
+        for(int i = 0; i < obstacleList.size(); i++)
+        {
+            temp.addToEnd(obstacleList.get(i));
+        }
+        for(int i = 0; i < pinList.size(); i++)
+        {
+            temp.addToEnd(pinList.get(i));
+        }
+        for(int i = 0; i < animalList.size(); i++)
+        {
+            temp.addToEnd(animalList.get(i));
+        }
+        
+        // System.out.println(temp.toString());
+        mCircles = temp;
+       // System.out.println(mCircles);
+//        while(I.hasNext())
+//        {
+//           
+//            mCircles.addToEnd((PhysicsBody)I.next());
+//        }
+        
+        mSolver.updateList(mCircles);
+        
+        
+        
+        
+    }
+     public void findOverlap(char type)
+    {
+        LinkedListIterator I = mCircles.iterator();
+
+        HashSet<PhysicsBody> tempSet = new HashSet(mCircles.Length(), mCircles.Length() / 2, 0.5f);
+        //mSolver = new QuadTreeSolver(mCircles,200,200,2);
+        
+        mSolver.findOverlap(tempSet);
+
     }
     protected void CullDeadObjects()
     {
@@ -289,11 +375,13 @@ public class GameLoop
         {
             if(!pinList.get(i).mAlive)
             {
+                mCircles.removeAll(pinList.get(i));
                 pinList.remove(i);
                 numHits++;
                 if(pinList.size() <= 0)
                 {
-                    StateManager.getInstance().MainMenu();      
+                    StateManager.getInstance().MainMenu();    
+                    
                 }
             }
         }
@@ -302,18 +390,25 @@ public class GameLoop
             if(!animalList.get(i).mAlive)
             {
                 getPrevAnimal();
+                mCircles.removeAll(animalList.get(i));
                 animalList.remove(i);
                 if(animalList.size() <= 0)
                 {
-                    StateManager.getInstance().MainMenu();      
+                    StateManager.getInstance().MainMenu();     
+                    
                 }
             }
         }
-        for(Obstacle o : obstacleList)
+        for(int i = 0; i <obstacleList.size(); i++)
         {
-            if(!o.mAlive)
-                obstacleList.remove(obstacleList.indexOf(o));
+            if(!obstacleList.get(i).mAlive)
+            {
+                mCircles.removeAll(obstacleList.get(i));
+                obstacleList.remove(i);
+            }
         }
+        updateCollisionList();
+        
     }
     private void HandleInput()
     {
@@ -886,6 +981,11 @@ public class GameLoop
         for(Pin p : pinList)
         {
             p.draw(prog);
+            if (p instanceof Melt)
+            {
+                
+                ((Melt)p).drawBullets(prog);
+            }
         }
         for(Obstacle o : obstacleList)
         {

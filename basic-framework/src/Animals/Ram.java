@@ -20,6 +20,7 @@ public class Ram extends Animal{
         specialTimer = 2f;
         mSpecies = "ram";
         mRotY = yRot;
+        at = AnimalType.RAM;
     }
     
     @Override

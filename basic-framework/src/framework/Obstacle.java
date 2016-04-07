@@ -8,12 +8,12 @@ import framework.math3d.vec3;
 /**
  * Basic Obstacle class, that can use any mesh, but does collision with an AABB
  */
-public class Obstacle 
+public class Obstacle extends PhysicsBody
 {
     static OpenSimplexNoise noise = new OpenSimplexNoise(); //Used for placing the obstacle on the ground
     Mesh mMesh;
     String mMeshString;
-    vec4 mPos;
+    //vec4 mPos;
     float mRotY;
     vec3 mScale;
     boolean mAlive = true;

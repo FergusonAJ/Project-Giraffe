@@ -20,6 +20,7 @@ public class Pig extends Animal
         specialTimer = 1;
         mSpecies = "pig";
         mRotY = yRot;
+        at = AnimalType.PIG;
     }
     @Override
     public void specialAbility()
