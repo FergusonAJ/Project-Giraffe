@@ -23,6 +23,7 @@ public class Owl extends Animal{
         mDmg = 10;
         mSpecies = "owl";
         mRotY = yRot;
+        at = AnimalType.OWL;
     }
     
     public void specialAbility()

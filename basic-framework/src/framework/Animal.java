@@ -29,9 +29,11 @@ public class Animal extends PhysicsBody
     protected double mRotY = Math.PI / 2;
     protected boolean mMoving = false;
     
+   
+    
     protected vec4 mForward;
     protected float mYOffset;
-    protected float mRad = 1.5f;
+    
     protected boolean mAlive = true;
     //Used for debugging, if the model is facing the wrong direction
     protected boolean flip = false;
@@ -44,6 +46,7 @@ public class Animal extends PhysicsBody
     protected boolean isSpecialActive;
     protected boolean usedSpecial;
     protected float specialTimer;
+    public AnimalType at;
     
     
     protected boolean isInStampede = false;
@@ -60,7 +63,15 @@ public class Animal extends PhysicsBody
         mMesh = mesh;
         mPos = position;
         mYOffset = yOffset;
+        mRad = 1.5f;
+        ot = ObjectType.ANIMAL; 
     }
+    
+    public enum AnimalType
+    {
+        PIG, RAM, CHEETAH, GIRAFFE, OWL
+    }
+            
     
     /**
      * Moves the animal and checks the special ability
@@ -75,6 +86,7 @@ public class Animal extends PhysicsBody
             mVel = sub(mVel,mul(mVel, 0.5f * elapsed));
             if(length(mVel) < 1f)
             {
+                //System.out.println("vec:"+mPos.toString());
                 mMoving = false;
                 mVel = new vec4(0,0,0,0);
                 resetSpecialAbility();
