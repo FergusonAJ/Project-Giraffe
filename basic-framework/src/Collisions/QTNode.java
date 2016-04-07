@@ -137,6 +137,14 @@ public class QTNode <E>
         float bottom = c.mPos.x + c.mRad;
         float left = c.mPos.z - c.mRad;
         float right = c.mPos.z + c.mRad;
+        System.out.println("top:"+ top);
+        System.out.println("bottom:"+ bottom);
+        System.out.println("left:"+ left);
+        System.out.println("right:"+ right);
+        System.out.println("bounds x"+mBounds.getX()+mBounds.getWidth() );
+        System.out.println("bounds z"+mBounds.getZ()+mBounds.getHeight() );
+        System.out.println(c.ot+" : "+c.mPos.toString());
+        
         //If the x and y values are in the node's range at some point
         if(right >= mBounds.getX() && left <= mBounds.getX() + mBounds.getWidth())
         {

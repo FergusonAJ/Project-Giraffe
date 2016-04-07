@@ -59,7 +59,7 @@ public class GameLoop
     Camera cam = new Camera();
     boolean inConsole = false;
     
-    QuadTreeSolver mSolver = new QuadTreeSolver(mCircles,100,100,5);
+    QuadTreeSolver mSolver = new QuadTreeSolver(mCircles,500,500,5);
     String consoleText = "";
     int totalPins;
     //implement this when it comes near to controller development
