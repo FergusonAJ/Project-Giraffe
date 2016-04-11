@@ -6,13 +6,11 @@ package framework;
 public class UnitSquare {
     Mesh m;
     
-    public UnitSquare()
-    {
+    public UnitSquare(){
         m = new Mesh("assets/Models/usq.obj.mesh");
     }
     
-    public void draw(Program p)
-    {
+    public void draw(Program p){
         m.draw(p);
     }
 }

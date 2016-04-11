@@ -29,8 +29,6 @@ public class Animal extends PhysicsBody
     protected double mRotY = Math.PI / 2;
     protected boolean mMoving = false;
     
-   
-    
     protected vec4 mForward;
     protected float mYOffset;
     
@@ -64,7 +62,7 @@ public class Animal extends PhysicsBody
         mPos = position;
         mYOffset = yOffset;
         mRad = 1.5f;
-        ot = ObjectType.ANIMAL; 
+        this.ot = ObjectType.ANIMAL; 
     }
     
     public enum AnimalType
@@ -86,7 +84,6 @@ public class Animal extends PhysicsBody
             mVel = sub(mVel,mul(mVel, 0.5f * elapsed));
             if(length(mVel) < 1f)
             {
-                //System.out.println("vec:"+mPos.toString());
                 mMoving = false;
                 mVel = new vec4(0,0,0,0);
                 resetSpecialAbility();

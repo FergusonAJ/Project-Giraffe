@@ -7,7 +7,6 @@ package TextRendering;
 
 import static JGL.JGL.*;
 import framework.Program;
-import framework.StateManager;
 import framework.math3d.mat4;
 import static framework.math3d.math3d.*;
 import framework.math3d.vec3;
@@ -23,6 +22,9 @@ public class DrawableChar
     float mScale = 1.0f;
     CharInfo mInfo;
     int vbuff;
+    Font mFont;
+    float mRelativeHeight;
+    vec3 mPos;
     
     /**
      * Generates a basic vao for the character
@@ -32,6 +34,8 @@ public class DrawableChar
     public DrawableChar(char c, Font font)
     {
         genVAO(c, font);
+        mFont = font;
+        mRelativeHeight = ((float)mInfo.mHeight / mFont.mLineHeight);
     }
     
     /**
@@ -46,6 +50,8 @@ public class DrawableChar
         mX = x;
         mY = y;
         genVAO(c, font);
+        mFont = font;
+        mRelativeHeight = ((float)mInfo.mHeight / mFont.mLineHeight);
     }
     
     /**
@@ -62,6 +68,8 @@ public class DrawableChar
         mY = y;
         mScale = scale;
         genVAO(c, font);
+        mFont = font;
+        mRelativeHeight = ((float)mInfo.mHeight / mFont.mLineHeight);
     }
     
     /**
@@ -97,7 +105,9 @@ public class DrawableChar
      */
     public void draw(Program prog)
     {
-        prog.setUniform("worldMatrix", mul(scaling(new vec3(mScale, mScale, 1.0f)), translation(-1.0f + (mX / StateManager.getInstance().resolution.x) * 2, 1.0f - (mY / StateManager.getInstance().resolution.y) * 2, 0.0f)));
+        //prog.setUniform("worldMatrix", mul(scaling(new vec3((mScale * mRelativeHeight) * ((float)mInfo.mWidth / mInfo.mHeight), mScale * mRelativeHeight, 1.0f)), translation(-1.0f + (mX / 1920.0f) * 2, 1.0f - (mY / 1080.0f) * 2, 0.0f)));
+        //prog.setUniform("worldMatrix", mul(scaling(new vec3((mScale * mRelativeHeight) * ((float)mInfo.mWidth / mInfo.mHeight), mScale * mRelativeHeight, 1.0f)), translation(-1.0f + 2*(mX / 1920.0f), 1.0f - (mY / 1080.0f) * 2, 0.0f)));
+        prog.setUniform("worldMatrix", mul(scaling(new vec3((mScale * mRelativeHeight) * ((float)mInfo.mWidth / mInfo.mHeight), mScale * mRelativeHeight, 1.0f)), translation(-1.0f + 2*(mX / 1920.0f), 1.0f - (mY / 1080.0f) * 2, 0.0f)));
         prog.setUniform("projMatrix", mat4.identity());
         prog.setUniform("viewMatrix", mat4.identity());
         glBindVertexArray(vao);

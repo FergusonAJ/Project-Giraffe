@@ -29,7 +29,6 @@ public class PhysicsBody {
             mVel = add(mVel,mul(mGravity,elapsed));
         mPos = add(mPos, mul(mVel,elapsed));
     }
-    
 
     public void setToggleGravity(boolean toggleGravity) {
         this.toggleGravity = toggleGravity;

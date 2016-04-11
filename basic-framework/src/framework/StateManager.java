@@ -23,6 +23,7 @@ public class StateManager
     {
         initGL();
         MeshManager.init();
+        ObstacleManager.init();
         instance_.MainMenu();
     }
     
@@ -32,6 +33,15 @@ public class StateManager
     public void MainMenu()
     {
         currentLoop_ = new MainMenu(win_);
+        currentLoop_.runLoop();
+    }
+    
+    /**
+    * Sets the current loop to a new instance of the level editor and then runs it.
+    */
+    public void LevelEditor()
+    {
+        currentLoop_ = new LevelEditor(win_);
         currentLoop_.runLoop();
     }
     
@@ -69,7 +79,7 @@ public class StateManager
     {
         SDL_Init(SDL_INIT_VIDEO);
         win_ = SDL_CreateWindow("Animal Bowling",40,60, (int)resolution.x,(int)resolution.y, SDL_WINDOW_OPENGL );
-        SDL_SetWindowFullscreen(win_, SDL_WINDOW_FULLSCREEN);
+        SDL_SetWindowFullscreen(win_, SDL_WINDOW_FULLSCREEN_DESKTOP);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,24);
         SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,8);
