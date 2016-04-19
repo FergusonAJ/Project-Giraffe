@@ -1,4 +1,5 @@
 package framework;
+import static framework.Obstacle.noise;
 import framework.math3d.*;
 import static framework.math3d.math3d.axisRotation;
 import static framework.math3d.math3d.scaling;
@@ -13,8 +14,9 @@ public class PortalPair
     private float mTimer = 0.0f;
     private float mMaxTimer = 1.0f;
     private vec4 mForwardVec;
+    static OpenSimplexNoise noise = new OpenSimplexNoise(); //Used for placing the obstacle on the ground
     
-    public PortalPair(Mesh m, vec4 pos1, float yRot1)
+    public PortalPair(vec4 pos1, float yRot1)
     {
         mPos1 = pos1.add(new vec4(0,2,0,0));
         mForwardVec = new vec4(Math.cos(yRot1), 0 , -Math.sin(yRot1), 0);
@@ -22,7 +24,7 @@ public class PortalPair
         mYRot2 = yRot1 + (float)Math.PI;
         mPos2 = pos1.add(mForwardVec.mul(20));
         mPos2 = mPos2.add(new vec4(0,2,0,0));
-        mMesh = m;
+        mMesh = MeshManager.getInstance().get("portal");
         mMesh.texture = null;
         mCam1 = new Camera();
         mCam1.lookAt(mPos1.xyz().add(new vec3(0,2,0)), mPos1.sub(mForwardVec).xyz().add(new vec3(0,2,0)), new vec4(0,1,0,0).xyz());
@@ -30,6 +32,17 @@ public class PortalPair
         mCam2.lookAt(mPos2.xyz().add(new vec3(0,2,0)), mPos2.add(mForwardVec).xyz().add(new vec3(0,2,0)), new vec4(0,1,0,0).xyz());
         mCam1.fov_h = 22.5f;
         mCam2.fov_h = 22.5f;
+        mTimer = 0.0f;
+        mPos1.y  = (float)noise.eval(mPos1.x/100*4, mPos1.z/100*4) * 10;
+        if(mPos1.y < 0)
+        {
+            mPos1.y = 0;
+        }
+        mPos2.y  = (float)noise.eval(mPos2.x/100*4, mPos2.z/100*4) * 10;
+        if(mPos2.y < 0)
+        {
+            mPos2.y = 0;
+        }
     }
     public Camera getCam1()
     {

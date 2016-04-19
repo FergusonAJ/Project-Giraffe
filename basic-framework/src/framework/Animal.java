@@ -31,7 +31,7 @@ public class Animal extends PhysicsBody
     
     protected vec4 mForward;
     protected float mYOffset;
-    protected float mRad = 1.5f;
+    
     protected boolean mAlive = true;
     //Used for debugging, if the model is facing the wrong direction
     protected boolean flip = false;
@@ -44,6 +44,7 @@ public class Animal extends PhysicsBody
     protected boolean isSpecialActive;
     protected boolean usedSpecial;
     protected float specialTimer;
+    public AnimalType at;
     
     
     protected boolean isInStampede = false;
@@ -60,7 +61,15 @@ public class Animal extends PhysicsBody
         mMesh = mesh;
         mPos = position;
         mYOffset = yOffset;
+        mRad = 1.5f;
+        this.ot = ObjectType.ANIMAL; 
     }
+    
+    public enum AnimalType
+    {
+        PIG, RAM, CHEETAH, GIRAFFE, OWL
+    }
+            
     
     /**
      * Moves the animal and checks the special ability
@@ -127,9 +136,9 @@ public class Animal extends PhysicsBody
         mMoving = true;
     }
     
-    protected void stampedeTakeoff()
+    protected void stampedeTakeoff(float angle)
     {
-        mVel = mul(new vec4(1,0,0,0), axisRotation(new vec4(0,1,0,0), mRotY));
+        mVel = mul(new vec4(1,0,0,0), axisRotation(new vec4(0,1,0,0), angle));
         mVel = mul(mVel, 25);
         mMoving = true;
     }

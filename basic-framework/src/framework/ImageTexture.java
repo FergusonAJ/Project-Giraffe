@@ -14,7 +14,9 @@ import static JGL.JGL.*;
 public class ImageTexture  extends Texture2D{
     int w,h;
     
-    public ImageTexture(String filename){
+    public ImageTexture(String filename)
+    {
+        super(1,1);
         
         byte[] pix;
         try {

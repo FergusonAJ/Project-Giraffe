@@ -2,6 +2,7 @@ package framework;
 
 import static JGL.JGL.*;
 import static JSDL.JSDL.*;
+import framework.math3d.vec2;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,6 +14,7 @@ public class StateManager
 {
     static private StateManager instance_ = new StateManager();
     static private GameLoop currentLoop_;
+    public static vec2 resolution = new vec2(1920,1080);
     static private long win_;
     
     /** Initializes the necessities for GL and fires up the MeshManager
@@ -21,6 +23,7 @@ public class StateManager
     {
         initGL();
         MeshManager.init();
+        ObstacleManager.init();
         instance_.MainMenu();
     }
     
@@ -30,6 +33,15 @@ public class StateManager
     public void MainMenu()
     {
         currentLoop_ = new MainMenu(win_);
+        currentLoop_.runLoop();
+    }
+    
+    /**
+    * Sets the current loop to a new instance of the level editor and then runs it.
+    */
+    public void LevelEditor()
+    {
+        currentLoop_ = new LevelEditor(win_);
         currentLoop_.runLoop();
     }
     
@@ -55,7 +67,10 @@ public class StateManager
     {
         return instance_;
     }
-    
+    public GameLoop getLoop()
+    {
+        return currentLoop_;
+    }
     /**
      * Gets the window, and all supporting GL attributes ready for the game. 
      * Most code by Jim Hudson
@@ -63,8 +78,8 @@ public class StateManager
     private static void initGL()
     {
         SDL_Init(SDL_INIT_VIDEO);
-        win_ = SDL_CreateWindow("Animal Bowling",40,60, 1920,1080, SDL_WINDOW_OPENGL );
-        SDL_SetWindowFullscreen(win_, SDL_WINDOW_FULLSCREEN);
+        win_ = SDL_CreateWindow("Animal Bowling",40,60, (int)resolution.x,(int)resolution.y, SDL_WINDOW_OPENGL );
+        SDL_SetWindowFullscreen(win_, SDL_WINDOW_FULLSCREEN_DESKTOP);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,24);
         SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,8);

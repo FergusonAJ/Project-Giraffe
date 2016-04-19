@@ -3,7 +3,9 @@ package Animals;
 import framework.Animal;
 import framework.Mesh;
 import framework.MeshManager;
+import framework.PortalPair;
 import framework.Program;
+import framework.StateManager;
 import framework.math3d.mat4;
 import static framework.math3d.math3d.*;
 import framework.math3d.vec3;
@@ -21,11 +23,12 @@ public class Owl extends Animal{
         mDmg = 10;
         mSpecies = "owl";
         mRotY = yRot;
+        at = AnimalType.OWL;
     }
     
     public void specialAbility()
     {
-        
+        StateManager.getInstance().getLoop().portals = new PortalPair(mPos, (float)mRotY);
     }
     public void draw(Program prog)
     {

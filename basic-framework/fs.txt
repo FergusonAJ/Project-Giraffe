@@ -16,6 +16,7 @@ uniform float yon;
 uniform sampler2D shadowBufferTex;
 uniform mat4 lightProjMatrix;
 uniform mat4 lightViewMatrix;
+uniform float beingPlaced;
 in vec2 v_texcoord;
 in vec3 v_normal;
 in vec3 v_pw;
@@ -35,7 +36,7 @@ void main(){
 	vec4 shadowTC = ((ps / ps.w)+1)/2.0;
 	vec4 shadowTexel = texture(shadowBufferTex, shadowTC.xy) * (yon-hither) + hither;
 	color = vec4(0,shadowTexel.g,0,1);
-	if(-pe.z < shadowTexel.r+0.010)
+	if(-pe.z < shadowTexel.r+0.010 && shadowTC.x > 0 && shadowTC.x < 1 && shadowTC.y > 0 && shadowTC.y < 1)
 	{
 		vec3 N = normalize(v_normal);
 		vec3 V = normalize(eyePos - v_pw);
@@ -70,18 +71,33 @@ void main(){
 
 
 		
-		color = vec4(lightsum*tc.rgb,tc.a);// + vec3(sp),tc.a);
+		if(beingPlaced == 0.0)
+		{
+			color = vec4(lightsum*tc.rgb,tc.a);// + vec3(sp),tc.a);
+		}
+		else
+		{
+			color = vec4(lightsum*tc.rgb,tc.a) + vec4(0.0,0.5,0.0,0.0);
+		}
 	}
 	else
 	{
-		color = vec4(tc.rgb * 0.2, tc.a);
+			color = vec4(tc.rgb * 0.2, tc.a);
 	}
 	color = mix(vec4(skyColor,1),color,visibility);
 		
 	}
 	else
 	{
-		color = tc;
+	
+		if(beingPlaced == 0.0)
+		{
+			color = tc;
+		}
+		else
+		{	
+			color = tc + vec4(0.0,0.5,0.0,0.0);
+		}
 	}
 }
 

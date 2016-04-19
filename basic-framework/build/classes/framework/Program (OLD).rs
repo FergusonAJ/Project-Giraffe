@@ -1,0 +1,16 @@
+framework.Program2$Sampler2DSetter
+framework.Program
+framework.Program2$Vec4Setter
+framework.Program2$FloatSetter
+framework.Program2$UniformSetter
+framework.Program$Mat4Setter
+framework.Program$Vec2Setter
+framework.Program$Sampler2DSetter
+framework.Program$UniformSetter
+framework.Program2$Vec2Setter
+framework.Program2
+framework.Program2$Mat4Setter
+framework.Program$Vec4Setter
+framework.Program$FloatSetter
+framework.Program2$Vec3Setter
+framework.Program$Vec3Setter
