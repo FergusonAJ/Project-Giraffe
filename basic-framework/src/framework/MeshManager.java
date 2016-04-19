@@ -30,6 +30,7 @@ public class MeshManager
         meshMap_.put("fieldGoal", new Mesh("assets/Models/FieldGoal.obj.mesh"));
         meshMap_.put("tree", new Mesh("assets/Models/bobbleTree.obj.mesh"));
         meshMap_.put("angus", new Mesh("assets/Models/angus.obj.mesh"));
+        meshMap_.put("zomBullet", new Mesh("assets/Models/meltBullet.obj.mesh"));
         
     }
     

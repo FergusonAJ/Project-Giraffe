@@ -381,8 +381,7 @@ public class GameLoop
             }
             p.update(elapsed);
         }
-    }
-    
+    }  
     public void updateCollisionList()
     {
         LinkedList temp = new LinkedList();
@@ -445,7 +444,10 @@ public class GameLoop
         {
             if(!animalList.get(i).mAlive)
             {
-                getPrevAnimal();
+                if(animalSelected == i)
+                {
+                    getPrevAnimal();
+                }
                 mCircles.removeAll(animalList.get(i));
                 animalList.remove(i);
                 if(animalList.size() <= 0)
