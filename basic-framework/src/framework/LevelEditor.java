@@ -18,7 +18,6 @@ import framework.math3d.vec4;
  */
 public class LevelEditor extends GameLoop
 {
-    
     public LevelEditor(long w) 
     {
         super(w);
