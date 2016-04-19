@@ -8,12 +8,12 @@ import framework.math3d.vec3;
 /**
  * Basic Obstacle class, that can use any mesh, but does collision with an AABB
  */
-public class Obstacle 
+public class Obstacle extends PhysicsBody
 {
     static OpenSimplexNoise noise = new OpenSimplexNoise(); //Used for placing the obstacle on the ground
     Mesh mMesh;
     String mMeshString;
-    vec4 mPos;
+    //vec4 mPos;
     float mRotY;
     vec3 mScale;
     boolean mAlive = true;
@@ -45,7 +45,7 @@ public class Obstacle
         mMesh = MeshManager.getInstance().get(meshName);
         mMeshString = meshName;
         mPos = position;
-        mRotY = 0;
+        mRotY = 0.0f;
         mScale = new vec3(1,2,1);
         min = new vec3(mPos.x - width / 2 * mScale.x, mPos.y - height / 2 * mScale.y, mPos.z - depth / 2 * mScale.z);
         max = new vec3(mPos.x + width / 2 * mScale.x, mPos.y + height / 2 * mScale.y, mPos.z + depth / 2 * mScale.z);
@@ -53,6 +53,34 @@ public class Obstacle
         U = mul(U, rot);
         V = mul(V, rot);
         W = mul(W, rot);
+        System.out.println("Rot: " + this.mRotY);
+        System.out.println("Mat: " + " " + rot);
+        System.out.println("Vecs: " + this.U + " " + this.V + " " + this.W);
+    }
+    
+    public Obstacle(ObstacleInfo oInfo, vec4 position, float yOffset, float yRot)
+    {
+        //mYOffset = position.y;
+        position.y  = (float)noise.eval(position.x/100*4, position.z/100*4) * 10;
+        if(position.y < 0)
+        {
+            position.y = 0;
+        }
+        position.y += mYOffset;
+        mMesh = oInfo.mMesh;
+        mMeshString = oInfo.mMeshName;
+        mPos = position;
+        mRotY = yRot;
+        mScale = new vec3(1,2,1);
+        min = new vec3(mPos.x - width / 2 * mScale.x, mPos.y - height / 2 * mScale.y, mPos.z - depth / 2 * mScale.z);
+        max = new vec3(mPos.x + width / 2 * mScale.x, mPos.y + height / 2 * mScale.y, mPos.z + depth / 2 * mScale.z);
+        mat4 rot = axisRotation(new vec4(0.0f, 1.0f, 0.0f, 0.0f), mRotY);
+        U = mul(U, rot);
+        V = mul(V, rot);
+        W = mul(W, rot);
+        System.out.println("Rot: " + this.mRotY);
+        System.out.println("Mat: " + " " + rot);
+        System.out.println("Vecs: " + this.U + " " + this.V + " " + this.W);
     }
     
     /**

@@ -66,12 +66,20 @@ public class Font
         float widthToHeight = (float)info.mWidth / (float)(info.mHeight + 1.0f);
         float heightRatio = info.mHeight / mLineHeight;
         float[] f2 = new float[]{
+            /*
             1.0f * widthToHeight,1.0f * heightRatio,-1.0f, (info.mX + info.mWidth) / mWidth, 1.0f - (info.mY / mHeight),  0.0f,0.0f,1.0f, //1           2---1    
             -1.0f* widthToHeight,1.0f * heightRatio,-1.0f, info.mX / mWidth, 1.0f - (info.mY/ mHeight),  0.0f,0.0f,1.0f,                //2           |   |
             -1.0f * widthToHeight,-1.0f * heightRatio,-1.0f, info.mX / mWidth, 1.0f - ((info.mY + info.mHeight) / mHeight),  0.0f,0.0f,1.0f, //3        3---4
             1.0f * widthToHeight,1.0f * heightRatio,-1.0f, (info.mX + info.mWidth) / mWidth, 1.0f - (info.mY / mHeight),  0.0f,0.0f,1.0f, //1          
             -1.0f * widthToHeight,-1.0f * heightRatio,-1.0f, info.mX / mWidth, 1.0f - ((info.mY + info.mHeight) / mHeight),  0.0f,0.0f,1.0f, //3       
-            1.0f * widthToHeight,-1.0f * heightRatio,-1.0f, (info.mX + info.mWidth) / mWidth, 1.0f - ((info.mY + info.mHeight) / mHeight),  0.0f,0.0f,1.0f, //4
+            1.0f * widthToHeight,-1.0f * heightRatio,-1.0f, (info.mX + info.mWidth) / mWidth, 1.0f - ((info.mY + info.mHeight) / mHeight),  0.0f,0.0f,1.0f, //4*/
+            
+            1.0f,  1.0f,  -1.0f, (info.mX + info.mWidth) / mWidth, 1.0f - (info.mY / mHeight),  0.0f,0.0f,1.0f, //1           2---1    
+            -1.0f, 1.0f,  -1.0f, info.mX / mWidth, 1.0f - (info.mY/ mHeight),  0.0f,0.0f,1.0f,                //2           |   |
+            -1.0f, -1.0f, -1.0f, info.mX / mWidth, 1.0f - ((info.mY + info.mHeight) / mHeight),  0.0f,0.0f,1.0f, //3        3---4
+            1.0f,  1.0f,  -1.0f, (info.mX + info.mWidth) / mWidth, 1.0f - (info.mY / mHeight),  0.0f,0.0f,1.0f, //1          
+            -1.0f, -1.0f, -1.0f, info.mX / mWidth, 1.0f - ((info.mY + info.mHeight) / mHeight),  0.0f,0.0f,1.0f, //3       
+            1.0f,  -1.0f, -1.0f, (info.mX + info.mWidth) / mWidth, 1.0f - ((info.mY + info.mHeight) / mHeight),  0.0f,0.0f,1.0f, //4
         };
         FB.put(f2);
         return BB;

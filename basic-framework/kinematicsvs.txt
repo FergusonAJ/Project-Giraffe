@@ -1,0 +1,188 @@
+#version 150
+
+in vec3 a_position;
+in vec2 a_texcoord;
+in vec3 a_normal;
+in vec4 a_weight;
+in vec4 a_boneidx;
+
+out vec2 v_texcoord;
+out vec3 v_normal;
+out vec3 v_pw;
+
+
+out float visibility;
+
+uniform mat4 projMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 worldMatrix;
+uniform mat4 scale;
+uniform mat4 translation;
+uniform float mode;
+
+uniform sampler2D bonetex;
+uniform sampler2D quattex;
+uniform vec4 quattex_size;
+uniform vec4 bonetex_size;
+uniform float curFrame;
+
+//uniform vec3 cameraU;
+//uniform vec3 cameraV;
+//uniform vec3 cameraW;
+uniform vec3 eyePos;
+
+uniform float hither,yon_minus_hither;
+
+const float density = 0.007;
+const float gradient = 2;
+
+out float true_z;
+
+//Prototypes
+
+vec4 averagePosition(vec4 p, float frame);
+vec4 computePos(vec4 p, int boneidx, float frame);
+vec4 getBone(int index);
+vec4 quat_mul(vec4 a, vec4 b);
+vec4 lerp(vec4 a, vec4 b, float t);
+vec4 nlerp(vec4 a, vec4 b, float t);
+vec4 slerp(vec4 a, vec4 b, float t);
+vec4 getQuaternion(float boneidx, float frame);
+vec4 quat_mul(vec4 a, vec4 b);
+vec4 quat_inv(vec4 a);
+
+void main()
+{
+	v_texcoord = a_texcoord;
+    if(mode == 0.1)
+    {
+        
+        vec4 p = vec4( a_position.xyz, 1.0 );
+		//p.z +=  curFrame;
+		p = averagePosition(p, curFrame);
+        p = p * worldMatrix;
+        v_pw = p.xyz;
+        p = p * viewMatrix;
+        p = p * projMatrix;
+		gl_Position = p;
+		v_normal = (vec4(a_normal,0.0) * worldMatrix).xyz;
+		true_z = (-p.z-hither)/yon_minus_hither;
+		float distance = length(p.xyz);
+		visibility = exp(-pow((distance*density),gradient));
+		visibility = clamp(visibility,0.0,1.0);
+    }
+    if(mode == 3)
+    {
+        
+        vec4 p = vec4( a_position.xyz, 1.0 );
+		p = averagePosition(p, curFrame);
+        p = p * worldMatrix;
+        v_pw = p.xyz;
+        p = p * viewMatrix;
+		p = p * projMatrix;
+		gl_Position = p;
+		v_normal = (vec4(a_normal,0.0) * worldMatrix).xyz;
+		true_z = (-p.z-hither)/yon_minus_hither;
+
+
+		float distance = length(p.xyz);
+		visibility = exp(-pow((distance*density),gradient));
+		visibility = clamp(visibility,0.0,1.0);
+    } 
+}
+
+vec4 averagePosition(vec4 p, float frame)
+{
+	vec4 p0 = computePos(p, int(a_boneidx[0]), frame);
+	vec4 p1 = computePos(p, int(a_boneidx[1]), frame);
+	vec4 p2 = computePos(p, int(a_boneidx[2]), frame);
+	vec4 p3 = computePos(p, int(a_boneidx[3]), frame);
+	float sum = a_weight[0] + a_weight[1] + a_weight[2] + a_weight[3];
+	return (a_weight[0]/sum * p0) + (a_weight[1]/sum * p1) + (a_weight[2]/sum * p2) + (a_weight[3]/sum * p3);
+}
+
+
+vec4 computePos(vec4 p, int boneidx, float frame)
+{
+	float ff = floor(frame);
+	float fc = ceil(frame);
+	float pct = fract(frame);
+	for(int i = 0; i < 20; i++)
+	{
+		if(boneidx < 0.0)
+		{
+			break;
+		}
+		vec4 bonedata = getBone(boneidx);
+		vec4 q1 = getQuaternion(boneidx, ff);
+		vec4 q2 = getQuaternion(boneidx, fc);
+		vec4 q = slerp(q1,q2,pct);
+		vec4 q_ = quat_inv(q);
+		p.xyz -= bonedata.xyz * p.w;
+		vec4 p_ = vec4(p.xyz, 0.0);
+		p.xyz = (quat_mul(quat_mul(q,p_),q_)).xyz;
+		p.xyz += bonedata.xyz * p.w;
+		boneidx = int(bonedata[3]);
+	}
+	return p;
+}
+
+vec4 getBone(int index)
+{
+	
+	//vec2 t = vec2((index + 0.5) * bonetex_size[2]);
+	//return texture2D(bonetex, t);
+	return texelFetch(bonetex, ivec2(index, 0),0);
+	//return texture2D(bonetex, vec2( (index+0.5)*bonetex_size[2],0.0));
+}
+
+vec4 quat_mul(vec4 a, vec4 b)
+{
+	float w = a.w *b.w - (dot(vec3(a.xyz),vec3(b.xyz)));
+	vec3 xyz = (a.w * b.xyz) + (b.w * a.xyz) + cross(a.xyz,b.xyz);
+ 	return vec4(xyz,w);
+}
+
+vec4 quat_inv(vec4 a)
+{
+ 	return vec4(-a.xyz,a.w);
+}
+
+vec4 lerp(vec4 a, vec4 b, float t)
+{
+	return(a*(t-1.0) + b * t);
+}
+
+vec4 nlerp(vec4 a, vec4 b, float t)
+{
+	vec4 temp = mix(a,b,t);
+	return normalize(temp);
+}
+
+vec4 slerp(vec4 a, vec4 b, float t)
+{
+	float dp = dot(a,b);
+	if(dp < 0)
+	{
+		a = -a;
+		dp = dot(a,b);
+	}
+	if(dp >= 0.9)
+	{
+		return nlerp(a,b,t);
+	}
+	else
+	{
+		float sina = sqrt(1 - (dot(a,b) * dot(a,b)));
+		float ang = acos(dot(a,b));
+		return(a*(sin((1-t)*ang)/sina) + b*(sin(ang*t)/sina));
+	}
+}
+
+vec4 getQuaternion(float boneidx, float frame)
+{
+	//vec2 t = vec2((boneidx + 0.5) * quattex_size[2], (frame+0.5) * quattex_size[3]); 
+	//vec2 t = vec2(boneidx, frame);
+	//return texture2D(quattex, t);
+	return texelFetch(quattex, ivec2(boneidx, frame),0);
+}

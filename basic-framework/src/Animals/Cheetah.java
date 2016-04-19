@@ -20,6 +20,7 @@ public class Cheetah extends Animal{
         mDmg = 30;
         mSpecies = "cheetah";
         mRotY = yRot;
+        at = AnimalType.CHEETAH;
     }
     
     @Override

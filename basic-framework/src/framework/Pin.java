@@ -17,18 +17,19 @@ import java.util.ArrayList;
  */
 public class Pin extends PhysicsBody
 {
-    Mesh mMesh;
-    String mName;
+    protected Mesh mMesh;
+    protected String mName;
     
-    double mRotY = Math.PI / 2 * 3;
-    boolean mMoving = false;
-    vec3 mScale = new vec3(1,1,1);
-    float mYOffset;
-    float mRad = 1.5f;
-    boolean mAlive = true;
-    float mHealth = 10;
-    boolean mIsStatic = false;
-    String mMeshString;
+    protected double mRotY = Math.PI / 2 * 3;
+    protected boolean mMoving = false;
+    protected vec3 mScale = new vec3(1,1,1);
+    protected float mYOffset;
+    
+    protected boolean mAlive = true;
+    protected float mHealth = 10;
+    protected boolean mIsStatic = false;
+    protected String mMeshString;
+    public PinType pt;
     
     /**
      * Basic constructor
@@ -41,6 +42,7 @@ public class Pin extends PhysicsBody
         mMesh = mesh;
         mPos = position;
         mYOffset = yOffset;
+        mRad = 1.5f;
     }
     
     /**
@@ -58,7 +60,14 @@ public class Pin extends PhysicsBody
         mPos = position;
         mYOffset = yOffset;
         mIsStatic = isStatic;
+        ot = ObjectType.PIN; 
     }
+    
+    public enum PinType
+    {
+        ANGUS, MELT, SLIDER
+    }
+    
     
     /**
      * Moves the pin if necessary
@@ -76,7 +85,7 @@ public class Pin extends PhysicsBody
      * Rotates the pin around the y axis
      * @param angle The amount of rotation (In radians)
      */
-    void rotate(double angle)
+    protected void rotate(double angle)
     {
         if(!mMoving)
         {
@@ -94,7 +103,7 @@ public class Pin extends PhysicsBody
      * @param dmg Base damage of the animal
      * @return 
      */
-    boolean checkCollision(vec4 pos, float rad2, boolean animalMoving, vec4 vel, int dmg)
+    protected boolean checkCollision(vec4 pos, float rad2, boolean animalMoving, vec4 vel, int dmg)
     {
         double dist = length(sub(pos, mPos));
         if(dist < mRad + rad2)
@@ -118,7 +127,7 @@ public class Pin extends PhysicsBody
      * @param vel The velocity used to calculate the damage
      * @param mDmg The base damage of the animal
      */
-    void calculateDamage(vec4 vel, int mDmg)
+    protected void calculateDamage(vec4 vel, int mDmg)
     {
         double result = length(mul(vel,mDmg));
         mHealth-= result;
@@ -128,7 +137,7 @@ public class Pin extends PhysicsBody
      * Sets the pin's velocity to be pointing in the direction of the given animal
      * @param animalPos Animal position to launch towards
      */
-    void takeoff(vec4 animalPos)
+    protected void takeoff(vec4 animalPos)
     {
         mVel = normalize(sub(animalPos, mPos));
         mVel = mul(mVel, 5);
@@ -139,7 +148,7 @@ public class Pin extends PhysicsBody
      * Checks to see if the given animal's position is within the awareness radius of the pin
      * @param animalPos Position of the animal to check
      */
-    void checkAnimalPosition(vec4 animalPos)
+    protected void checkAnimalPosition(vec4 animalPos)
     {
         if(!mIsStatic && mVel != null)
         {
@@ -155,7 +164,7 @@ public class Pin extends PhysicsBody
      * Checks an ArrayList of animals to see if any are within the awareness radius of the pin
      * @param aList The list of animals to check
      */
-    void checkAnimalPositions(ArrayList<Animal> aList)
+    protected void checkAnimalPositions(ArrayList<Animal> aList)
     {
         if(!mIsStatic && mVel != null)
         {
