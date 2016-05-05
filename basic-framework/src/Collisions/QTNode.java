@@ -37,7 +37,7 @@ public class QTNode <E>
      */
     public void add(E value)
     {
-        System.out.println("ADDED: " + value);
+       //System.out.println("ADDED: " + value);
         //Add it to ourself if we have no chidren
         if(mChildNodes == null)
         {
@@ -52,19 +52,19 @@ public class QTNode <E>
                 {
                     split();
                     numChildren+=4;
-                    System.out.println("split");
+                    //System.out.println("split");
                 }
             }
         }
         else
         {
-            System.out.println("else added: " + value);
+           //System.out.println("else added: " + value);
            addToChildren(value);
         }
-        for(int i = 0; i < mItems.length; i++)
-        {
-            System.out.println("mItems:"+ mItems[i]);
-        }
+        //for(int i = 0; i < mItems.length; i++)
+        //{
+            ///System.out.println("mItems:"+ mItems[i]);
+        //}
         
         
     }
@@ -105,10 +105,10 @@ public class QTNode <E>
                         {
                             if(Math.sqrt(dX*dX + dZ*dZ) < c1.mRad + c2.mRad)
                             {
-                                
+                                c1.partner = c2;
+                                c2.partner = c1;
                                 set.add(c1);
                                 set.add(c2);
-
                             }
                         }
                     }
@@ -137,13 +137,13 @@ public class QTNode <E>
         float bottom = c.mPos.x + c.mRad;
         float left = c.mPos.z - c.mRad;
         float right = c.mPos.z + c.mRad;
-        System.out.println("top:"+ top);
-        System.out.println("bottom:"+ bottom);
-        System.out.println("left:"+ left);
-        System.out.println("right:"+ right);
-        System.out.println("bounds x"+mBounds.getX()+mBounds.getWidth() );
-        System.out.println("bounds z"+mBounds.getZ()+mBounds.getHeight() );
-        System.out.println(c.ot+" : "+c.mPos.toString());
+        //System.out.println("top:"+ top);
+        //System.out.println("bottom:"+ bottom);
+        //System.out.println("left:"+ left);
+        //System.out.println("right:"+ right);
+        //System.out.println("bounds x"+mBounds.getX()+mBounds.getWidth() );
+        //System.out.println("bounds z"+mBounds.getZ()+mBounds.getHeight() );
+        //System.out.println(c.ot+" : "+c.mPos.toString());
         
         //If the x and y values are in the node's range at some point
         if(right >= mBounds.getX() && left <= mBounds.getX() + mBounds.getWidth())

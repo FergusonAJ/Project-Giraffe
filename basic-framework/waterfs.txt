@@ -1,0 +1,79 @@
+#version 150
+uniform sampler2D basetexture;
+
+in vec2 otexcoord;
+in vec4 pw;
+in vec4 pe;
+uniform float hither;
+uniform float yon;
+uniform vec4 eyePos;
+uniform vec4 lightPos;
+uniform vec2 winsize;
+uniform sampler2D depthtexture;
+uniform vec3 skyColor;
+
+uniform float freq;
+uniform float speed;
+uniform float steepness;
+uniform float amplitude;
+uniform float s;
+uniform float elapsed;
+uniform vec3 d0;
+uniform vec3 d1;
+uniform vec3 d2;
+
+out vec4 color;
+
+void main()
+{ 
+/*
+a=amplitude
+v=speed ("velocity")
+t=time
+f=frequency
+d=direction
+s=steepness
+p=the point at we want to find the height
+*/
+
+
+    float partialx = 0,partialz = 0;
+    vec3 N = vec3(0,0,0);
+vec3 d[3] = vec3[](d0,d1,d2);
+    for(int i = 0; i < 3; ++i)
+    {
+       float K = elapsed * speed * freq + d[i].x * pe.x * freq + d[i].z + pe.z * freq;
+       partialx += amplitude*pow(0.5,steepness)*steepness*pow(sin(K)+1,steepness-1)*cos(K)*d[i].x*freq;
+       partialz += amplitude*pow(0.5,steepness)*steepness*pow(sin(K)+1,steepness-1)*cos(K)*d[i].z*freq;
+       vec3 b = vec3(1,partialx,0);
+       vec3 t = vec3(0,partialz, 1); 
+       N += cross(t,b);
+    }
+    N = normalize(N);
+    //vec4 onormal = vec4(N.xyz,1);
+    vec4 watercolor = vec4(0.04,0.07,0.5,1);  
+    
+
+    
+    float di = (-pe.z - hither) / yon;
+    color = vec4(di,di,di,1.0);
+    //color = vec4(watercolor,1)*color;
+    vec2 texc = gl_FragCoord.xy;
+    texc /= winsize.xy;
+    //what is pv????
+    vec3 V = eyePos.xyz -pw.xyz;
+    float cosi = dot(V,N);
+    float cosr = pow(1-((1-(cosi*cosi))/1.7689),.5);
+    float amtReflect = pow((1.33*cosr-cosi)/(1.33*cosr+cosi),2);
+    float totalReflect = (amtReflect+amtReflect)*.5;
+    float lightTransmitted = 1- totalReflect;
+    vec4 newSky = vec4(skyColor,1)*totalReflect;
+    watercolor = watercolor*lightTransmitted;
+    color = mix(color,(watercolor+newSky),1);
+ //   float waterdist = -V.z;
+  //  float objectdist = texture2D(depthtexture,otexcoord).r;
+  //  float wdepth = .5 - waterdist;
+    
+  //  color.a = mix(0.25,1.0,0.5*wdepth);
+    
+}

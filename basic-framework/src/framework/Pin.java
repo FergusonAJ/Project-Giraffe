@@ -60,7 +60,8 @@ public class Pin extends PhysicsBody
         mPos = position;
         mYOffset = yOffset;
         mIsStatic = isStatic;
-        ot = ObjectType.PIN; 
+        ot = ObjectType.PIN;
+        mRad = 1.5f;
     }
     
     public enum PinType
@@ -150,13 +151,19 @@ public class Pin extends PhysicsBody
      */
     protected void checkAnimalPosition(vec4 animalPos)
     {
+        boolean launched = false;
         if(!mIsStatic && mVel != null)
         {
             float dist = length(sub(mPos,animalPos));
             if(dist<=30f)
             {
                 takeoff(animalPos);
+                launched = true;
             }
+        }
+        if(!launched)
+        {
+            mVel = new vec4(0,0,0,0);
         }
     }
     

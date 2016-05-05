@@ -5,12 +5,15 @@ import Collisions.HashSet;
 import Collisions.LinkedList;
 import Collisions.LinkedListIterator;
 import Collisions.QuadTreeSolver;
+import Collisions.HashMapIterator;
 import static JGL.JGL.*;
 import JSDL.JSDL;
 import static JSDL.JSDL.*;
+import PerlinNoise.Noise;
 import Pins.Melt;
 import TextRendering.*;
 import static framework.math3d.math3d.*;
+import framework.math3d.vec2;
 import framework.math3d.vec3;
 import framework.math3d.vec4;
 import java.io.IOException;
@@ -35,7 +38,7 @@ import java.util.stream.Stream;
 public class GameLoop 
 {
     //<editor-fold defaultstate="collapsed" desc="Application Variables">
-    Program prog, shadowProg, kinematicsProg;
+    Program prog, shadowProg, kinematicsProg, furProg, waterProg;
     Set<Integer> keys = new TreeSet<>();
     long win;
     JSDL.SDL_Event ev;
@@ -46,6 +49,8 @@ public class GameLoop
         ArrayList<Obstacle> obstacleList = new ArrayList();
         LinkedList mCircles = new LinkedList();
         ArrayList<Pin> pinList = new ArrayList();
+        OpenSimplexNoise noise = new OpenSimplexNoise();
+        vec3 sunPosition = new vec3(0,100,0);
 //</editor-fold> 
     //<editor-fold defaultstate="collapsed" desc="Loop Variables">
     boolean isPaused = false;
@@ -85,7 +90,7 @@ public class GameLoop
     ImageTexture dummyTex = new ImageTexture("assets/Models/blank.png");
     UnitSquare stampedeUS = new UnitSquare();
     static Sound sounds = new Sound("assets/Audio/funkbox_music_stuff.wav");
-    Water water= new Water(new vec4(0,0,0,1), 0f);
+    Water water= new Water(new vec4(0,0,0,1), -1.9f);
     //Sound sounds = new Sound("assets/audio/trump.wav");
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Fonts">
@@ -99,14 +104,18 @@ public class GameLoop
     vec3 skyColor = new vec3(0.2f,0.4f,0.6f);
     Framebuffer fbo1 = new Framebuffer(512,512);
     Framebuffer fbo2 = new Framebuffer(512,512);
-    Framebuffer2D shadowBuffer = new Framebuffer2D(1920,1080, GL_R32F, GL_FLOAT);//, GL_R32F, GL_FLOAT);
+    Framebuffer2D shadowBuffer = new Framebuffer2D(2048, 2048, GL_R32F, GL_FLOAT);//, GL_R32F, GL_FLOAT);
     Camera lightCam = new Camera();
     public PortalPair portals;
     //blurprog = new Program("blurvs.txt","blurfs.txt");
 //</editor-fold>
-    OpenSimplexNoise noise = new OpenSimplexNoise();
-    vec3 sunPosition = new vec3(0,100,0);
+    ArrayList<Animal> editorAnimalList;
+    ArrayList<Pin> editorPinList;
+    ArrayList<Obstacle> editorObstacleList;
     Obstacle obstacleBeingPlaced = null;
+    Animal animalBeingPlaced = null;
+    Pin pinBeingPlaced = null;
+    int editorIndex;
     
     public GameLoop(long w)
     {
@@ -122,13 +131,20 @@ public class GameLoop
         prog = new Program("vs.txt","fs.txt");
         shadowProg = new Program("shadowvs.txt", "shadowfs.txt");
         kinematicsProg = new Program("kinematicsvs.txt", "kinematicsfs.txt");
+        furProg = new Program("furvs.txt", "furgs.txt", "furfs.txt");
+        waterProg = new Program("watervs.txt", "waterfs.txt");
         if(animalList.size() > 0)
         {
             cam.lookAt( new vec3(0,2,3), animalList.get(animalSelected).mPos.xyz(), new vec3(0,1,0) );
             cam.mFollowTarget = animalList.get(0);
         }
         totalPins = pinList.size();
-
+        
+        lightCam.yon = 110;
+        lightCam.hither = 10f;
+        lightCam.fov_v = 45;
+        lightCam.fov_h = 45;
+        lightCam.compute_proj_matrix();
     }
     protected void genBasic()
     {
@@ -142,9 +158,9 @@ public class GameLoop
         //animalList.add(new Animal(zomMesh,new vec4(30,1000,0,1), 0.0f));
         obstacleList.add(new Obstacle(ObstacleManager.getInstance().getInfo("rockWall"),new vec4(0,-1,-20,1), -1.0f,0.0f));
         //obstacleList.add(new Obstacle("rockWall", new vec4(0,-1,-20,1), -1.0f,0.0f));
-        obstacleList.add(new Obstacle(ObstacleManager.getInstance().getInfo("tree"), new vec4(-30,-2,20,1), -2.0f,0.0f));
-        obstacleList.add(new Obstacle(ObstacleManager.getInstance().getInfo("tree"), new vec4(0,-2,-40,1), -2.0f,0.0f));
-        obstacleList.add(new Obstacle(ObstacleManager.getInstance().getInfo("tree"), new vec4(30,-2,-40,1), -2.0f,0.0f));
+        obstacleList.add(new Obstacle(ObstacleManager.getInstance().getInfo("tree"), new vec4(-30,-2,20,1), 0.0f,0.0f));
+        obstacleList.add(new Obstacle(ObstacleManager.getInstance().getInfo("tree"), new vec4(0,-2,-40,1), 0.0f,0.0f));
+        obstacleList.add(new Obstacle(ObstacleManager.getInstance().getInfo("tree"), new vec4(30,-2,-40,1), 0.0f,0.0f));
         
         
         pinList.add(new Pin("zombie", new vec4(0,-1,-30,1), 2.0f, false));
@@ -207,7 +223,9 @@ public class GameLoop
                 MeshManager.getInstance().get("fieldGoal").curFrame += elapsed  * 2;
                 if(MeshManager.getInstance().get("fieldGoal").curFrame > 9.0f)
                     MeshManager.getInstance().get("fieldGoal").curFrame = 0.0f;
-                
+                MeshManager.getInstance().get("riggedPig").curFrame += elapsed  * 2;
+                updateCollisionList();
+                findOverlap('A');
                 //System.out.println(MeshManager.getInstance().get("fieldGoal").curFrame);
                 //SDL_GL_SwapWindow(win);
             }
@@ -234,7 +252,7 @@ public class GameLoop
                     if(inConsole)
                     {
                         int id = ev.key.keysym.sym;
-                        System.out.println(id);
+                        //System.out.println(id);
                         if((id > 96 && id < 123) || id == 32 || (id > 47 && id < 58) || id == 46)//Add a-z and spaces to the console line
                         {
                             consoleText += (char)ev.key.keysym.sym;
@@ -303,6 +321,10 @@ public class GameLoop
     }
     protected void UpdateAnimals()
     {
+        if(animalSelected < 0 || animalSelected >= animalList.size())
+        {
+            animalSelected = animalList.size() - 1;
+        }
         for(Animal a: animalList)
         {
             if(!inEditor)
@@ -324,7 +346,7 @@ public class GameLoop
                    {
                         o.calculateDamage(a.mVel,a.mDmg);
                    }
-                   a.mVel = new vec4();
+                   //a.mVel = new vec4();
                }
             }
         }
@@ -335,12 +357,49 @@ public class GameLoop
         if(inEditor)
         {
             cam.follow(animalList.get(animalSelected), true);
+            if(obstacleBeingPlaced != null)
+            {
+                Animal a = animalList.get(animalSelected);
+                vec4 vec = new vec4(1,0,0,0).mul(axisRotation(new vec4(0,1,0,0), a.mRotY));
+                obstacleBeingPlaced.mPos = a.mPos.add(vec.mul(10));  
+                obstacleBeingPlaced.mPos.y  = (float)noise.eval(obstacleBeingPlaced.mPos.x/100*4, obstacleBeingPlaced.mPos.z/100*4) * 10;
+                if(obstacleBeingPlaced.mPos.y < 0)
+                {
+                    obstacleBeingPlaced.mPos.y = 0;
+                }
+                obstacleBeingPlaced.mRotY = (float)(animalList.get(animalSelected).mRotY + Math.PI/2);
+            }
+            else if(animalBeingPlaced != null)
+            {
+                Animal a = animalList.get(animalSelected);
+                vec4 vec = new vec4(1,0,0,0).mul(axisRotation(new vec4(0,1,0,0), a.mRotY));
+                animalBeingPlaced.mPos = a.mPos.add(vec.mul(10));  
+                animalBeingPlaced.mPos.y  = (float)noise.eval(animalBeingPlaced.mPos.x/100*4, animalBeingPlaced.mPos.z/100*4) * 10;
+                if(animalBeingPlaced.mPos.y < 0)
+                {
+                    animalBeingPlaced.mPos.y = 0;
+                }
+                animalBeingPlaced.mRotY = (float)(animalList.get(animalSelected).mRotY + Math.PI/2);
+            }
+            else if(pinBeingPlaced != null)
+            {
+                Animal a = animalList.get(animalSelected);
+                vec4 vec = new vec4(1,0,0,0).mul(axisRotation(new vec4(0,1,0,0), a.mRotY));
+                pinBeingPlaced.mPos = a.mPos.add(vec.mul(10));  
+                pinBeingPlaced.mPos.y  = (float)noise.eval(pinBeingPlaced.mPos.x/100*4, pinBeingPlaced.mPos.z/100*4) * 10;
+                if(pinBeingPlaced.mPos.y < 0)
+                {
+                    pinBeingPlaced.mPos.y = 0;
+                }
+                pinBeingPlaced.mRotY = (float)(animalList.get(animalSelected).mRotY + Math.PI/2);
+            }
         }
     }
     private void UpdatePins()
     {
         for (Pin p : pinList)
         {
+            p.update(elapsed);
             p.mPos.y  = (float)noise.eval(p.mPos.x/100*4, p.mPos.z/100*4) * 10;
             if(p.mPos.y < 0)
             {
@@ -349,16 +408,14 @@ public class GameLoop
             p.checkAnimalPositions(animalList);
             for(Animal a: animalList)
             {
-                if(p.checkCollision(a.mPos, a.mRad,a.mMoving, a.mVel,a.mDmg))
+                /*if(p.checkCollision(a.mPos, a.mRad,a.mMoving, a.mVel,a.mDmg))
                 {
-                    //if(a.equals(animalList.get(animalSelected)))
-                    //    animalSelected = 0;
                     a.mAlive = false;
                     if(a.equals(animalList.get(animalSelected)))
                     {
                         getPrevAnimal();
                     }
-                }
+                }*/
 
                 //Does hit detection for melts bullet list to animals
                 if (p.pt == PinType.MELT) 
@@ -372,14 +429,13 @@ public class GameLoop
 
                 //p.checkAnimalPosition(a.mPos);
             }
-            for(Obstacle o : obstacleList)
+            /*for(Obstacle o : obstacleList)
             {
                if(o.checkSphereCollision(p.mPos.xyz(), p.mRad))
                {
                    p.mVel = new vec4(0,0,0,0);
                }
-            }
-            p.update(elapsed);
+            }*/
         }
     }  
     public void updateCollisionList()
@@ -423,6 +479,53 @@ public class GameLoop
         //mSolver = new QuadTreeSolver(mCircles,200,200,2);
         
         mSolver.findOverlap(tempSet);
+        //System.out.println(tempSet.mTableSize);
+        HashMapIterator hsI = tempSet.iterator();
+        for(int i = 0; i < tempSet.mTableSize; i++)
+        {
+            PhysicsBody b = (PhysicsBody)hsI.next();
+            if(b != null)
+            {
+                if(b.ot == PhysicsBody.ObjectType.ANIMAL)
+                {
+                    if(b.partner != null)
+                    {
+                        if(b.partner.ot == PhysicsBody.ObjectType.OBSTACLE)
+                        {
+                            b.mVel = new vec4(0,0,0,0);
+                            Animal a = (Animal)b;
+                            if (a.at == AnimalType.RAM && a.isSpecialActive) 
+                            {
+                                 ((Obstacle)b.partner).calculateDamage(a.mVel,a.mDmg);
+                            }
+                        }
+                        else if (b.partner.ot == PhysicsBody.ObjectType.PIN)
+                        {
+                            Pin p = (Pin)b.partner;
+                            Animal a = (Animal)b; 
+                            if(p.checkCollision(a.mPos, a.mRad,a.mMoving, a.mVel,a.mDmg))
+                            {
+                                a.mAlive = false;
+                                if(a.equals(animalList.get(animalSelected)))
+                                {
+                                    getPrevAnimal();
+                                }
+                            }
+                        }
+                    }
+                }
+                else if(b.ot == PhysicsBody.ObjectType.PIN)
+                {
+                    if(b.partner != null)
+                    {
+                        if(b.partner.ot == PhysicsBody.ObjectType.OBSTACLE)
+                        {
+                            b.mVel = new vec4(0,0,0,0);
+                        }
+                    }
+                }
+            }
+        }
 
     }
     protected void CullDeadObjects()
@@ -444,15 +547,15 @@ public class GameLoop
         {
             if(!animalList.get(i).mAlive)
             {
-                if(animalSelected == i)
-                {
-                    getPrevAnimal();
-                }
                 mCircles.removeAll(animalList.get(i));
                 animalList.remove(i);
                 if(animalList.size() <= 0)
                 {
                     StateManager.getInstance().MainMenu();      
+                }
+                if(animalSelected == i)
+                {
+                    getPrevAnimal();
                 }
             }
         }
@@ -462,8 +565,8 @@ public class GameLoop
             {
                 mCircles.removeAll(obstacleList.get(i));
                 obstacleList.remove(i);
+            }
         }
-    }
     }
     protected void HandleInput()
     {
@@ -492,6 +595,10 @@ public class GameLoop
         }
         if(!inEditor)
         {
+            if(animalSelected >= animalList.size())
+            {
+                getPrevAnimal();
+            }
             if( keys.contains(SDLK_w ))
                 cam.walk(3f*elapsed);
             if( keys.contains(SDLK_s))
@@ -578,17 +685,6 @@ public class GameLoop
                 cam.eye = cam.eye.add(vec);
                 cam.follow(animalList.get(animalSelected), true);
             }
-            if(obstacleBeingPlaced != null)
-            {
-                vec4 vec = new vec4(1,0,0,0).mul(axisRotation(new vec4(0,1,0,0), a.mRotY));
-                obstacleBeingPlaced.mPos = a.mPos.add(vec.mul(10));  
-                obstacleBeingPlaced.mPos.y  = (float)noise.eval(obstacleBeingPlaced.mPos.x/100*4, obstacleBeingPlaced.mPos.z/100*4) * 10;
-                if(obstacleBeingPlaced.mPos.y < 0)
-                {
-                    obstacleBeingPlaced.mPos.y = 0;
-                }
-                obstacleBeingPlaced.mRotY = (float)(animalList.get(animalSelected).mRotY + Math.PI/2);
-            }
 
             if( keys.contains(SDLK_q))
             {
@@ -600,36 +696,146 @@ public class GameLoop
                 animalList.get(animalSelected).rotate(-2 * elapsed);
                 cam.follow(animalList.get(animalSelected),false);
             }
-            if(keys.contains(SDLK_p))
+            if(keys.contains(SDLK_1))
             {
-                if(obstacleBeingPlaced == null)
+                if(animalBeingPlaced == null)
                 {
-                    
                     a = animalList.get(animalSelected);
                     vec4 vec = new vec4(1,0,0,0).mul(axisRotation(new vec4(0,1,0,0), a.mRotY));
-                    obstacleBeingPlaced = new Obstacle(ObstacleManager.getInstance().getInfo("rockWall"), a.mPos.add(vec.mul(10)), 2.0f, (float)a.mRotY);
+                    editorIndex = 0;
+                    animalBeingPlaced = editorAnimalList.get(editorIndex);
+                    animalBeingPlaced.mPos = a.mPos.add(vec.mul(10));
+                    animalBeingPlaced.mRotY = (float)a.mRotY;
+                    obstacleBeingPlaced = null;
+                    pinBeingPlaced = null;
+                    //obstacleBeingPlaced = new Obstacle(ObstacleManager.getInstance().getInfo("rockWall"), a.mPos.add(vec.mul(10)), 2.0f, (float)a.mRotY);
                 }
                 else
                 {
+                    if(editorIndex < editorAnimalList.size()-1)
+                    {
+                        editorIndex++;
+                    }
+                    else
+                    {
+                        editorIndex = 0;
+                    }
+                    a = animalList.get(animalSelected);
+                    vec4 vec = new vec4(1,0,0,0).mul(axisRotation(new vec4(0,1,0,0), a.mRotY));
+                    animalBeingPlaced = editorAnimalList.get(editorIndex);
+                    animalBeingPlaced.mPos = a.mPos.add(vec.mul(10));
+                    animalBeingPlaced.mRotY = (float)a.mRotY;
                     obstacleBeingPlaced = null;
+                    pinBeingPlaced = null;
                 }
-                keys.remove(SDLK_p);
+                keys.remove(SDLK_1);
+            }
+            if(keys.contains(SDLK_2))
+            {
+                if(pinBeingPlaced == null)
+                {
+                    a = animalList.get(animalSelected);
+                    vec4 vec = new vec4(1,0,0,0).mul(axisRotation(new vec4(0,1,0,0), a.mRotY));
+                    editorIndex = 0;
+                    pinBeingPlaced = editorPinList.get(editorIndex);
+                    pinBeingPlaced.mPos = a.mPos.add(vec.mul(10));
+                    pinBeingPlaced.mRotY = (float)a.mRotY;
+                    obstacleBeingPlaced = null;
+                    animalBeingPlaced = null;
+                    //obstacleBeingPlaced = new Obstacle(ObstacleManager.getInstance().getInfo("rockWall"), a.mPos.add(vec.mul(10)), 2.0f, (float)a.mRotY);
+                }
+                else
+                {
+                    if(editorIndex < editorPinList.size()-1)
+                    {
+                        editorIndex++;
+                    }
+                    else
+                    {
+                        editorIndex = 0;
+                    }
+                    a = animalList.get(animalSelected);
+                    vec4 vec = new vec4(1,0,0,0).mul(axisRotation(new vec4(0,1,0,0), a.mRotY));
+                    pinBeingPlaced = editorPinList.get(editorIndex);
+                    pinBeingPlaced.mPos = a.mPos.add(vec.mul(10));
+                    pinBeingPlaced.mRotY = (float)a.mRotY;
+                    obstacleBeingPlaced = null;
+                    animalBeingPlaced = null;
+                }
+                keys.remove(SDLK_2);
+            }
+            if(keys.contains(SDLK_3))
+            {
+                if(obstacleBeingPlaced == null)
+                {
+                    a = animalList.get(animalSelected);
+                    vec4 vec = new vec4(1,0,0,0).mul(axisRotation(new vec4(0,1,0,0), a.mRotY));
+                    editorIndex = 0;
+                    obstacleBeingPlaced = editorObstacleList.get(editorIndex);
+                    obstacleBeingPlaced.mPos = a.mPos.add(vec.mul(10));
+                    obstacleBeingPlaced.mRotY = (float)a.mRotY;
+                    animalBeingPlaced = null;
+                    pinBeingPlaced = null;
+                    //obstacleBeingPlaced = new Obstacle(ObstacleManager.getInstance().getInfo("rockWall"), a.mPos.add(vec.mul(10)), 2.0f, (float)a.mRotY);
+                }
+                else
+                {
+                    if(editorIndex < editorObstacleList.size()-1)
+                    {
+                        editorIndex++;
+                    }
+                    else
+                    {
+                        editorIndex = 0;
+                    }
+                    a = animalList.get(animalSelected);
+                    vec4 vec = new vec4(1,0,0,0).mul(axisRotation(new vec4(0,1,0,0), a.mRotY));
+                    obstacleBeingPlaced = editorObstacleList.get(editorIndex);
+                    obstacleBeingPlaced.mPos = a.mPos.add(vec.mul(10));
+                    obstacleBeingPlaced.mRotY = (float)a.mRotY;
+                    animalBeingPlaced = null;
+                    pinBeingPlaced = null;
+                }
+                keys.remove(SDLK_3);
             }
             if(keys.contains(SDLK_SPACE))
             {
                 if(obstacleBeingPlaced != null)
                 {
-                    System.out.println("Placing Object");
-                    Obstacle o = new Obstacle(ObstacleManager.getInstance().getInfo("rockWall"), new vec4(obstacleBeingPlaced.mPos), 0.0f, 0.0f);
+                    Obstacle o = new Obstacle(ObstacleManager.getInstance().getInfo(obstacleBeingPlaced.mMeshString), new vec4(obstacleBeingPlaced.mPos), 0.0f, 0.0f);
                     //obstacleList.add(new Obstacle("rockWall", new vec4(0,-1,-20,1), -1.0f,0.0f));
                     o.mRotY = obstacleBeingPlaced.mRotY;
                     obstacleList.add(o);
                 }
-                if(stampedeActive)
+                else if(animalBeingPlaced != null)
                 {
-                    stampedeLaunches++;
-                    stampedeActive = false;
-                    numLaunches++;
+                    Animal animal;
+                    if(animalBeingPlaced.mSpecies == "giraffe")
+                    {
+                        animal = new Giraffe(animalBeingPlaced.mPos, (float)animalBeingPlaced.mRotY);
+                    }
+                    else if(animalBeingPlaced.mSpecies == "cheetah")
+                    {
+                        animal = new Cheetah(animalBeingPlaced.mPos, (float)animalBeingPlaced.mRotY);
+                    }
+                    else if(animalBeingPlaced.mSpecies == "ram")
+                    {
+                        animal = new Ram(animalBeingPlaced.mPos, (float)animalBeingPlaced.mRotY);
+                    }
+                    else if(animalBeingPlaced.mSpecies == "owl")
+                    {
+                        animal = new Owl(animalBeingPlaced.mPos, (float)animalBeingPlaced.mRotY);
+                    }
+                    else
+                    {
+                        animal = new Pig(animalBeingPlaced.mPos, (float)animalBeingPlaced.mRotY);
+                    }
+                    animalList.add(animal);
+                }
+                else if (pinBeingPlaced != null)
+                {
+                    Pin p = new Pin(pinBeingPlaced.mMeshString, pinBeingPlaced.mPos, (float)pinBeingPlaced.mRotY, false);
+                    pinList.add(p);
                 }
                 keys.remove(SDLK_SPACE);
             }
@@ -828,7 +1034,9 @@ public class GameLoop
     {
         animalSelected--;
         if(animalSelected < 0)
+        {
             animalSelected = animalList.size()-1;
+        }
         cam.follow(animalList.get(animalSelected),false);
         cam.mFollowTarget = animalList.get(animalSelected);
         if(animalList.get(animalSelected).mMoving)
@@ -928,8 +1136,38 @@ public class GameLoop
                 portals = null;
                 break;
             case "editor":
-                inEditor = !inEditor;
+                if(!inEditor)
+                {
+                    startEditor();
+                }
+                else
+                {
+                    inEditor = false;
+                    editorAnimalList = null;
+                    editorPinList = null;
+                    editorObstacleList = null;
+                }
         }
+    }
+    private void startEditor()
+    {
+        inEditor = true;
+        editorAnimalList = new ArrayList();
+        editorPinList = new ArrayList();
+        editorObstacleList = new ArrayList();
+        editorAnimalList.add(new Pig(new vec4(0,0,0,1), 0));
+        editorAnimalList.add(new Giraffe(new vec4(0,0,0,1), 0));
+        editorAnimalList.add(new Cheetah(new vec4(0,0,0,1), 0));
+        editorAnimalList.add(new Ram(new vec4(0,0,0,1), 0));
+        editorAnimalList.add(new Owl(new vec4(0,0,0,1), 0));
+        editorPinList.add(new Pin("zombie", new vec4(0,0,0,1), 2.0f, false));
+        editorPinList.add(new Melt("angus",new vec4(0,0,0,1), 2.0f, false));
+        editorObstacleList.add(new Obstacle(ObstacleManager.getInstance().getInfo("rockWall"),new vec4(0,0,0,1), -1.0f,0.0f));
+        editorObstacleList.add(new Obstacle(ObstacleManager.getInstance().getInfo("tree"), new vec4(0,0,0,1), -2.0f,0.0f));
+        editorIndex = 0;
+        animalBeingPlaced = null;
+        pinBeingPlaced = null;
+        obstacleBeingPlaced = null;
     }
     private void spawnAnimal(Animal a, String[] s)
     {
@@ -969,7 +1207,7 @@ public class GameLoop
             }
         }
     }
-    private void spawnAnimal(Mesh m, String[] s)
+    private void spawnAnimal(Mesh m, String[] s) 
     {
         if (s == null || s.length <= 2)
         {
@@ -1088,7 +1326,6 @@ public class GameLoop
         {
             o.draw(shadowProg);
         }
-        water.draw(shadowProg);
     }
     private void DrawWorld(Camera c)
     {
@@ -1117,7 +1354,7 @@ public class GameLoop
         {
             o.draw(prog);
         }
-        water.draw(prog);
+        //water.draw(prog);
         prog.setUniform("diffuse_texture",alphabet);
         prog.setUniform("unitSquare", 1.0f);
         prog.setUniform("unitSquare", 0.0f);
@@ -1131,8 +1368,6 @@ public class GameLoop
     {
         DrawableString scoreText = new DrawableString("Enemies hit: " + numHits, 10, 20, 30, testFont);
         DrawableString launchText = new DrawableString("Launches: " + numLaunches, 10, 60, 30, testFont);
-        float fps = (1.0f/elapsed);
-        //DrawableString fpsText = new DrawableString("FPS: " + fps, 1600, 10, 30, testFont);
         DrawableString console = null;
         if(inConsole)
         {
@@ -1142,6 +1377,7 @@ public class GameLoop
         prog.setUniform("beingPlaced", 0.0f);
         if(portals != null)
         {
+            portals.reposition(cam);
             fbo1.bind();
             vec4 temp = portals.getPortal1Pos().sub(cam.eye);
             vec3 tempVec3 = new vec3(temp.x, 0, temp.z);
@@ -1168,12 +1404,39 @@ public class GameLoop
             prog.setUniform("lights["+i+"].color",new vec3(0,0,0));
         }
         cam.draw(prog);
+        prog.setUniform("shadowYon", lightCam.yon);
+        prog.setUniform("shadowHither", lightCam.hither);
         prog.setUniform("worldMatrix", mul(scaling(new vec3(100,1,100)),translation(new vec3(0,-1.0f,0))));
         planeMesh.draw(prog);
         for(Animal a: animalList)
         {
             a.draw(prog);
         }
+        furProg.use();
+        furProg.setUniform("mode",0.1);
+        furProg.setUniform("beingPlaced", 0.0f);
+        furProg.setUniform("skyColor",skyColor);
+        furProg.setUniform("lights[0].position",new vec3(0,50,0));//cam.eye.x, cam.eye.y, cam.eye.z));
+        furProg.setUniform("lights[0].color",new vec3(1,1,1));
+        furProg.setUniform("shadowBufferTex", shadowBuffer.texture);
+        furProg.setUniform("lightProjMatrix", lightCam.projMatrix);
+        furProg.setUniform("lightViewMatrix", lightCam.viewMatrix);
+        for(int i =1;i<8;i++)
+        {
+            furProg.setUniform("lights["+i+"].position",new vec3(0,0,0));
+            furProg.setUniform("lights["+i+"].color",new vec3(0,0,0));
+        }
+        cam.draw(furProg);
+        furProg.setUniform("shadowYon", lightCam.yon);
+        furProg.setUniform("shadowHither", lightCam.hither);
+        furProg.setUniform("worldMatrix", mul(scaling(new vec3(100,1,100)),translation(new vec3(0,-1.0f,0))));
+        furProg.setUniform("furlength", 0.6f);
+        furProg.setUniform("furGravity", new vec4(0,-5.0,0,0));
+        for(Animal a: animalList)
+        {
+            a.drawFur(furProg);
+        }
+        prog.use();
         for(Pin p : pinList)
         {
             p.draw(prog);
@@ -1186,17 +1449,28 @@ public class GameLoop
         {
             o.draw(prog);
         }
-        if(inEditor && obstacleBeingPlaced != null)
+        if(inEditor)
         {
             prog.setUniform("beingPlaced", 1.0f);
-            obstacleBeingPlaced.draw(prog);
+            if(obstacleBeingPlaced != null)
+            {
+                obstacleBeingPlaced.draw(prog);
+            }
+            else if(animalBeingPlaced != null)
+            {
+                animalBeingPlaced.draw(prog);
+            }
+            else if(pinBeingPlaced != null)
+            {
+                pinBeingPlaced.draw(prog);
+            }
             prog.setUniform("beingPlaced", 0.0f);
         }
         if(portals != null)
         {
             portals.draw(prog, fbo1, fbo2);
         }
-        water.draw(prog);
+        //water.draw(prog);
         
         kinematicsProg.use();
         cam.draw(kinematicsProg);
@@ -1210,9 +1484,24 @@ public class GameLoop
         kinematicsProg.setUniform("worldMatrix", axisRotation(new vec3(1,0,0), -Math.PI/2).mul(translation(new vec3(0,3.0f,0))));
         kinematicsProg.setUniform("unitSquare", 0.0f);
         MeshManager.getInstance().get("fieldGoal").draw(kinematicsProg);
+        //MeshManager.getInstance().get("riggedPig").draw(kinematicsProg);
         kinematicsProg.setUniform("shadowBufferTex", dummyTex);
-        
-        prog.use();
+       waterProg.use();
+       waterProg.setUniform("skyColor",skyColor);
+       waterProg.setUniform("worldMatrix",translation(new vec3(0,50.0f,0)));
+       waterProg.setUniform("viewMatrix",cam.viewMatrix);
+       waterProg.setUniform("hitheryon",new vec2(cam.hither,cam.yon));
+       waterProg.setUniform("hither",cam.hither);
+       waterProg.setUniform("yon",cam.yon);
+       //waterProg.setUniform("viewMatrix",);
+       waterProg.setUniform("d0", new vec3(1,0,-1));
+       waterProg.setUniform("d1", normalize(new vec3(.707,0,.707)));
+       waterProg.setUniform("d2", normalize(new vec3(-0.928,0,-0.371)));
+       //waterProg.setUniform("elapsed", elapsed);
+       waterProg.setUniform("eyePos", cam.eye);
+       waterProg.setUniform("projMatrix",cam.projMatrix);
+       water.draw(waterProg);
+       prog.use();
         
         //fbo1.unbind();
 

@@ -41,7 +41,6 @@ class ObstacleInfo
     String mMeshName;
     ObstacleInfo(String meshName, float w, float h, float d)
     {
-        System.out.println(meshName);
         mMeshName = meshName;
         mMesh = MeshManager.getInstance().get(meshName);
         mWidth = w;

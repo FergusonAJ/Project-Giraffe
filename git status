@@ -1,0 +1,628 @@
+[33mcommit 2cc434579605acb3105b6fe6ee8005c6a066a67a[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Tue Apr 19 10:08:20 2016 -0400
+
+    Everything from Milestone 3
+
+[33mcommit ec0d82de28775881279b0038a1fe7f108c2531d1[m
+Merge: 4b7cc0e f1d27cf
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Wed Mar 2 22:59:30 2016 -0500
+
+    Merge pull request #29 from AJARTCGA/PreparingForMilestone2
+    
+    Sort of fixed the shadows. Made saving and loading a command.
+
+[33mcommit f1d27cf98be69e6d0d8f753731b2174deee46e0d[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Wed Mar 2 22:57:37 2016 -0500
+
+    Sort of fixed the shadows. Made saving and loading a command.
+    
+    Save <filename> saves the current map as filename.txt
+    Load <filename> loads the contents of filename.txt
+    Shadows look better, but the shadow camera still needs its own yon and
+    hither
+
+[33mcommit 4b7cc0e420d3e1746bcdb19727f081ca00ebe61b[m
+Merge: d6aca1b 2be2d62
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Wed Mar 2 11:42:46 2016 -0500
+
+    Merge pull request #28 from AJARTCGA/Saving-Loading-Shadows
+    
+    Adds in saving and loading gamestate, plus a start of shadow buffers.
+
+[33mcommit 2be2d624deb5803255610430a4126259cf71ea89[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Wed Mar 2 11:41:51 2016 -0500
+
+    Adds in saving and loading gamestate, plus a start of shadow buffers.
+    
+    Save the gamestate with o. Load with p.
+    Shadows are... kinda? working.
+
+[33mcommit d6aca1b2b4bd70a0fb4fd5eb4af442bf8f9010f5[m
+Merge: 0a66170 da7c1c8
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Wed Mar 2 11:12:10 2016 -0500
+
+    Merge pull request #27 from AJARTCGA/March2nd-doomsday
+    
+    Added in more models and refined special abilities
+
+[33mcommit da7c1c855e130438e65b4f04beba0f5d8ad9058a[m
+Author: loopypup <loopypup@gmail.com>
+Date:   Wed Mar 2 11:08:25 2016 -0500
+
+    Added in more models and refined special abilities
+    
+    added in cheetah and ram models (ram needs to be fixed) special
+    abilities will be active when you hit space again during a launch of an
+    animal
+
+[33mcommit 0a6617072683f0df9a0c47ba6250d2513d7e468c[m
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Fri Feb 26 08:39:33 2016 -0500
+
+    Create README.md
+
+[33mcommit 56cd746bb83c428bc4519f977a187c60d6430996[m
+Merge: 74f1e60 8bdfb15
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Thu Feb 25 11:08:22 2016 -0500
+
+    Merge pull request #26 from AJARTCGA/HouseKeeping
+    
+    Housekeeping
+
+[33mcommit 8bdfb15ab5b5c37e1842c78f112a457ff001079c[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Thu Feb 25 11:07:47 2016 -0500
+
+    Organized Assets
+    
+    Sorted the asset folder into models, audio, and fonts
+
+[33mcommit 70d0800bf9149dc283f7b4141cfe66295d5bd1aa[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Wed Feb 24 14:28:16 2016 -0500
+
+    Comments and Docstrings
+    
+    Tried to make the code a little more legible. I cleaned up all of the
+    code I have touched.
+
+[33mcommit 74f1e602eaa4f812c7bf69fc760549be2d97be9f[m
+Merge: 6dc4e8c c4a9a2a
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Mon Feb 22 11:27:44 2016 -0500
+
+    Merge pull request #25 from AJARTCGA/Merge
+    
+    Added in a few little things and merged with Andrew's code
+
+[33mcommit c4a9a2ae5fc7627bf40ba0102817799b7ea2eb09[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Mon Feb 22 11:27:09 2016 -0500
+
+    Added in a few little things and merged with Andrew's code
+    
+    Added simplex terrain with basic 'collision'. Changed fog color. Added
+    State and MeshManager
+
+[33mcommit 6dc4e8c232b89a48a08981805ff884bfe0ee03da[m
+Merge: a85cb50 52bcc63
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Mon Feb 22 10:55:10 2016 -0500
+
+    Merge pull request #24 from AJARTCGA/specialAbilities/animal-edits
+    
+    Added in special abilities and edited a bunch of edits and w/e
+
+[33mcommit 52bcc63e8fdf308d9705bdb6b30cd69abcb77955[m
+Author: loopypup <loopypup@gmail.com>
+Date:   Mon Feb 22 10:53:12 2016 -0500
+
+    Added in special abilities and edited a bunch of edits and w/e
+    
+    ye
+
+[33mcommit a85cb50cf7428bbb219edf828f608ef3e43eabab[m
+Merge: 17f4a76 7951824
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Fri Feb 19 11:01:29 2016 -0500
+
+    Merge pull request #23 from AJARTCGA/SimplexTerrain
+    
+    Added Simplex Noise to the ground plane
+
+[33mcommit 79518245c7e95863a58c9ffa46313435352383aa[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Fri Feb 19 11:00:59 2016 -0500
+
+    Added Simplex Noise to the ground plane
+    
+    Sort of a nasty way to do it, but I modify the mesh when it is loaded
+    using simplex noise (Uses a boolean in the constructor)
+
+[33mcommit 17f4a763676a57d497bd04ee26da915307a918f0[m
+Author: loopypup <loopypup@gmail.com>
+Date:   Fri Feb 19 10:41:51 2016 -0500
+
+    Water Updated
+    
+    deleted audio files as well for basic framework 2 and current version to
+    save space
+
+[33mcommit 2216cf7c7d4d42697b6a15abb635ec486bec1286[m
+Merge: 038bc1d ae0e942
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Tue Feb 16 14:02:23 2016 -0500
+
+    Merge pull request #22 from AJARTCGA/GettingEverythingUpToDate
+    
+    Trying to get the two of us on the same page
+
+[33mcommit ae0e94211f5aea24ce3a6579a4f3953dad1c6268[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Tue Feb 16 14:01:40 2016 -0500
+
+    Trying to get the two of us on the same page
+    
+    Hopefully this works
+
+[33mcommit 038bc1d5318dfcc698cbacca0b98180b50a6d08f[m
+Merge: cf089c5 ac19678
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Tue Feb 16 13:27:40 2016 -0500
+
+    Merge remote-tracking branch 'origin/master'
+    
+    # Conflicts:
+    #	basic-framework/build/classes/framework/GameLoop.class
+    #	basic-framework/src/framework/GameLoop.java
+
+[33mcommit cf089c58f19d49fc354007a86f5bd1d000ebad87[m
+Merge: b91306c 52e1300
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Tue Feb 16 13:22:36 2016 -0500
+
+    Merge branch 'Portals'
+
+[33mcommit 52e13006031ccd07708c1f7f6b2efb3a9d6693da[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Tue Feb 16 13:20:29 2016 -0500
+
+    Added in some portals.
+    
+    Portals are stationary. No collisions. Their views are straight ahead.
+
+[33mcommit ac196781d8f710964fd7e21cdd05d736107e8d55[m
+Merge: b91306c 317265b
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Tue Feb 16 13:18:56 2016 -0500
+
+    Merge pull request #19 from AJARTCGA/Animals/Terrains-Package
+    
+    Animals.terrains package
+
+[33mcommit 317265bbb9a84dbd40ad49055af2ac52add77f0d[m
+Author: loopypup <loopypup@gmail.com>
+Date:   Tue Feb 16 12:41:26 2016 -0500
+
+    Animals.terrains package
+    
+    started water
+    
+    adding in animal/terrain package
+    
+    made animal variables protected
+
+[33mcommit b91306c7665239ed0e7ae2f297af3fbeb100fb03[m
+Merge: a5e8073 d25c13a
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Tue Feb 9 10:04:32 2016 -0500
+
+    Merge pull request #18 from AJARTCGA/Console
+    
+    Few changes to gameloop
+
+[33mcommit d25c13a347ff46b4b68205f19fc89c2fc846bcdf[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Tue Feb 9 10:03:36 2016 -0500
+
+    Few changes to gameloop
+    
+    Allows us to place animals either at our location with an offset, or at
+    any coordinates
+
+[33mcommit a5e8073386e60bebaf514079f38c3c7276f3431a[m
+Merge: 6219ef0 79ef4d2
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Thu Feb 4 10:58:49 2016 -0500
+
+    Merge branch 'master' of https://github.com/AJARTCGA/Project-Giraffe
+    
+    # Conflicts:
+    #	basic-framework/build/built-jar.properties
+    #	basic-framework/build/classes/framework/Animal.class
+    #	basic-framework/build/classes/framework/GameLoop.class
+    #	basic-framework/build/classes/framework/MainMenu.class
+    #	basic-framework/build/classes/framework/Pin.class
+    #	basic-framework/nbproject/private/private.xml
+
+[33mcommit 6219ef08bb65c65bdf1f67fc3960c1932eaecc89[m
+Merge: 896ccfe 277ee87
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Thu Feb 4 10:00:11 2016 -0500
+
+    Merge branch 'RightBeforeMilestone1'
+
+[33mcommit 79ef4d20e9abffb8395469db0d31a1bfb58d39f8[m
+Merge: 896ccfe 61d50ce
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Thu Feb 4 09:56:47 2016 -0500
+
+    Merge pull request #16 from AJARTCGA/Sound
+    
+    Andrew 2/4/16 wav edit
+
+[33mcommit 61d50ce5c0fecb23050dbb5d42bd8c1f6605dd67[m
+Author: loopypup <loopypup@gmail.com>
+Date:   Thu Feb 4 09:10:36 2016 -0500
+
+    Andrew 2/4/16 wav edit
+    
+    can now wav files but not mp3
+
+[33mcommit 277ee870f7e06d8c11df4594f34ccd0a937e2d1b[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Thu Feb 4 09:08:04 2016 -0500
+
+    A few tweaks
+
+[33mcommit 896ccfe5a9631e460238ee7cc78618fc5a92845c[m
+Merge: 22b1537 d8c5d51
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Tue Feb 2 11:27:17 2016 -0500
+
+    Merge branch 'GameLoop'
+
+[33mcommit d8c5d517cacb2917b6cc58b1fbe4d973f33cd97b[m
+Merge: f198d4c 22b1537
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Tue Feb 2 11:24:34 2016 -0500
+
+    Merge branch 'master' into GameLoop
+    
+    # Conflicts:
+    #	basic-framework/build/classes/framework/Framebuffer.class
+    #	basic-framework/build/classes/framework/GameLoop.class
+    #	basic-framework/build/classes/framework/Main.class
+    #	basic-framework/build/classes/framework/Pin.class
+    #	basic-framework/src/framework/Pin.java
+
+[33mcommit 22b1537ce9fe7c02a635552a8fa210b11907bf51[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Tue Feb 2 10:59:25 2016 -0500
+
+    Stupid .class files want to update
+
+[33mcommit f198d4c7c1efcae57e621d5e2796d4f5b7d20a87[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Tue Feb 2 10:56:51 2016 -0500
+
+    Now kicks the player back to the main menu when all animals or zombies are dead.
+    
+    Ends the game when conditions are met. Also fixed collisions with
+    obstacles
+
+[33mcommit 786530f80aef5b1615b5fde51e98c7bd8791fa42[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Fri Jan 29 11:50:04 2016 -0500
+
+    Added Exit Sign
+    
+    I made an exit sign to the main menu
+
+[33mcommit 9e8a948a748f77efe55bdeb8b77f0e154529ed0a[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Fri Jan 29 11:43:08 2016 -0500
+
+    Created an extension of GameLoop to do a basic Main Menu
+    
+    Game now launches a main menu. When the player hits the sign, the game
+    really starts.
+
+[33mcommit 59de89efdae88d8e7a045fc0927762ee6e2183fc[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Fri Jan 29 11:03:14 2016 -0500
+
+    Added super basic console stuff
+    
+    Home pulls up the console. You can type, but nothing happens when you
+    send it to the parser.
+
+[33mcommit c84c1ea2b4fce38630c88f2a749ec3ae8c79df9b[m
+Merge: ec38552 6b361b6
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Tue Jan 26 21:07:02 2016 -0500
+
+    Merge pull request #14 from AJARTCGA/Physics
+    
+    Physics
+
+[33mcommit 6b361b677be12c518d70768b7013d60a262d0af8[m
+Author: loopypup <loopypup@gmail.com>
+Date:   Tue Jan 26 20:35:52 2016 -0500
+
+    Andrew Edits # 7
+    
+    Added Physics bodies for pins and animals--gravity is now implemented
+    and toggleable
+
+[33mcommit 7c1818b1feba1353958cb81566e5db77185ea5d0[m
+Author: loopypup <loopypup@gmail.com>
+Date:   Tue Jan 26 15:15:45 2016 -0500
+
+    Revert "Edit #6? - Andrew"
+    
+    This reverts commit 69f3dc789469cbe9f3fdad8cd0d01dd77520e6af.
+
+[33mcommit 69f3dc789469cbe9f3fdad8cd0d01dd77520e6af[m
+Author: loopypup <loopypup@gmail.com>
+Date:   Tue Jan 26 15:12:17 2016 -0500
+
+    Edit #6? - Andrew
+    
+    Added gravity and created a physics object class
+
+[33mcommit ec38552683ab866a0aabf5ac38fc56f88209dfa3[m
+Merge: 11469bd c5dbee1
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Tue Jan 26 14:50:00 2016 -0500
+
+    Merge pull request #13 from AJARTCGA/GameLoop
+    
+    Gameloop
+
+[33mcommit c5dbee1f931011f710691565521bd16b795d6b35[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Tue Jan 26 14:41:02 2016 -0500
+
+    Cut down Main.java. It now creates an instance of GameLoop
+    
+    GameLoop has all the necessary code to run the game, other than the GL
+    initialization. Main does that initialization and then creates an
+    instance of GameLoop. This should allow us to have cleaner code, as we
+    can now call outside functions.
+
+[33mcommit 11469bd13b8933644965589128aa7eb02d3e3a30[m
+Merge: 6d2bb97 c1aeb94
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Tue Jan 26 13:31:53 2016 -0500
+
+    Merge pull request #12 from AJARTCGA/BasicObstacles
+    
+    Created a wall mesh and texture. No collision yet
+
+[33mcommit c1aeb94091170b863968aa1c4ccff2599be8e1bc[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Tue Jan 26 13:31:37 2016 -0500
+
+    Created a wall mesh and texture. No collision yet
+    
+    Basic Mesh for a stone wall added. Created an obstacle class that draws
+    the object. No hit detection yet
+
+[33mcommit 6d2bb9730a73cf6dfe0d9172f88ad91263feeb3b[m
+Merge: db9e928 d7b60ba
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Tue Jan 26 09:02:15 2016 -0500
+
+    Merge pull request #11 from AJARTCGA/TextDrawing
+    
+    Adding a model for a wall.
+
+[33mcommit d7b60baaf7fc71e9704f0f58fcaf1f0db881bbb2[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Tue Jan 26 09:00:53 2016 -0500
+
+    Some assets to use
+    
+    Shouldn't be in this branch. Forgot to make a new branch. Whoops.
+
+[33mcommit db9e9281108f1a77eac945f727e235e5e6b8f425[m
+Merge: d519415 635c70a
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Mon Jan 25 18:50:31 2016 -0500
+
+    Merge pull request #10 from AJARTCGA/TextDrawing
+    
+    Basic version of text rendering. - Austin Edit #5(?)
+
+[33mcommit 635c70a241072623754b9013e7e9130fa8a5ef5a[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Mon Jan 25 14:56:22 2016 -0500
+
+    Basic version of text rendering. - Austin Edit #5(?)
+    
+    A very basic, yet working text rendering technique. Includes parser and
+    basic HUD.
+
+[33mcommit d51941511fe21d7302f741d85c4a46cb5e8cb4be[m
+Merge: c280075 63bff4b
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Thu Jan 21 13:04:21 2016 -0500
+
+    Merge pull request #9 from AJARTCGA/BasicScore
+    
+    Austin Edit #5 - Super simple score system
+
+[33mcommit 63bff4b5ac60dce4b1761c57756c55724ccff449[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Thu Jan 21 13:03:31 2016 -0500
+
+    Austin Edit #5 - Super simple score system
+    
+    Press Enter to output your score. Does not show up on screen yet.
+
+[33mcommit c28007580060668128995cf55db9590e96a37799[m
+Merge: 2b3c2bf 6b68a05
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Thu Jan 21 12:42:43 2016 -0500
+
+    Merge pull request #8 from AJARTCGA/FixCameraMovement
+    
+    Austin Edit # 4: Fixed most of the bugs related to the camera when you switch animals
+
+[33mcommit 6b68a0568da2d1ef4c1f6525770e820e7e7401ee[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Thu Jan 21 12:41:50 2016 -0500
+
+    Austin Edit # 4: Fixed most of the bugs related to the camera when you switch animals
+    
+    Sometimes the camera messes up when the animal stops moving. Not sure
+    why. If you find out, tell me.
+
+[33mcommit 2b3c2bf031d866925cd1f419eb3b97e20302f18a[m
+Merge: 94e7f22 4106540
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Thu Jan 21 11:20:22 2016 -0500
+
+    Merge pull request #7 from AJARTCGA/NewZombieMesh
+    
+    Added a new zombie mesh
+    Austin Edit #4 (I think)
+
+[33mcommit 41065409d1677a4c8ae7a58de6317ec1b2f9de07[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Thu Jan 21 11:18:13 2016 -0500
+
+    Added a new zombie mesh
+    
+    The pins are no longer trees. They are now spooky zombie boxes. Much
+    better.
+
+[33mcommit 43f0c3a954de7b624571822ffeca92f19eb698ec[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Thu Jan 21 10:50:47 2016 -0500
+
+    Austin Edit #3 Pig Mesh and Animal Fix
+    
+    Added a pig mesh, and also made a yoffset for the animal class that
+    raises them out of the ground.
+
+[33mcommit 94e7f22dc4ecb6ff259d4542d4d65bd8767593b2[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Thu Jan 21 10:39:44 2016 -0500
+
+    Will this work?
+    
+    Probably not
+
+[33mcommit 36e018e5da66465e1ca91d49ceac791ad17e3745[m
+Merge: 519b74e cab35d8
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Thu Jan 21 10:34:55 2016 -0500
+
+    Merge pull request #6 from AJARTCGA/De-Accel
+    
+    Austin Edit #2 - De-Acceleration
+
+[33mcommit cab35d81d946ddcf6ce85416dd770085351583d5[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Thu Jan 21 10:34:02 2016 -0500
+
+    Austin Edit #2 - De-Acceleration
+    
+    Adds de-acceleration to animals, and allows them to be launched more
+    than once.
+    Also removes a System.out.println() in Pin that was driving me nuts.
+
+[33mcommit 519b74e0e3c3ad0b51d5e1c74b6c0453597d7e95[m
+Merge: 58a8738 f652d68
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Thu Jan 21 10:21:11 2016 -0500
+
+    Merge pull request #5 from AJARTCGA/Multianimal
+    
+    Multianimal
+
+[33mcommit f652d684970ed8578d96ade698b11a9d523113f9[m
+Author: loopypup <loopypup@gmail.com>
+Date:   Thu Jan 21 10:16:54 2016 -0500
+
+    Edits #3 - Andrew
+    
+    -Zombies can kill animals if the animals have no velocity
+    -Animals can kill trees only if they have velocity
+
+[33mcommit 58a8738997e2945613642f69508d88fd2943ab51[m
+Merge: aaecc83 e51ad75
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Wed Jan 20 19:29:50 2016 -0500
+
+    Merge pull request #4 from AJARTCGA/Multianimal
+    
+    Edits #2- Andrew
+
+[33mcommit e51ad75dea96d50110dd00f807535416714a87bd[m
+Author: loopypup <loopypup@gmail.com>
+Date:   Wed Jan 20 19:10:24 2016 -0500
+
+    Edits #2- Andrew
+    
+    -Added moveable zombies when they are within a certain range
+    -Load in a lot of meshes as soon as the program starts
+    -Changeable animals on the fly
+
+[33mcommit aaecc8326ec33756d187b9c1e344f4f1c15b0d1d[m
+Merge: a9669d8 588d0a7
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Tue Jan 19 13:09:09 2016 -0500
+
+    Merge pull request #3 from AJARTCGA/CellShading
+    
+    Merge pull request #2 from AJARTCGA/master
+
+[33mcommit 588d0a760c64af572cfd1e6a4d14379066e9b2b7[m
+Merge: 4d4aca6 a9669d8
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Tue Jan 19 13:07:35 2016 -0500
+
+    Merge pull request #2 from AJARTCGA/master
+    
+    Merge pull request #1 from AJARTCGA/CellShading
+
+[33mcommit a9669d83d063c8f7595523357f19bdc43c561df8[m
+Merge: dcd17c7 4d4aca6
+Author: AJARTCGA <ajartcga@gmail.com>
+Date:   Tue Jan 19 11:07:33 2016 -0500
+
+    Merge pull request #1 from AJARTCGA/CellShading
+    
+    Merge branch 'refs/heads/Dude-Branch'
+
+[33mcommit 4d4aca69948424584f065e0254ae3e33e466220d[m
+Author: loopypup <loopypup@gmail.com>
+Date:   Tue Jan 19 10:58:02 2016 -0500
+
+    Merge branch 'refs/heads/Dude-Branch'
+    
+    testing stuff
+
+[33mcommit dcd17c7880fcb947a6c3f3669b7e1b82bf1d85d3[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Tue Jan 19 10:26:16 2016 -0500
+
+    Initial Commit
+    
+    Putting all code up onto git
+
+[33mcommit c80f0a8c898bbadfa945ef573b17a61bb7b9a154[m
+Author: Austin Ferguson <ajartcga@gmail.com>
+Date:   Tue Jan 19 10:25:22 2016 -0500
+
+    :tada: Added .gitattributes & .gitignore files

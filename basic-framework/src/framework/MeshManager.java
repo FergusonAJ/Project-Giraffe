@@ -28,6 +28,7 @@ public class MeshManager
         meshMap_.put("sign1", new Mesh("assets/Models/sign1.obj.mesh"));
         meshMap_.put("sign2", new Mesh("assets/Models/sign2.obj.mesh"));
         meshMap_.put("fieldGoal", new Mesh("assets/Models/FieldGoal.obj.mesh"));
+        meshMap_.put("riggedPig", new Mesh("assets/Models/RiggedPig.obj.mesh"));
         meshMap_.put("tree", new Mesh("assets/Models/bobbleTree.obj.mesh"));
         meshMap_.put("angus", new Mesh("assets/Models/angus.obj.mesh"));
         meshMap_.put("zomBullet", new Mesh("assets/Models/meltBullet.obj.mesh"));

@@ -2,7 +2,6 @@ package framework;
 
 import static JGL.JGL.*;
 import static JSDL.JSDL.*;
-
 public class Main
 { 
     static GameLoop curLoop = null;

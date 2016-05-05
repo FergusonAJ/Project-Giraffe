@@ -1,0 +1,2 @@
+framework.ObstacleManager
+framework.ObstacleInfo

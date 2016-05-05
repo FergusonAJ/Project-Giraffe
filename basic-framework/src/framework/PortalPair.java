@@ -72,8 +72,17 @@ public class PortalPair
         return mPos2;
     }
     
+    public void reposition(Camera c)
+    {
+         
+    }
+    
     public void update(Animal a, float deltaTime)
     {
+        vec4 aTo1 = a.mPos.sub(mPos1);
+        vec4 aTo2 = a.mPos.sub(mPos2);
+        mCam1.lookAt(mPos1.add(aTo2).xyz(), mPos1.xyz(), new vec3(0,1,0));
+        mCam2.lookAt(mPos2.add(aTo1).xyz(), mPos2.xyz(), new vec3(0,1,0));  
         if(mTimer <= 0)
         {
             if(math3d.length(a.mPos.sub(mPos1)) < a.mRad)

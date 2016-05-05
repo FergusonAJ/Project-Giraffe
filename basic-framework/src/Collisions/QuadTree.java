@@ -21,7 +21,7 @@ public class QuadTree <E>
     public QuadTree(int width, int height, int bucketSize)
     {
         mBucketSize = bucketSize;
-        mRoot = new QTNode(new Rectangle(0,0,width, height), bucketSize);
+        mRoot = new QTNode(new Rectangle(-100,-100,200, 200), bucketSize);
     }
         
     /**

@@ -1,0 +1,80 @@
+#version 150
+#define MAX_LIGHTS 8
+struct Light{
+    vec3 position;
+    vec3 color;
+};
+uniform vec3 lightPos;
+uniform vec3 lightColor;
+uniform Light lights[MAX_LIGHTS];
+uniform vec3 eyePos;
+uniform sampler2D diffuse_texture;
+uniform vec3 skyColor;
+uniform float unitSquare;
+uniform float hither;
+uniform float yon;
+uniform sampler2D shadowBufferTex;
+uniform mat4 lightProjMatrix;
+uniform mat4 lightViewMatrix;
+uniform float shadowYon;
+uniform float shadowHither;
+uniform float beingPlaced;
+in vec2 g_texcoord;
+in vec3 g_normal;
+in vec3 g_pw;
+
+in float visibility;
+out vec4 color;
+in float true_z;
+
+const float levels = 4;
+
+void main(){
+	vec4 tc = texture(diffuse_texture,g_texcoord);
+	vec4 pe = vec4(g_pw,1) * lightViewMatrix;
+	vec4 ps = pe * lightProjMatrix;
+	vec4 shadowTC = ((ps / ps.w)+1)/2.0;
+	vec4 shadowTexel = texture(shadowBufferTex, shadowTC.xy) * (shadowYon-shadowHither) + shadowHither;
+	color = vec4(0,shadowTexel.g,0,1);
+	if(-pe.z < shadowTexel.r+0.015 && shadowTC.x > 0 && shadowTC.x < 1 && shadowTC.y > 0 && shadowTC.y < 1)
+	{
+		vec3 N = normalize(g_normal);
+		vec3 V = normalize(eyePos - g_pw);
+
+
+		//insert light stuff
+		//This is for multiple lights be sure to include the cell shading stuff as well 
+		//when we place more light sources
+		
+		vec3 lightsum = vec3(0.4,0.4,0.4);
+		for(int i=0;i<MAX_LIGHTS;++i)
+		{
+			vec3 L = normalize( lights[i].position - g_pw );
+			float dp = clamp( dot(L,N), 0.0, 1.0 );
+
+			float Ldist = length(L);
+			L = 1.0/Ldist * L;
+			vec3 R = reflect(-L,N);
+			
+			dp = floor(levels*dp)/levels;
+			
+			lightsum += (dp * lights[i].color);
+		}
+	
+		if(beingPlaced == 0.0)
+		{
+			color = vec4(lightsum*tc.rgb,tc.a);// + vec3(sp),tc.a);
+		}
+		else
+		{
+			color = vec4(lightsum*tc.rgb,tc.a) + vec4(0.0,0.5,0.0,0.0);
+		}
+	}
+	else
+	{
+		color = vec4(tc.rgb * 0.2, tc.a);
+	}
+	//Fog
+	color = mix(vec4(skyColor,1),color,visibility);
+}
+

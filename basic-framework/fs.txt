@@ -16,6 +16,8 @@ uniform float yon;
 uniform sampler2D shadowBufferTex;
 uniform mat4 lightProjMatrix;
 uniform mat4 lightViewMatrix;
+uniform float shadowYon;
+uniform float shadowHither;
 uniform float beingPlaced;
 in vec2 v_texcoord;
 in vec3 v_normal;
@@ -27,64 +29,57 @@ in float true_z;
 
 const float levels = 4;
 
-void main(){
+void main()
+{
 	vec4 tc = texture(diffuse_texture,v_texcoord);
 	if(unitSquare == 0.0)
 	{
-	vec4 pe = vec4(v_pw,1) * lightViewMatrix;
-	vec4 ps = pe * lightProjMatrix;
-	vec4 shadowTC = ((ps / ps.w)+1)/2.0;
-	vec4 shadowTexel = texture(shadowBufferTex, shadowTC.xy) * (yon-hither) + hither;
-	color = vec4(0,shadowTexel.g,0,1);
-	if(-pe.z < shadowTexel.r+0.010 && shadowTC.x > 0 && shadowTC.x < 1 && shadowTC.y > 0 && shadowTC.y < 1)
-	{
-		vec3 N = normalize(v_normal);
-		vec3 V = normalize(eyePos - v_pw);
-
-
-		//insert light stuff
-		//This is for multiple lights be sure to include the cell shading stuff as well 
-		//when we place more light sources
-		
-		vec3 lightsum = vec3(0.4,0.4,0.4);
-		for(int i=0;i<MAX_LIGHTS;++i)
+		vec4 pe = vec4(v_pw,1) * lightViewMatrix;
+		vec4 ps = pe * lightProjMatrix;
+		vec4 shadowTC = ((ps / ps.w)+1)/2.0;
+		vec4 shadowTexel = texture(shadowBufferTex, shadowTC.xy) * (shadowYon-shadowHither) + shadowHither;
+		color = vec4(0,shadowTexel.g,0,1);
+		if(-pe.z < shadowTexel.r+0.015 && shadowTC.x > 0 && shadowTC.x < 1 && shadowTC.y > 0 && shadowTC.y < 1)//If not in shadow
 		{
-			vec3 L = normalize( lights[i].position - v_pw );
-			float dp = clamp( dot(L,N), 0.0, 1.0 );
-
-			float Ldist = length(L);
-			L = 1.0/Ldist * L;
-			vec3 R = reflect(-L,N);
+			vec3 N = normalize(v_normal);
+			vec3 V = normalize(eyePos - v_pw);
 			
-			dp = floor(levels*dp)/levels;
+			vec3 lightsum = vec3(0.4,0.4,0.4);
+			for(int i=0;i<MAX_LIGHTS;++i)
+			{
+				vec3 L = normalize( lights[i].position - v_pw );
+				float dp = clamp( dot(L,N), 0.0, 1.0 );
 
-			float sp = dot(V,R);
-			sp *= sign(dp);
-			sp = pow(sp,32.0); 
-			sp = clamp(sp,0.0,1.0);
-			sp = floor(levels*sp)/levels;
-		
-			lightsum += (dp * lights[i].color)+(sp * lights[i].color*.1);
+				float Ldist = length(L);
+				L = 1.0/Ldist * L;
+				vec3 R = reflect(-L,N);
+				
+				dp = floor(levels*dp)/levels;
+
+				float sp = dot(V,R);
+				sp *= sign(dp);
+				sp = pow(sp,32.0); 
+				sp = clamp(sp,0.0,1.0);
+				sp = floor(levels*sp)/levels;
+			
+				lightsum += (dp * lights[i].color)+(sp * lights[i].color*.1);
+			}
+			
+			if(beingPlaced == 0.0)
+			{
+				color = vec4(lightsum*tc.rgb,tc.a);// + vec3(sp),tc.a);
+			}
+			else
+			{
+				color = vec4(lightsum*tc.rgb,tc.a) + vec4(0.0,0.5,0.0,0.0);
+			}
 		}
-
-
-
-
-		
-		if(beingPlaced == 0.0)
+		else //If pixel is in shadow
 		{
-			color = vec4(lightsum*tc.rgb,tc.a);// + vec3(sp),tc.a);
-		}
-		else
-		{
-			color = vec4(lightsum*tc.rgb,tc.a) + vec4(0.0,0.5,0.0,0.0);
-		}
-	}
-	else
-	{
 			color = vec4(tc.rgb * 0.2, tc.a);
-	}
-	color = mix(vec4(skyColor,1),color,visibility);
+		}
+		//Fog
+		color = mix(vec4(skyColor,1),color,visibility);
 		
 	}
 	else

@@ -6,7 +6,6 @@
 package framework;
 
 import framework.Mesh;
-import framework.Mesh;
 import framework.Obstacle;
 import framework.Obstacle;
 import framework.PhysicsBody;
@@ -30,7 +29,13 @@ public class Animal extends PhysicsBody
     protected boolean mMoving = false;
     
     protected vec4 mForward;
+    protected vec4 mRight;
+    protected vec4 mUp;
     protected float mYOffset;
+    protected OrientedBoundingBox mBox;
+    protected float mWidth = 2;
+    protected float mHeight = 3;
+    protected float mDepth = 4;
     
     protected boolean mAlive = true;
     //Used for debugging, if the model is facing the wrong direction
@@ -63,6 +68,14 @@ public class Animal extends PhysicsBody
         mYOffset = yOffset;
         mRad = 1.5f;
         this.ot = ObjectType.ANIMAL; 
+        mat4 m = axisRotation(new vec4(0,1,0,0), mRotY);
+        mForward = mul(new vec4(0,0,-1,0), m);
+        mRight = mul(new vec4(1,0,0,0), m);
+        mUp = mul(new vec4(0,1,0,0), m);
+        vec4 u = mRight.mul(mWidth);
+        vec4 v = mUp.mul(mHeight);
+        vec4 w = mForward.mul(mDepth);
+        mBox = new OrientedBoundingBox(mPos.sub(u.mul(0.5).sub(v.mul(0.5).sub(w.mul(0.5)))), u, v, w);
     }
     
     public enum AnimalType
@@ -104,7 +117,14 @@ public class Animal extends PhysicsBody
         if(!mMoving)
         {
             mRotY += angle;
-            mForward = mul(new vec4(0,0,-1,0), axisRotation(new vec4(0,1,0,0), mRotY));
+            mat4 m = axisRotation(new vec4(0,1,0,0), mRotY);
+            mForward = mul(new vec4(0,0,-1,0), m);
+            mRight = mul(new vec4(1,0,0,0), m);
+            mUp = mul(new vec4(0,1,0,0), m);
+            vec4 u = mRight.mul(mWidth);
+            vec4 v = mUp.mul(mHeight);
+            vec4 w = mForward.mul(mDepth);
+            mBox = new OrientedBoundingBox(mPos.sub(u.mul(0.5).sub(v.mul(0.5).sub(w.mul(0.5)))), u, v, w);
         }
     }
     
@@ -172,4 +192,13 @@ public class Animal extends PhysicsBody
         mMesh.draw(prog);
     }
     
+    /**
+     * Renders the animal's fur to the screen
+     * @param prog The Program to use for drawing
+     */
+    public void drawFur(Program prog)
+    {
+        prog.setUniform("worldMatrix", mul(mul(axisRotation(new vec4(0.0f,1.0f,0.0f,0.0f), mRotY), translation(mPos)), translation(new vec3(0,mYOffset, 0))));
+        mMesh.drawFur(prog);
+    }
 }

@@ -17,6 +17,7 @@ public class PhysicsBody {
     protected boolean toggleGravity = false;
     protected vec4 prevPos = new vec4(0,0,0,1);
     public ObjectType ot;
+    public PhysicsBody partner = null;
     
     public enum ObjectType
     {

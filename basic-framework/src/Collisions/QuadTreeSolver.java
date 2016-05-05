@@ -48,7 +48,7 @@ public class QuadTreeSolver
         LinkedListIterator I = list.iterator();
         //System.out.println("size of list:" +list.mSize);
         int numIt = 0;
-        System.out.println(list.toString());
+        //System.out.println(list.toString());
         while(I.hasNext())
         {
           //  System.out.println(I.next());
@@ -56,7 +56,7 @@ public class QuadTreeSolver
             numIt++;
         }
         //System.out.println("numIt"+numIt);
-        System.out.println("numChildren"+numChildren);
+        //System.out.println("numChildren"+numChildren);
     }
     
     /**

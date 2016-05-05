@@ -26,6 +26,7 @@ public class Obstacle extends PhysicsBody
     vec3 min,max;
     float mHealth = 20;
     float mYOffset;
+    OrientedBoundingBox mBox;
     
     /**
      * Basic Obstacle constructor that calculates the position and the AABB
@@ -53,9 +54,11 @@ public class Obstacle extends PhysicsBody
         U = mul(U, rot);
         V = mul(V, rot);
         W = mul(W, rot);
-        System.out.println("Rot: " + this.mRotY);
-        System.out.println("Mat: " + " " + rot);
-        System.out.println("Vecs: " + this.U + " " + this.V + " " + this.W);
+        vec4 u = U.mul(width);
+        vec4 v = V.mul(height);
+        vec4 w = W.mul(depth);
+        mBox = new OrientedBoundingBox(mPos.sub(u.mul(.5f)).sub(v.mul(.5f)).sub(w.mul(.5f)), u, v, w); 
+        ot = PhysicsBody.ObjectType.OBSTACLE;
     }
     
     public Obstacle(ObstacleInfo oInfo, vec4 position, float yOffset, float yRot)
@@ -78,9 +81,7 @@ public class Obstacle extends PhysicsBody
         U = mul(U, rot);
         V = mul(V, rot);
         W = mul(W, rot);
-        System.out.println("Rot: " + this.mRotY);
-        System.out.println("Mat: " + " " + rot);
-        System.out.println("Vecs: " + this.U + " " + this.V + " " + this.W);
+        ot = PhysicsBody.ObjectType.OBSTACLE;
     }
     
     /**

@@ -1,0 +1,54 @@
+#version 150
+in vec4 position;
+in vec4 texcoord;
+in vec4 normal;
+
+out vec2 otexcoord;
+out vec4 onormal;
+out vec4 pw;
+out vec4 pe;
+uniform mat4 worldMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projMatrix;
+uniform vec4 eyePos;
+uniform vec3 d0;
+uniform vec3 d1;
+uniform vec3 d2;
+
+uniform float freq;
+uniform float speed;
+uniform float steepness;
+uniform float amplitude;
+
+
+uniform float elapsed;
+
+float height(vec2 p, vec3 d)
+{ 
+
+  float tempS = dot(d.xz, p);
+  tempS = tempS*freq;
+  tempS = tempS + elapsed * speed * freq;
+  float v = 0.5 * (sin(tempS)+1);
+  v = pow(v,steepness);
+  v = amplitude * v;
+  return v; 
+}
+
+void main()
+{ 
+   float sum = 0;
+   otexcoord = texcoord.st;
+   pw = position * worldMatrix;
+   // onormal = normal * worldMatrix;
+   pe = pw * viewMatrix;
+   mat4 viewProjMatrix = viewMatrix*projMatrix;
+   vec3 d[3] = vec3[](d0,d1,d2);
+   for(int i = 0; i<3;++i)
+   {
+       sum+=height(pw.xz,d[i]);
+   }
+   pw.y += sum;
+   gl_Position = pw * viewProjMatrix;
+}
+

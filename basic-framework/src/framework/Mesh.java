@@ -47,7 +47,7 @@ public class Mesh {
     float curFrame = 0.0f;
     int maxdepth=0;
     vec4 quattex_size, bonetex_size;
-    
+    int furvbuff, furvao, numfurverts = -1;
     vec3 specular = new vec3(1,1,1);
     //vec3 bbmin,bbmax;
     //vec3 centroid;
@@ -131,7 +131,7 @@ public class Mesh {
         if( !line.equals("mesh_07"))
             throw new RuntimeException("Incorrect mesh format: "+line);
         
-        byte[] vdata=null,ndata=null,tcdata=null,tdata=null,idata=null,wdata=null,infdata=null;
+        byte[] vdata=null,ndata=null,tcdata=null,tdata=null,idata=null,wdata=null,infdata=null, furdata = null;
         
         byte[] boneheads=null,bonetails=null,matrices=null,quaternions=null;
         
@@ -193,6 +193,10 @@ public class Mesh {
                 {
                     
                 }
+            }
+            else if(lst[0].equals("fur_data"))
+            {
+                furdata = readbytes(din,lst);
             }
             else if(lst[0].equals("normal_data"))
                 ndata = readbytes(din,lst);
@@ -352,9 +356,36 @@ public class Mesh {
         }
         if( matrices != null )
             mattex = new DataTexture( numbones*4, numframes, matrices );
-        
+        if(furdata != null)
+        {
+            numfurverts = furdata.length / 8 / 4;
+            glGenVertexArrays(1,tmp);
+            furvao = tmp[0];
+            glBindVertexArray(furvao);
+            glGenBuffers(1,tmp);
+            furvbuff = tmp[0];
+            glBindBuffer( GL_ARRAY_BUFFER, furvbuff );
+            glBufferData( GL_ARRAY_BUFFER, furdata.length , furdata, GL_STATIC_DRAW );
+            glEnableVertexAttribArray(Program.POSITION_INDEX);
+            glVertexAttribPointer(Program.POSITION_INDEX, 3, GL_FLOAT, false, 9*4,0);
+            glEnableVertexAttribArray(Program.NORMAL_INDEX);
+            glVertexAttribPointer(Program.NORMAL_INDEX, 3, GL_FLOAT, false, 9*4,3*4);
+            glEnableVertexAttribArray(Program.TEXCOORD_INDEX);
+            //this is a vec3!
+            glVertexAttribPointer(Program.TEXCOORD_INDEX, 3, GL_FLOAT, false, 9*4,6*4);
+            glBindVertexArray(0);
+        }
     }
-    
+public void drawFur(Program prog)
+{
+    if(this.furvao != 0)
+    {
+        if(this.texture != null )
+            prog.setUniform("diffuse_texture",this.texture);
+        glBindVertexArray(furvao);
+        glDrawArrays(GL_POINTS, 0, numfurverts);
+    }
+}
 public void draw(Program prog){
         if(this.texture != null )
             prog.setUniform("diffuse_texture",this.texture);
@@ -384,6 +415,10 @@ public void draw(Program prog){
         else
             glDrawElements(GL_TRIANGLES,this.numindices,this.itype,0);
 
+    }
+    public void setTexture(Texture2D tex)
+    {
+        this.texture = tex;
     }
 }
 

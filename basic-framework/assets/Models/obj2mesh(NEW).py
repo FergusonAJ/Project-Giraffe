@@ -116,7 +116,7 @@ def main(infile):
         
         if len(L) == 0:
             continue
-            
+        T = L
         L = L.split(" ")
         
         if L[0].startswith("#"):
